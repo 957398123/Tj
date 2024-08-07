@@ -40,7 +40,7 @@ public class PCChangeMap {
             ByteArray execDataIn = new ByteArray(_data);
             switch (commID) {
                 case 536871296:
-                    (Player.getInstance()).path = (int[][]) null;
+                    (Player.getInstance()).path = null;
                     canPass = -1;
                     canPass = execDataIn.readByte();
                     if (canPass != 1) {

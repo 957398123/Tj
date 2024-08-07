@@ -78,6 +78,9 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     public static byte CHARW = Cons.FONT_SIZE[MOBILE_TELEPHONE_TYPE][0];
     public static byte CHARH = Cons.FONT_SIZE[MOBILE_TELEPHONE_TYPE][1];
     public static Font[] font;
+    /**
+     * 当前游戏界面 5-游戏中
+     */
     private static byte curState = 0;
     private static byte oldState = 0;
     private long timeTaken;
@@ -352,6 +355,10 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     public static MImage mImageC;
     public static int titlecount = 0;
     public UIForm baseForm = null;
+    /**
+     * NPC面板
+     */
+    public UIForm npcForm = null;
     public UIScroll[] scrolls = new UIScroll[10];
     public UITable[] tables = new UITable[10];
     public UITextArea[] textArea = new UITextArea[10];
@@ -890,14 +897,17 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
      * @param g 
      */
     public void paint(Graphics g) {
+        // 设置黑色背景
         g.setColor(0);
         g.fillRect(0, 0, screenW, screenH);
+        // 设置字体
         g.setFont(font[1]);
         switch (getState()) {
-            case 33:
+            case 33:{
                 AdvertiseSplash.getInstance().moreGamePaint(g);
                 AdvertiseSplash.getInstance().moreGameTick();
                 break;
+            }
             case 18:
                 if ((Player.getInstance()).state == 5) {
                     setState((byte) 5);
@@ -9494,9 +9504,13 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     }
 
     private void showGame(Graphics g) {
+        // 绘制地图
         Map.getInstance().draw(g);
+        // 绘制技能释放动画
         SpecialManager.getInstance().draw(g);
+        // 绘制技能释放进度
         Player.getInstance().drawSkillPre(g);
+        // 绘制经验条、血量、聊天等
         UIGameRun.draw(g);
     }
 
@@ -11205,6 +11219,10 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         baseForm.draw(g);
     }
 
+    /**
+     * 绘制NPC位置面板（寻径用）
+     * @param g 
+     */
     public void drawUINPCPos(Graphics g) {
         if (baseForm == null) {
             baseForm = new UIForm(0, 0, screenW, screenH, "");
@@ -11234,7 +11252,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     }
 
     private void mapRunSubTick() {
-        Map.getInstance().adjustWindow((Player.getInstance()).x, (Player.getInstance()).y);
+        Player player = Player.getInstance();
+        Map.getInstance().adjustWindow(player.x, player.y);
         ObjManager.getInstance().tick();
     }
     public static MImage[] mImgUI = new MImage[40];

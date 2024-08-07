@@ -101,59 +101,66 @@ public class UIForm extends UIComponent {
     this.style = style;
   }
   
-  public void draw(Graphics g) {
-    if (this.aboutForm == null || !this.isShowAboutForm || this.aboutForm.width != this.width || this.aboutForm.height != this.height) {
-      if (this.bgStyle != 9) {
-        g.setColor(2037253);
-        g.fillRect(this.positionX, this.positionY, this.width, this.height);
-        g.setColor(0);
-        g.drawRect(this.positionX - 1, this.positionY - 1, this.width + 2, this.height + 2);
-        if (this.style == 1) {
-          UIRim.drawRim(g, this.positionX, this.positionY, this.width, this.height, (byte)2);
-        } else {
-          g.setClip(0, 0, MainCanvas.screenW, MainCanvas.screenH);
-          switch (this.bgStyle) {
-            case 7:
-              MainCanvas.drawGroundback(g);
-              break;
-            case 8:
-              MainCanvas.drawGroundback(g);
-              break;
-          } 
-        } 
-      } 
-      this.e = this.components.elements();
-      while (this.e.hasMoreElements()) {
-        UIComponent uic = (UIComponent)this.e.nextElement();
-        if (uic.getVisible())
-          uic.draw(g); 
-      } 
-    } 
-    if (this.aboutForm != null && this.isShowAboutForm)
-      this.aboutForm.draw(g); 
-    if (this.showMessage) {
-      g.setClip(0, 0, this.width, this.height);
-      g.setColor(0);
-      g.fillRect(0, 0, this.width, charH + 2);
-      g.setColor(16711680);
-      g.drawString(this.msg, this.width - this.msgCount, 1, 20);
-      g.setColor(16769185);
-      g.drawLine(0, charH + 2, this.width, charH + 2);
-      if (this.width - this.msgCount < -font.stringWidth(this.msg)) {
-        this.msgCount = 0;
-        this.showTimes = (byte)(this.showTimes + 1);
-        if (this.showTimes > 1) {
-          this.msg = null;
-          this.showMessage = false;
-          this.msgCount = 0;
-          this.showTimes = 0;
-          this.cannotInterrupt = false;
-          return;
-        } 
-      } 
-      this.msgCount += 6;
-    } 
-  }
+public void draw(Graphics g) {
+        if (this.aboutForm == null || !this.isShowAboutForm || this.aboutForm.width != this.width || this.aboutForm.height != this.height) {
+            if (this.bgStyle != 9) {
+                g.setColor(2037253);
+                g.fillRect(this.positionX, this.positionY, this.width, this.height);
+                g.setColor(0);
+                g.drawRect(this.positionX - 1, this.positionY - 1, this.width + 2, this.height + 2);
+                if (this.style == 1) {
+                    UIRim.drawRim(g, this.positionX, this.positionY, this.width, this.height, (byte)2);
+                } else {
+                    g.setClip(0, 0, MainCanvas.screenW, MainCanvas.screenH);
+                    switch (this.bgStyle) {
+                        case 7:
+                            MainCanvas.drawGroundback(g);
+                            break;
+                        case 8:
+                            MainCanvas.drawGroundback(g);
+                    }
+                }
+            }
+
+            this.e = this.components.elements();
+
+            while(this.e.hasMoreElements()) {
+                UIComponent uic = (UIComponent)this.e.nextElement();
+                if (uic.getVisible()) {
+                    uic.draw(g);
+                }
+            }
+        }
+
+        if (this.aboutForm != null && this.isShowAboutForm) {
+            this.aboutForm.draw(g);
+        }
+
+        if (this.showMessage) {
+            g.setClip(0, 0, this.width, this.height);
+            g.setColor(0);
+            g.fillRect(0, 0, this.width, charH + 2);
+            g.setColor(16711680);
+            g.drawString(this.msg, this.width - this.msgCount, 1, 20);
+            g.setColor(16769185);
+            g.drawLine(0, charH + 2, this.width, charH + 2);
+            if (this.width - this.msgCount < -font.stringWidth(this.msg)) {
+                this.msgCount = 0;
+                ++this.showTimes;
+                if (this.showTimes > 1) {
+                    this.msg = null;
+                    this.showMessage = false;
+                    this.msgCount = 0;
+                    this.showTimes = 0;
+                    this.cannotInterrupt = false;
+                    return;
+                }
+            }
+
+            this.msgCount += 6;
+        }
+
+    }
   
   public UIComponent getCommand() {
     if (this.aboutForm != null && this.isShowAboutForm)

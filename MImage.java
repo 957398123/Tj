@@ -43,9 +43,10 @@ public class MImage {
      */
     public MImage(Image img) {
         if (img != null) {
-            frame_w = (short) img.getWidth();
-            frame_h = (short) img.getHeight();
-            cols = rows = frames = 1;
+            this.img = img;
+            this.frame_w = (short)img.getWidth();
+            this.frame_h = (short)img.getHeight();
+            this.cols = this.rows = this.frames = 1;
         }
     }
 

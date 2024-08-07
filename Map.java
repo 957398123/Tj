@@ -304,6 +304,11 @@ public class Map {
 
     }
 
+    /**
+     * 调整窗口位置跟随玩家坐标
+     * @param x
+     * @param y 
+     */
     public void adjustWindow(int x, int y) {
         currentWindowX = x - (MainCanvas.screenW >> 1);
         currentWindowY = y - (MAP_H >> 1);

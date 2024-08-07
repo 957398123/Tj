@@ -1114,7 +1114,7 @@ public class GameObj {
     }
 
     /**
-     * 绘制选中对象
+     * 绘制选中对象（脚底下的选中条）
      * @param g 
      */
     public void drawSelect(Graphics g) {
@@ -1638,7 +1638,8 @@ public class GameObj {
     }
 
     public static void drawNpcForUi(Graphics g, int argImgID, int argX, int argY) {
-        Util.drawRoleEditFrame(npcImage, g, npcFrameData[npcMotionDataAll[0][argImgID - OFFSET_NPC]], npcPicData, argX, argY, false);
+        short[] frameDatas = npcFrameData[npcMotionDataAll[0][argImgID - OFFSET_NPC]];
+        Util.drawRoleEditFrame(npcImage, g, frameDatas, npcPicData, argX, argY, false);
     }
 
     public void setCurWeapon(int argWeapon) {

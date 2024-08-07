@@ -339,7 +339,7 @@ public class PCGameObj {
                     obj.setState((byte) 5);
                     Player.getInstance().resetAimID();
                     MainCanvas.cancelBusiness();
-                    (Player.getInstance()).path = (int[][]) null;
+                    (Player.getInstance()).path = null;
                     MainCanvas.mc.setGameState((byte) 8);
                     MainCanvas.mc.setOtherSubState((byte) 1);
                     break;

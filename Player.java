@@ -141,6 +141,9 @@ public class Player extends OtherPlayer {
     int[][] canMoveIndex;
     int[][] stepIndex;
     private int oldSkillTargetId;
+    /**
+     * 玩家寻径路径（A星算法）
+     */
     public int[][] path;
     public boolean findpath;
 
@@ -188,6 +191,7 @@ public class Player extends OtherPlayer {
         tickHpChangeVectorPop();
         checkSkill();
         follow();
+        // 如果有寻径，进行寻径
         if (path != null && path.length > 0) {
             movePath();
         }
@@ -318,11 +322,11 @@ public class Player extends OtherPlayer {
             return;
         }
         if (pressArrowKey()) {
-            path = (int[][]) null;
+            path = null;
             return;
         }
         if (MainCanvas.isKeyPress(14) || (Cons.use5 && MainCanvas.isKeyPress(5))) {
-            path = (int[][]) null;
+            path = null;
             return;
         }
         if (pressSkillKey()) {
@@ -872,7 +876,6 @@ public class Player extends OtherPlayer {
      * @return
      */
     private boolean collidesREC(int ax, int ay, int aw, int ah, int bx, int by, int bw, int bh) {
-        //return Math.abs((ax << 1) + aw - ((bx << 1) + bw)) < aw + bw && Math.abs((ay << 1) + ah - ((by << 1) + bh)) < ah + bh;
         return ax < bx + bw
                 && ax + aw > bx
                 && ay < by + bh
@@ -1576,7 +1579,7 @@ public class Player extends OtherPlayer {
     public int getCastLength() {
         return castLength;
     }
-
+    
     public void setAimColRow(int aimCol, int aimRow) {
         if (aimCol != col || aimRow != row) {
             path = AStarTree.getInstance().findPath(col, row, aimCol, aimRow);

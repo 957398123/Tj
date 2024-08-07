@@ -45,687 +45,122 @@ public class UIGameRun {
     beginChat();
   }
   
-  public void drawHPMPBar(Graphics g, GameObj obj, int startX, int startY, boolean isTeam) {
-    // Byte code:
-    //   0: aload_2
-    //   1: getfield type : B
-    //   4: iconst_5
-    //   5: if_icmpne -> 261
-    //   8: ldc ''
-    //   10: astore #6
-    //   12: aload_2
-    //   13: getfield imgID : B
-    //   16: tableswitch default -> 145, 0 -> 48, 1 -> 73, 2 -> 98, 3 -> 123
-    //   48: new java/lang/StringBuffer
-    //   51: dup
-    //   52: invokespecial <init> : ()V
-    //   55: aload #6
-    //   57: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   60: ldc '矿类'
-    //   62: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   65: invokevirtual toString : ()Ljava/lang/String;
-    //   68: astore #6
-    //   70: goto -> 145
-    //   73: new java/lang/StringBuffer
-    //   76: dup
-    //   77: invokespecial <init> : ()V
-    //   80: aload #6
-    //   82: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   85: ldc '木类'
-    //   87: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   90: invokevirtual toString : ()Ljava/lang/String;
-    //   93: astore #6
-    //   95: goto -> 145
-    //   98: new java/lang/StringBuffer
-    //   101: dup
-    //   102: invokespecial <init> : ()V
-    //   105: aload #6
-    //   107: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   110: ldc '草类'
-    //   112: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   115: invokevirtual toString : ()Ljava/lang/String;
-    //   118: astore #6
-    //   120: goto -> 145
-    //   123: new java/lang/StringBuffer
-    //   126: dup
-    //   127: invokespecial <init> : ()V
-    //   130: aload #6
-    //   132: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   135: ldc '皮类'
-    //   137: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   140: invokevirtual toString : ()Ljava/lang/String;
-    //   143: astore #6
-    //   145: new java/lang/StringBuffer
-    //   148: dup
-    //   149: invokespecial <init> : ()V
-    //   152: aload #6
-    //   154: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   157: aload_2
-    //   158: getfield level : B
-    //   161: invokevirtual append : (I)Ljava/lang/StringBuffer;
-    //   164: ldc '级'
-    //   166: invokevirtual append : (Ljava/lang/String;)Ljava/lang/StringBuffer;
-    //   169: invokevirtual toString : ()Ljava/lang/String;
-    //   172: astore #6
-    //   174: aload_1
-    //   175: iconst_0
-    //   176: invokevirtual setColor : (I)V
-    //   179: aload_1
-    //   180: aload #6
-    //   182: getstatic MainCanvas.screenW : I
-    //   185: aload_1
-    //   186: invokevirtual getFont : ()Ljavax/microedition/lcdui/Font;
-    //   189: aload #6
-    //   191: invokevirtual stringWidth : (Ljava/lang/String;)I
-    //   194: isub
-    //   195: bipush #11
-    //   197: isub
-    //   198: bipush #12
-    //   200: iconst_0
-    //   201: invokevirtual drawString : (Ljava/lang/String;III)V
-    //   204: aload_1
-    //   205: aload #6
-    //   207: getstatic MainCanvas.screenW : I
-    //   210: aload_1
-    //   211: invokevirtual getFont : ()Ljavax/microedition/lcdui/Font;
-    //   214: aload #6
-    //   216: invokevirtual stringWidth : (Ljava/lang/String;)I
-    //   219: isub
-    //   220: bipush #10
-    //   222: isub
-    //   223: bipush #13
-    //   225: iconst_0
-    //   226: invokevirtual drawString : (Ljava/lang/String;III)V
-    //   229: aload_1
-    //   230: ldc 16777173
-    //   232: invokevirtual setColor : (I)V
-    //   235: aload_1
-    //   236: aload #6
-    //   238: getstatic MainCanvas.screenW : I
-    //   241: aload_1
-    //   242: invokevirtual getFont : ()Ljavax/microedition/lcdui/Font;
-    //   245: aload #6
-    //   247: invokevirtual stringWidth : (Ljava/lang/String;)I
-    //   250: isub
-    //   251: bipush #10
-    //   253: isub
-    //   254: bipush #12
-    //   256: iconst_0
-    //   257: invokevirtual drawString : (Ljava/lang/String;III)V
-    //   260: return
-    //   261: iconst_3
-    //   262: istore #6
-    //   264: bipush #44
-    //   266: istore #7
-    //   268: iload #5
-    //   270: ifeq -> 277
-    //   273: bipush #19
-    //   275: istore #7
-    //   277: iload #4
-    //   279: iconst_3
-    //   280: iadd
-    //   281: istore #8
-    //   283: iload #4
-    //   285: bipush #7
-    //   287: iadd
-    //   288: istore #9
-    //   290: aload_2
-    //   291: getfield maxHp : I
-    //   294: istore #12
-    //   296: aload_2
-    //   297: getfield curHp : I
-    //   300: istore #13
-    //   302: aload_2
-    //   303: getfield curMp : I
-    //   306: istore #14
-    //   308: aload_2
-    //   309: getfield maxMp : I
-    //   312: istore #15
-    //   314: iload #5
-    //   316: ifeq -> 405
-    //   319: aload_1
-    //   320: getstatic MainCanvas.mImgUI : [LMImage;
-    //   323: bipush #24
-    //   325: aaload
-    //   326: getfield img : Ljavax/microedition/lcdui/Image;
-    //   329: iconst_0
-    //   330: iconst_0
-    //   331: bipush #40
-    //   333: getstatic MainCanvas.mImgUI : [LMImage;
-    //   336: bipush #24
-    //   338: aaload
-    //   339: getfield img : Ljavax/microedition/lcdui/Image;
-    //   342: invokevirtual getHeight : ()I
-    //   345: iload_3
-    //   346: iload #4
-    //   348: iconst_0
-    //   349: invokestatic drawRegion : (Ljavax/microedition/lcdui/Graphics;Ljavax/microedition/lcdui/Image;IIIIIII)V
-    //   352: aload_1
-    //   353: getstatic MainCanvas.mImgUI : [LMImage;
-    //   356: bipush #24
-    //   358: aaload
-    //   359: getfield img : Ljavax/microedition/lcdui/Image;
-    //   362: getstatic MainCanvas.mImgUI : [LMImage;
-    //   365: bipush #24
-    //   367: aaload
-    //   368: getfield img : Ljavax/microedition/lcdui/Image;
-    //   371: invokevirtual getWidth : ()I
-    //   374: bipush #6
-    //   376: isub
-    //   377: iconst_0
-    //   378: bipush #6
-    //   380: getstatic MainCanvas.mImgUI : [LMImage;
-    //   383: bipush #24
-    //   385: aaload
-    //   386: getfield img : Ljavax/microedition/lcdui/Image;
-    //   389: invokevirtual getHeight : ()I
-    //   392: iload_3
-    //   393: bipush #40
-    //   395: iadd
-    //   396: iload #4
-    //   398: iconst_0
-    //   399: invokestatic drawRegion : (Ljavax/microedition/lcdui/Graphics;Ljavax/microedition/lcdui/Image;IIIIIII)V
-    //   402: goto -> 421
-    //   405: getstatic MainCanvas.mImgUI : [LMImage;
-    //   408: bipush #24
-    //   410: aaload
-    //   411: aload_1
-    //   412: iload_3
-    //   413: iload #4
-    //   415: bipush #20
-    //   417: iconst_0
-    //   418: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIII)V
-    //   421: aload_2
-    //   422: getfield type : B
-    //   425: iconst_2
-    //   426: if_icmpne -> 599
-    //   429: getstatic MainCanvas.mImgUI : [LMImage;
-    //   432: bipush #32
-    //   434: aaload
-    //   435: aload_1
-    //   436: iload_3
-    //   437: iconst_3
-    //   438: iadd
-    //   439: iload #4
-    //   441: iconst_4
-    //   442: iadd
-    //   443: bipush #9
-    //   445: iconst_0
-    //   446: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   449: aload_2
-    //   450: getfield eliteType : B
-    //   453: tableswitch default -> 576, 0 -> 484, 1 -> 507, 2 -> 530, 3 -> 553
-    //   484: getstatic MainCanvas.mImgUI : [LMImage;
-    //   487: bipush #32
-    //   489: aaload
-    //   490: aload_1
-    //   491: iload_3
-    //   492: iconst_3
-    //   493: iadd
-    //   494: iload #4
-    //   496: iconst_4
-    //   497: iadd
-    //   498: bipush #9
-    //   500: iconst_0
-    //   501: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   504: goto -> 652
-    //   507: getstatic MainCanvas.mImgUI : [LMImage;
-    //   510: bipush #32
-    //   512: aaload
-    //   513: aload_1
-    //   514: iload_3
-    //   515: iconst_3
-    //   516: iadd
-    //   517: iload #4
-    //   519: iconst_4
-    //   520: iadd
-    //   521: bipush #10
-    //   523: iconst_0
-    //   524: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   527: goto -> 652
-    //   530: getstatic MainCanvas.mImgUI : [LMImage;
-    //   533: bipush #32
-    //   535: aaload
-    //   536: aload_1
-    //   537: iload_3
-    //   538: iconst_3
-    //   539: iadd
-    //   540: iload #4
-    //   542: iconst_4
-    //   543: iadd
-    //   544: bipush #11
-    //   546: iconst_0
-    //   547: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   550: goto -> 652
-    //   553: getstatic MainCanvas.mImgUI : [LMImage;
-    //   556: bipush #32
-    //   558: aaload
-    //   559: aload_1
-    //   560: iload_3
-    //   561: iconst_3
-    //   562: iadd
-    //   563: iload #4
-    //   565: iconst_4
-    //   566: iadd
-    //   567: bipush #12
-    //   569: iconst_0
-    //   570: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   573: goto -> 652
-    //   576: getstatic MainCanvas.mImgUI : [LMImage;
-    //   579: bipush #32
-    //   581: aaload
-    //   582: aload_1
-    //   583: iload_3
-    //   584: iconst_3
-    //   585: iadd
-    //   586: iload #4
-    //   588: iconst_4
-    //   589: iadd
-    //   590: bipush #9
-    //   592: iconst_0
-    //   593: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   596: goto -> 652
-    //   599: aload_2
-    //   600: getfield type : B
-    //   603: iconst_3
-    //   604: if_icmpne -> 630
-    //   607: getstatic MainCanvas.mImgUI : [LMImage;
-    //   610: bipush #32
-    //   612: aaload
-    //   613: aload_1
-    //   614: iload_3
-    //   615: iconst_3
-    //   616: iadd
-    //   617: iload #4
-    //   619: iconst_4
-    //   620: iadd
-    //   621: bipush #13
-    //   623: iconst_0
-    //   624: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   627: goto -> 652
-    //   630: getstatic MainCanvas.mImgUI : [LMImage;
-    //   633: bipush #32
-    //   635: aaload
-    //   636: aload_1
-    //   637: iload_3
-    //   638: iconst_3
-    //   639: iadd
-    //   640: iload #4
-    //   642: iconst_4
-    //   643: iadd
-    //   644: aload_2
-    //   645: getfield originalImgID : B
-    //   648: iconst_0
-    //   649: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   652: aload_2
-    //   653: getfield objID : I
-    //   656: getstatic MainCanvas.mc : LMainCanvas;
-    //   659: getfield teamLeaderId : I
-    //   662: if_icmpne -> 680
-    //   665: getstatic MainCanvas.mImgUI : [LMImage;
-    //   668: bipush #34
-    //   670: aaload
-    //   671: aload_1
-    //   672: iload_3
-    //   673: iload #4
-    //   675: iconst_0
-    //   676: iconst_0
-    //   677: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   680: aload_2
-    //   681: invokestatic getInstance : ()LPlayer;
-    //   684: if_acmpeq -> 703
-    //   687: aload_2
-    //   688: getfield type : B
-    //   691: iconst_3
-    //   692: if_icmpeq -> 703
-    //   695: aload_2
-    //   696: getfield type : B
-    //   699: iconst_1
-    //   700: if_icmpne -> 799
-    //   703: aload_2
-    //   704: getfield level : B
-    //   707: bipush #10
-    //   709: if_icmplt -> 769
-    //   712: getstatic MainCanvas.mImgUI : [LMImage;
-    //   715: bipush #12
-    //   717: aaload
-    //   718: aload_1
-    //   719: iload_3
-    //   720: bipush #23
-    //   722: iadd
-    //   723: iload #4
-    //   725: bipush #11
-    //   727: iadd
-    //   728: aload_2
-    //   729: getfield level : B
-    //   732: bipush #10
-    //   734: idiv
-    //   735: iconst_0
-    //   736: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   739: getstatic MainCanvas.mImgUI : [LMImage;
-    //   742: bipush #12
-    //   744: aaload
-    //   745: aload_1
-    //   746: iload_3
-    //   747: bipush #28
-    //   749: iadd
-    //   750: iload #4
-    //   752: bipush #11
-    //   754: iadd
-    //   755: aload_2
-    //   756: getfield level : B
-    //   759: bipush #10
-    //   761: irem
-    //   762: iconst_0
-    //   763: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   766: goto -> 975
-    //   769: getstatic MainCanvas.mImgUI : [LMImage;
-    //   772: bipush #12
-    //   774: aaload
-    //   775: aload_1
-    //   776: iload_3
-    //   777: bipush #25
-    //   779: iadd
-    //   780: iload #4
-    //   782: bipush #11
-    //   784: iadd
-    //   785: aload_2
-    //   786: getfield level : B
-    //   789: bipush #10
-    //   791: irem
-    //   792: iconst_0
-    //   793: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   796: goto -> 975
-    //   799: aload_2
-    //   800: getfield type : B
-    //   803: iconst_2
-    //   804: if_icmpeq -> 835
-    //   807: aload_2
-    //   808: getfield type : B
-    //   811: iconst_1
-    //   812: if_icmpne -> 975
-    //   815: aload_2
-    //   816: getfield group : B
-    //   819: ifeq -> 975
-    //   822: invokestatic getInstance : ()LPlayer;
-    //   825: getfield group : B
-    //   828: aload_2
-    //   829: getfield group : B
-    //   832: if_icmpeq -> 975
-    //   835: aload_2
-    //   836: getfield level : B
-    //   839: invokestatic getInstance : ()LPlayer;
-    //   842: getfield level : B
-    //   845: isub
-    //   846: bipush #8
-    //   848: if_icmpge -> 858
-    //   851: aload_2
-    //   852: getfield level : B
-    //   855: ifge -> 882
-    //   858: getstatic MainCanvas.mImgUI : [LMImage;
-    //   861: bipush #36
-    //   863: aaload
-    //   864: aload_1
-    //   865: iload_3
-    //   866: bipush #22
-    //   868: iadd
-    //   869: iload #4
-    //   871: bipush #10
-    //   873: iadd
-    //   874: iconst_0
-    //   875: iconst_0
-    //   876: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   879: goto -> 975
-    //   882: aload_2
-    //   883: getfield level : B
-    //   886: bipush #10
-    //   888: if_icmplt -> 948
-    //   891: getstatic MainCanvas.mImgUI : [LMImage;
-    //   894: bipush #12
-    //   896: aaload
-    //   897: aload_1
-    //   898: iload_3
-    //   899: bipush #23
-    //   901: iadd
-    //   902: iload #4
-    //   904: bipush #11
-    //   906: iadd
-    //   907: aload_2
-    //   908: getfield level : B
-    //   911: bipush #10
-    //   913: idiv
-    //   914: iconst_0
-    //   915: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   918: getstatic MainCanvas.mImgUI : [LMImage;
-    //   921: bipush #12
-    //   923: aaload
-    //   924: aload_1
-    //   925: iload_3
-    //   926: bipush #28
-    //   928: iadd
-    //   929: iload #4
-    //   931: bipush #11
-    //   933: iadd
-    //   934: aload_2
-    //   935: getfield level : B
-    //   938: bipush #10
-    //   940: irem
-    //   941: iconst_0
-    //   942: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   945: goto -> 975
-    //   948: getstatic MainCanvas.mImgUI : [LMImage;
-    //   951: bipush #12
-    //   953: aaload
-    //   954: aload_1
-    //   955: iload_3
-    //   956: bipush #25
-    //   958: iadd
-    //   959: iload #4
-    //   961: bipush #11
-    //   963: iadd
-    //   964: aload_2
-    //   965: getfield level : B
-    //   968: bipush #10
-    //   970: irem
-    //   971: iconst_0
-    //   972: invokevirtual draw : (Ljavax/microedition/lcdui/Graphics;IIIZ)V
-    //   975: iload #12
-    //   977: ifne -> 987
-    //   980: iload #7
-    //   982: istore #10
-    //   984: goto -> 1006
-    //   987: iload #12
-    //   989: iload #13
-    //   991: isub
-    //   992: bipush #100
-    //   994: imul
-    //   995: iload #12
-    //   997: idiv
-    //   998: iload #7
-    //   1000: imul
-    //   1001: bipush #100
-    //   1003: idiv
-    //   1004: istore #10
-    //   1006: iload #15
-    //   1008: ifne -> 1018
-    //   1011: iload #7
-    //   1013: istore #11
-    //   1015: goto -> 1037
-    //   1018: iload #15
-    //   1020: iload #14
-    //   1022: isub
-    //   1023: bipush #100
-    //   1025: imul
-    //   1026: iload #15
-    //   1028: idiv
-    //   1029: iload #7
-    //   1031: imul
-    //   1032: bipush #100
-    //   1034: idiv
-    //   1035: istore #11
-    //   1037: aload_1
-    //   1038: ldc 3879194
-    //   1040: invokevirtual setColor : (I)V
-    //   1043: aload_1
-    //   1044: iload_3
-    //   1045: bipush #24
-    //   1047: iadd
-    //   1048: iload #7
-    //   1050: iadd
-    //   1051: iload #10
-    //   1053: isub
-    //   1054: iload #8
-    //   1056: iload #10
-    //   1058: iconst_3
-    //   1059: invokevirtual fillRect : (IIII)V
-    //   1062: aload_2
-    //   1063: getfield type : B
-    //   1066: iconst_4
-    //   1067: if_icmpeq -> 1078
-    //   1070: aload_2
-    //   1071: getfield type : B
-    //   1074: iconst_1
-    //   1075: if_icmpne -> 1099
-    //   1078: aload_1
-    //   1079: iload_3
-    //   1080: bipush #24
-    //   1082: iadd
-    //   1083: iload #7
-    //   1085: iadd
-    //   1086: iload #11
-    //   1088: isub
-    //   1089: iload #9
-    //   1091: iconst_1
-    //   1092: isub
-    //   1093: iload #11
-    //   1095: iconst_3
-    //   1096: invokevirtual fillRect : (IIII)V
-    //   1099: iload #5
-    //   1101: ifne -> 1119
-    //   1104: aload_0
-    //   1105: aload_1
-    //   1106: aload_2
-    //   1107: iload_3
-    //   1108: bipush #22
-    //   1110: iadd
-    //   1111: iload #4
-    //   1113: bipush #24
-    //   1115: iadd
-    //   1116: invokevirtual drawBuffer : (Ljavax/microedition/lcdui/Graphics;LGameObj;II)V
-    //   1119: return
-    // Line number table:
-    //   Java source line number -> byte code offset
-    //   #82	-> 0
-    //   #83	-> 8
-    //   #84	-> 12
-    //   #86	-> 48
-    //   #87	-> 70
-    //   #89	-> 73
-    //   #90	-> 95
-    //   #93	-> 98
-    //   #94	-> 120
-    //   #96	-> 123
-    //   #100	-> 145
-    //   #106	-> 174
-    //   #107	-> 179
-    //   #108	-> 186
-    //   #107	-> 201
-    //   #110	-> 204
-    //   #111	-> 211
-    //   #110	-> 226
-    //   #113	-> 229
-    //   #114	-> 235
-    //   #115	-> 242
-    //   #114	-> 257
-    //   #117	-> 260
-    //   #121	-> 261
-    //   #122	-> 264
-    //   #123	-> 268
-    //   #124	-> 273
-    //   #126	-> 277
-    //   #127	-> 283
-    //   #130	-> 290
-    //   #131	-> 296
-    //   #132	-> 302
-    //   #133	-> 308
-    //   #136	-> 314
-    //   #137	-> 319
-    //   #138	-> 342
-    //   #137	-> 349
-    //   #139	-> 352
-    //   #140	-> 371
-    //   #141	-> 389
-    //   #139	-> 399
-    //   #144	-> 405
-    //   #148	-> 421
-    //   #149	-> 429
-    //   #152	-> 449
-    //   #154	-> 484
-    //   #155	-> 504
-    //   #157	-> 507
-    //   #158	-> 524
-    //   #160	-> 527
-    //   #162	-> 530
-    //   #163	-> 547
-    //   #164	-> 550
-    //   #167	-> 553
-    //   #168	-> 570
-    //   #169	-> 573
-    //   #171	-> 576
-    //   #172	-> 596
-    //   #176	-> 599
-    //   #177	-> 607
-    //   #183	-> 630
-    //   #188	-> 652
-    //   #194	-> 665
-    //   #198	-> 680
-    //   #201	-> 703
-    //   #202	-> 712
-    //   #204	-> 739
-    //   #207	-> 769
-    //   #212	-> 799
-    //   #215	-> 822
-    //   #216	-> 835
-    //   #219	-> 858
-    //   #222	-> 882
-    //   #223	-> 891
-    //   #225	-> 918
-    //   #228	-> 948
-    //   #235	-> 975
-    //   #236	-> 980
-    //   #238	-> 987
-    //   #240	-> 1006
-    //   #242	-> 1011
-    //   #244	-> 1018
-    //   #246	-> 1037
-    //   #247	-> 1043
-    //   #249	-> 1062
-    //   #251	-> 1078
-    //   #254	-> 1099
-    //   #255	-> 1104
-    //   #257	-> 1119
-    // Local variable table:
-    //   start	length	slot	name	descriptor
-    //   12	249	6	tmpStr	Ljava/lang/String;
-    //   984	3	10	disHpBarLen	I
-    //   1015	3	11	disMpBarLen	I
-    //   0	1120	0	this	LUIGameRun;
-    //   0	1120	1	g	Ljavax/microedition/lcdui/Graphics;
-    //   0	1120	2	obj	LGameObj;
-    //   0	1120	3	startX	I
-    //   0	1120	4	startY	I
-    //   0	1120	5	isTeam	Z
-    //   264	856	6	barH	B
-    //   268	852	7	barLen	B
-    //   283	837	8	hpBarY	I
-    //   290	830	9	mpBarY	I
-    //   1006	114	10	disHpBarLen	I
-    //   1037	83	11	disMpBarLen	I
-    //   296	824	12	maxHp	I
-    //   302	818	13	hp	I
-    //   308	812	14	mp	I
-    //   314	806	15	maxMp	I
-  }
+    public void drawHPMPBar(Graphics g, GameObj obj, int startX, int startY, boolean isTeam) {
+        if (obj.type == 5) {
+            String tmpStr = "";
+            switch (obj.imgID) {
+                case 0:
+                    tmpStr = tmpStr + "矿类";
+                    break;
+                case 1:
+                    tmpStr = tmpStr + "木类";
+                    break;
+                case 2:
+                    tmpStr = tmpStr + "草类";
+                    break;
+                case 3:
+                    tmpStr = tmpStr + "皮类";
+            }
+
+            tmpStr = tmpStr + obj.level + "级";
+            g.setColor(0);
+            g.drawString(tmpStr, MainCanvas.screenW - g.getFont().stringWidth(tmpStr) - 11, 12, 0);
+            g.drawString(tmpStr, MainCanvas.screenW - g.getFont().stringWidth(tmpStr) - 10, 13, 0);
+            g.setColor(16777173);
+            g.drawString(tmpStr, MainCanvas.screenW - g.getFont().stringWidth(tmpStr) - 10, 12, 0);
+        } else {
+            byte barLen = 44;
+            if (isTeam) {
+                barLen = 19;
+            }
+
+            int hpBarY = startY + 3;
+            int mpBarY = startY + 7;
+            int maxHp = obj.maxHp;
+            int hp = obj.curHp;
+            int mp = obj.curMp;
+            int maxMp = obj.maxMp;
+            if (isTeam) {
+                Util.drawRegion(g, MainCanvas.mImgUI[24].img, 0, 0, 40, MainCanvas.mImgUI[24].img.getHeight(), startX, startY, 0);
+                Util.drawRegion(g, MainCanvas.mImgUI[24].img, MainCanvas.mImgUI[24].img.getWidth() - 6, 0, 6, MainCanvas.mImgUI[24].img.getHeight(), startX + 40, startY, 0);
+            } else {
+                MainCanvas.mImgUI[24].draw(g, startX, startY, 20, 0);
+            }
+
+            if (obj.type == 2) {
+                MainCanvas.mImgUI[32].draw(g, startX + 3, startY + 4, 9, false);
+                switch (obj.eliteType) {
+                    case 0:
+                        MainCanvas.mImgUI[32].draw(g, startX + 3, startY + 4, 9, false);
+                        break;
+                    case 1:
+                        MainCanvas.mImgUI[32].draw(g, startX + 3, startY + 4, 10, false);
+                        break;
+                    case 2:
+                        MainCanvas.mImgUI[32].draw(g, startX + 3, startY + 4, 11, false);
+                        break;
+                    case 3:
+                        MainCanvas.mImgUI[32].draw(g, startX + 3, startY + 4, 12, false);
+                        break;
+                    default:
+                        MainCanvas.mImgUI[32].draw(g, startX + 3, startY + 4, 9, false);
+                }
+            } else if (obj.type == 3) {
+                MainCanvas.mImgUI[32].draw(g, startX + 3, startY + 4, 13, false);
+            } else {
+                MainCanvas.mImgUI[32].draw(g, startX + 3, startY + 4, obj.originalImgID, false);
+            }
+
+            if (obj.objID == MainCanvas.mc.teamLeaderId) {
+                MainCanvas.mImgUI[34].draw(g, startX, startY, 0, false);
+            }
+
+            if (obj != Player.getInstance() && obj.type != 3 && obj.type != 1) {
+                if (obj.type == 2 || obj.type == 1 && obj.group != 0 && Player.getInstance().group != obj.group) {
+                    if (obj.level - Player.getInstance().level < 8 && obj.level >= 0) {
+                        if (obj.level >= 10) {
+                            MainCanvas.mImgUI[12].draw(g, startX + 23, startY + 11, obj.level / 10, false);
+                            MainCanvas.mImgUI[12].draw(g, startX + 28, startY + 11, obj.level % 10, false);
+                        } else {
+                            MainCanvas.mImgUI[12].draw(g, startX + 25, startY + 11, obj.level % 10, false);
+                        }
+                    } else {
+                        MainCanvas.mImgUI[36].draw(g, startX + 22, startY + 10, 0, false);
+                    }
+                }
+            } else if (obj.level >= 10) {
+                MainCanvas.mImgUI[12].draw(g, startX + 23, startY + 11, obj.level / 10, false);
+                MainCanvas.mImgUI[12].draw(g, startX + 28, startY + 11, obj.level % 10, false);
+            } else {
+                MainCanvas.mImgUI[12].draw(g, startX + 25, startY + 11, obj.level % 10, false);
+            }
+
+            int disHpBarLen;
+            if (maxHp == 0) {
+                disHpBarLen = barLen;
+            } else {
+                disHpBarLen = (maxHp - hp) * 100 / maxHp * barLen / 100;
+            }
+
+            int disMpBarLen;
+            if (maxMp == 0) {
+                disMpBarLen = barLen;
+            } else {
+                disMpBarLen = (maxMp - mp) * 100 / maxMp * barLen / 100;
+            }
+
+            g.setColor(3879194);
+            g.fillRect(startX + 24 + barLen - disHpBarLen, hpBarY, disHpBarLen, 3);
+            if (obj.type == 4 || obj.type == 1) {
+                g.fillRect(startX + 24 + barLen - disMpBarLen, mpBarY - 1, disMpBarLen, 3);
+            }
+
+            if (!isTeam) {
+                this.drawBuffer(g, obj, startX + 22, startY + 24);
+            }
+
+        }
+    }
   
   public void drawLetterInfo(Graphics g) {
     if (MainCanvas.isHaveNewMail)
