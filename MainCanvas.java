@@ -6749,57 +6749,52 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         }
     }
 
-    public void keyInNPCMenu() {
-        if (baseForm == null) {
-            return;
-        }
-        UIComponent cmd = baseForm.getCommand();
-        if (isKeyPress(17) || isKeyPress(14)) {
-            if (baseForm.getSubForm() == null) {
-                byte i;
-                baseForm.setAboutForm((UIForm) null);
-                baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
-                switch (NPCMenu.getMappingPointer()) {
-                    case 20:
-                        ni.send(1073742080);
-                        releaseUI();
-                    case 21:
+public void keyInNPCMenu() {
+        if (this.baseForm != null) {
+            UIComponent cmd = this.baseForm.getCommand();
+            if (!isKeyPress(17) && !isKeyPress(14)) {
+                if (isKeyPress(18)) {
+                    if (this.baseForm.getCurrentFocusForm() == this.baseForm) {
                         if (NPCMenu.getSubMenu() == null) {
-                            menus[1] = new UIMenu(0, 0, 80, 0, null, Cons.MENU_DIVORCE);
-                            NPCMenu.setSubMenu(menus[1]);
-                            baseForm.setAboutForm((UIForm) null);
-                        } else {
-                            switch (NPCMenu.getSubMenu().getCurrentPointer()) {
-                                case 0:
-                                    ni.send(1073742336);
-                                    NPCMenu.setSubMenu((UIMenu) null);
-                                    releaseUI();
-                                    break;
-                                case 1:
-                                    ni.send(1073742592);
-                                    NPCMenu.setSubMenu((UIMenu) null);
-                                    releaseUI();
-                                    break;
+                            if (firstLogon == 1) {
+                                setMessage(this.baseForm, "请按选择键查看任务详情，按操作键接受任务。");
+                            } else {
+                                NPCMenu = null;
+                                PCArena.releaseInstance();
+                                this.releaseUI();
+                                this.setGameState((byte)0);
+                                ObjManager.currentTarget = Player.getInstance();
+                                ObjManager.showTarget = null;
                             }
+                        } else {
+                            NPCMenu.setSubMenu((UIMenu)null);
                         }
-                    case 120:
-                        for (i = 0; i < 2; i = (byte) (i + 1)) {
-                            taskStuffId[i] = 0;
-                            taskStuffImageId[i] = 0;
-                            taskDetail[i] = null;
-                        }
-                        ni.send(162529280);
+                    } else if ("detail".startsWith(this.baseForm.getCurrentFocusForm().getName())) {
+                        this.baseForm.setAboutForm((UIForm)null);
+                        this.labels[5].setStr("选择");
+                    } else if ("mss2".equals(this.baseForm.getCurrentFocusForm().getName())) {
+                        this.baseForm.setAboutForm((UIForm)null);
+                    }
+                } else if (this.actionInForm(cmd)) {
+                }
+            } else if (this.baseForm.getSubForm() == null) {
+                this.baseForm.setAboutForm((UIForm)null);
+                this.baseForm.addAboutForm("waiting", "请稍候…", (byte)0, screenW - 30, 0);
+                switch (NPCMenu.getMappingPointer()) {
                     case 1:
                         if (NPCMenu.getSubMenu() == null) {
                             ni.send(163577856);
                         } else {
                             ni.send(163578112);
                         }
+                        break;
                     case 2:
                         packageSend = 1;
                         ni.send(67109120);
+                        break;
                     case 3:
                         ni.send(154140672);
+                        break;
                     case 4:
                     case 13:
                     case 14:
@@ -6811,35 +6806,36 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                     case 66:
                     case 67:
                         ni.send(155189248);
-                    case 68:
-                        pet.addComposite((byte) 0, (byte) 9, Cons.COMPOSITE_SKILL[9], (byte) 1, 0, 0, Cons.PET_SKILL_IMAGE_ID[9]);
-                        composeListTitle = "材料合成列表";
-                        pet.setSkillIndexAndLevelIndex(0, 1);
-                        pet.material = 1;
-                        ni.send(163579136);
+                        break;
                     case 5:
-                        setNPCSubState((byte) 5);
-                        releaseUI();
+                        this.setNPCSubState((byte)5);
+                        this.releaseUI();
+                        break;
                     case 6:
                         ni.send(251658496);
-                        baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
+                        this.baseForm.addAboutForm("waiting", "请稍候…", (byte)0, screenW - 30, 0);
+                        break;
                     case 7:
-                        baseForm.setAboutForm((UIForm) null);
-                        setNPCSubState((byte) 7);
-                        setAuctionState((byte) -10);
+                        this.baseForm.setAboutForm((UIForm)null);
+                        this.setNPCSubState((byte)7);
+                        this.setAuctionState((byte)-10);
+                        break;
                     case 8:
                         packageSend = 2;
                         ni.send(67109120);
+                        break;
                     case 9:
                         packageSend = 3;
                         ni.send(67109120);
+                        break;
                     case 10:
                         ni.send(157286400);
+                        break;
                     case 11:
                         if (NPCMenu.getSubMenu() == null) {
-                            menus[1] = new UIMenu(0, 0, 80, 0, null, Cons.MAIL_MENU);
-                            NPCMenu.setSubMenu(menus[1]);
-                            baseForm.setAboutForm((UIForm) null);
+                            this.menus[1] = new UIMenu(0, 0, 80, 0, (String)null, Cons.MAIL_MENU);
+                            NPCMenu.setSubMenu(this.menus[1]);
+                            this.baseForm.setAboutForm((UIForm)null);
                         } else {
                             PCMail.initMailState();
                             switch (NPCMenu.getSubMenu().getCurrentPointer()) {
@@ -6849,38 +6845,127 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                                     break;
                                 case 1:
                                     ni.send(184551168);
-                                    break;
                             }
                         }
                     case 12:
-                        return;
+                        break;
+                    case 20:
+                        ni.send(1073742080);
+                        this.releaseUI();
+                        break;
+                    case 21:
+                        if (NPCMenu.getSubMenu() == null) {
+                            this.menus[1] = new UIMenu(0, 0, 80, 0, (String)null, Cons.MENU_DIVORCE);
+                            NPCMenu.setSubMenu(this.menus[1]);
+                            this.baseForm.setAboutForm((UIForm)null);
+                        } else {
+                            switch (NPCMenu.getSubMenu().getCurrentPointer()) {
+                                case 0:
+                                    ni.send(1073742336);
+                                    NPCMenu.setSubMenu((UIMenu)null);
+                                    this.releaseUI();
+                                    return;
+                                case 1:
+                                    ni.send(1073742592);
+                                    NPCMenu.setSubMenu((UIMenu)null);
+                                    this.releaseUI();
+                            }
+                        }
+                        break;
                     case 22:
                     case 23:
                     case 24:
                     case 25:
-                        baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
+                        this.baseForm.addAboutForm("waiting", "请稍候…", (byte)0, screenW - 30, 0);
                         ni.send(1610612992);
-                    case 31:
-                        initAwardForm((byte) 31);
-                    case 32:
-                        initAwardForm((byte) 32);
-                        loginRewardUesrId();
-                        while (isGetingUserID) {
-                            try {
-                                Thread.sleep(100L);
-                            } catch (Exception exception) {
-                            }
+                        break;
+                    case 26:
+                    case 30:
+                    case 34:
+                    case 35:
+                    case 45:
+                    case 59:
+                    case 60:
+                    case 61:
+                    case 63:
+                    case 75:
+                    case 77:
+                    case 78:
+                    case 79:
+                    case 80:
+                    case 81:
+                    case 82:
+                    case 86:
+                    case 87:
+                    case 88:
+                    case 89:
+                    case 90:
+                    case 91:
+                    case 92:
+                    case 93:
+                    case 94:
+                    case 95:
+                    case 96:
+                    case 97:
+                    case 98:
+                    case 99:
+                    case 100:
+                    case 101:
+                    case 102:
+                    case 103:
+                    case 104:
+                    case 105:
+                    case 106:
+                    case 107:
+                    case 108:
+                    case 109:
+                    case 110:
+                    case 111:
+                    case 112:
+                    case 113:
+                    case 114:
+                    case 115:
+                    case 116:
+                    case 117:
+                    case 118:
+                    case 119:
+                    default:
+                        if (NPCMenu.getMappingPointer() < 120) {
+                            setMessage(this.baseForm, "此功能还未开放");
+                        } else {
+                            this.baseForm.addAboutForm("waiting", "请稍候…", (byte)0, screenW - 30, 0);
+                            ni.send(1610612992);
                         }
-                    case 33:
-                        initAwardForm((byte) 33);
+                        break;
                     case 27:
                         PCNPC.battleGroundIndex = 1;
                         ni.send(163643392);
+                        break;
                     case 28:
                         PCNPC.battleGroundIndex = 2;
                         ni.send(163643392);
+                        break;
                     case 29:
                         ni.send(163708928);
+                        break;
+                    case 31:
+                        this.initAwardForm((byte)31);
+                        break;
+                    case 32:
+                        this.initAwardForm((byte)32);
+                        this.loginRewardUesrId();
+
+                        while(this.isGetingUserID) {
+                            try {
+                                Thread.sleep(100L);
+                            } catch (Exception var3) {
+                            }
+                        }
+
+                        return;
+                    case 33:
+                        this.initAwardForm((byte)33);
+                        break;
                     case 36:
                     case 37:
                     case 38:
@@ -6892,135 +6977,141 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                     case 64:
                     case 69:
                         PCArena.getInstance().sendCommand(NPCMenu.getMappingPointer());
-                    case 46:
-                        ni.send(301990144);
-                        startWait(baseForm);
-                    case 47:
-                        ni.send(301993216);
-                        startWait(baseForm);
-                    case 48:
-                        ni.send(302002176);
-                        startWait(baseForm);
-                    case 49:
-                        ni.send(302014464);
-                        startWait(baseForm);
-                    case 50:
-                        ni.send(302026752);
-                        startWait(baseForm);
-                    case 51:
-                        ni.send(302039040);
-                        startWait(baseForm);
-                    case 52:
-                        (ClanWar.getInstance()).m_curPage = 0;
-                        ni.send(302051328);
-                        startWait(baseForm);
-                    case 53:
-                        (ClanWar.getInstance()).m_curPage = 0;
-                        ni.send(302055424);
-                        startWait(baseForm);
-                    case 54:
-                        ni.send(302120960);
-                        startWait(baseForm);
-                    case 55:
-                        ni.send(301992960);
-                        startWait(baseForm);
-                    case 62:
-                        ni.send(1073743104);
-                        startWait(baseForm);
+                        break;
                     case 44:
                         packageSend = 4;
                         ni.send(67109120);
-                        startWait(baseForm);
+                        startWait(this.baseForm);
+                        break;
+                    case 46:
+                        ni.send(301990144);
+                        startWait(this.baseForm);
+                        break;
+                    case 47:
+                        ni.send(301993216);
+                        startWait(this.baseForm);
+                        break;
+                    case 48:
+                        ni.send(302002176);
+                        startWait(this.baseForm);
+                        break;
+                    case 49:
+                        ni.send(302014464);
+                        startWait(this.baseForm);
+                        break;
+                    case 50:
+                        ni.send(302026752);
+                        startWait(this.baseForm);
+                        break;
+                    case 51:
+                        ni.send(302039040);
+                        startWait(this.baseForm);
+                        break;
+                    case 52:
+                        ClanWar.getInstance().m_curPage = 0;
+                        ni.send(302051328);
+                        startWait(this.baseForm);
+                        break;
+                    case 53:
+                        ClanWar.getInstance().m_curPage = 0;
+                        ni.send(302055424);
+                        startWait(this.baseForm);
+                        break;
+                    case 54:
+                        ni.send(302120960);
+                        startWait(this.baseForm);
+                        break;
+                    case 55:
+                        ni.send(301992960);
+                        startWait(this.baseForm);
+                        break;
                     case 56:
                         PCNPC.isGold = true;
                         ni.send(251678720);
-                        startWait(baseForm);
+                        startWait(this.baseForm);
+                        break;
                     case 57:
                         PCNPC.isGold = false;
                         ni.send(251678720);
-                        startWait(baseForm);
+                        startWait(this.baseForm);
+                        break;
                     case 58:
                         packageSend = 5;
                         ni.send(67109120);
-                        startWait(baseForm);
+                        startWait(this.baseForm);
+                        break;
+                    case 62:
+                        ni.send(1073743104);
+                        startWait(this.baseForm);
+                        break;
                     case 65:
                     case 71:
                     case 74:
-                        releaseUI();
+                        this.releaseUI();
                         ni.send(163578880);
-                        setGameState((byte) 8);
-                        setOtherSubState((byte) 3);
+                        this.setGameState((byte)8);
+                        this.setOtherSubState((byte)3);
+                        break;
+                    case 68:
+                        pet.addComposite((byte)0, (byte)9, Cons.COMPOSITE_SKILL[9], (byte)1, 0, 0, Cons.PET_SKILL_IMAGE_ID[9]);
+                        this.composeListTitle = "材料合成列表";
+                        pet.setSkillIndexAndLevelIndex(0, 1);
+                        pet.material = 1;
+                        ni.send(163579136);
+                        break;
                     case 70:
-                        startWait(baseForm);
+                        startWait(this.baseForm);
                         ni.send(302645248);
+                        break;
                     case 72:
-                        startWait(baseForm);
+                        startWait(this.baseForm);
                         ni.send(302841856);
+                        break;
                     case 73:
-                        startWait(baseForm);
+                        startWait(this.baseForm);
                         ni.send(303038464);
+                        break;
                     case 76:
-                        startWait(baseForm);
+                        startWait(this.baseForm);
                         ni.send(306184192);
+                        break;
+                    case 83:
+                        startWait(this.baseForm);
+                        ni.send(134219264);
+                        break;
                     case 84:
                         PCArena.isArena = 0;
-                        startWait(baseForm);
+                        startWait(this.baseForm);
                         ni.send(285219328);
+                        break;
                     case 85:
                         PCArena.isArena = 1;
-                        startWait(baseForm);
+                        startWait(this.baseForm);
                         ni.send(285219328);
-                    case 83:
-                        startWait(baseForm);
-                        ni.send(134219264);
+                        break;
+                    case 120:
+                        for(byte i = 0; i < 2; ++i) {
+                            this.taskStuffId[i] = 0;
+                            this.taskStuffImageId[i] = 0;
+                            this.taskDetail[i] = null;
+                        }
+
+                        ni.send(162529280);
                 }
-                if (NPCMenu.getMappingPointer() < 120) {
-                    setMessage(baseForm, "此功能还未开放");
-                }
-                baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
-                ni.send(1610612992);
-            }
-            if ("message".equals(baseForm.getSubForm().getName())) {
-                baseForm.setAboutForm((UIForm) null);
-            }
-            if ("msg".equals(baseForm.getSubForm().getName())) {
-                baseForm.setAboutForm((UIForm) null);
-            }
-            if ("arena".equals(baseForm.getSubForm().getName())) {
-                baseForm.setAboutForm((UIForm) null);
-            }
-            if ("msge".equals(baseForm.getCurrentFocusForm().getName())) {
-                baseForm.setAboutForm((UIForm) null);
-            }
-            if ("mss2".equals(baseForm.getCurrentFocusForm().getName())) {
-                baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
+            } else if ("message".equals(this.baseForm.getSubForm().getName())) {
+                this.baseForm.setAboutForm((UIForm)null);
+            } else if ("msg".equals(this.baseForm.getSubForm().getName())) {
+                this.baseForm.setAboutForm((UIForm)null);
+            } else if ("arena".equals(this.baseForm.getSubForm().getName())) {
+                this.baseForm.setAboutForm((UIForm)null);
+            } else if ("msge".equals(this.baseForm.getCurrentFocusForm().getName())) {
+                this.baseForm.setAboutForm((UIForm)null);
+            } else if ("mss2".equals(this.baseForm.getCurrentFocusForm().getName())) {
+                this.baseForm.addAboutForm("waiting", "请稍候…", (byte)0, screenW - 30, 0);
                 ni.send(1879048704);
             }
+
         }
-        if (isKeyPress(18)) {
-            if (baseForm.getCurrentFocusForm() == baseForm) {
-                if (NPCMenu.getSubMenu() == null) {
-                    if (firstLogon == 1) {
-                        setMessage(baseForm, "请按选择键查看任务详情，按操作键接受任务。");
-                    }
-                    NPCMenu = null;
-                    PCArena.releaseInstance();
-                    releaseUI();
-                    setGameState((byte) 0);
-                    ObjManager.currentTarget = Player.getInstance();
-                    ObjManager.showTarget = null;
-                }
-                NPCMenu.setSubMenu((UIMenu) null);
-            }
-            if ("detail".startsWith(baseForm.getCurrentFocusForm().getName())) {
-                baseForm.setAboutForm((UIForm) null);
-                labels[5].setStr("选择");
-            }
-            if ("mss2".equals(baseForm.getCurrentFocusForm().getName())) {
-                baseForm.setAboutForm((UIForm) null);
-            }
-        }
-        if (actionInForm(cmd));
     }
 
     public static boolean isKeyPressOk() {

@@ -753,7 +753,7 @@ public class HttpConn implements Runnable {
                                     }
                                 }
 
-                                MainCanvas.ni.send(1342197760);
+                                MainCanvas.ni.send(Cmd.C_VALUEADDED_RENT);
                                 this.isFirstLogin = false;
                             }
 

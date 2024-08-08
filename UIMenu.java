@@ -278,7 +278,7 @@ public class UIMenu extends UIComponent {
   }
   
   public int getMappingPointer() {
-    int temp = this.itemId[getCurrentPointer()];
+    int temp = itemId[getCurrentPointer()];
     int mappingState = 0;
     if (temp > 0 && temp < 120) {
       mappingState = temp;

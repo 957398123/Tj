@@ -28,7 +28,7 @@ public class PCLogin {
         Image img;
         ByteArray execDataIn = new ByteArray(data);
         switch (commID) {
-            case 16781696:
+            case Cmd.S_CLOSE_ABOUTFORM:
                 MainCanvas.mc.baseForm.setAboutForm(null);
                 break;
             case 16781440:

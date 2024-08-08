@@ -1,4 +1,3 @@
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -541,82 +540,82 @@ public abstract class Util {
     }
 
     public static String[] colorChangeLine(UIComponent component, String s, int useWidth, Font font) {
-        char[] tempChars = s.toCharArray();
-        int lg = tempChars.length;
-        int[] sign = new int[34];
-        int number = 0;
-        StringBuffer sb = new StringBuffer();
-
-        for (int i = 0; i < lg; ++i) {
-            if (tempChars[i] == '$') {
-                sign[number] = i;
-                ++number;
-            } else {
-                sb.append(tempChars[i]);
-            }
-        }
-
-        String[] strs = wrapText(sb.toString(), useWidth, font);
-        lg = strs.length;
-        component.colorSigns = new byte[lg][];
-        int[][] start_end = new int[lg][2];
-        for (int i = 0; i < lg; ++i) {
-            i = strs[i].length();
-            component.colorSigns[i] = new byte[i];
-            if (i == 0) {
-                start_end[i][0] = 0;
-                start_end[i][1] = i - 1;
-            } else {
-                start_end[i][0] = start_end[i - 1][1] + 1;
-                start_end[i][1] = start_end[i][0] + i - 1;
-            }
-        }
-
-        Vector vector = new Vector(4);
-
-        int b;
-        int i;
-        int j;
-        for (i = 0; i < number; i += 2) {
-            sign[i] -= i;
-            sign[i + 1] -= i + 1 + 1;
-            int a = getColorPlace(sign[i], start_end);
-            b = getColorPlace(sign[i + 1], start_end);
-            if (a == b) {
-                int[] cs = new int[]{a, sign[i] - start_end[a][0], sign[i + 1] - start_end[a][0]};
-                vector.addElement(cs);
-            } else {
-                i = b - a;
-                if (i > 1) {
-                    for (j = a + 1; j < b; ++j) {
-                        int[] cs = new int[]{j, 0, strs[j].length() - 1};
-                        vector.addElement(cs);
-                    }
-                }
-
-                int[] cs = new int[]{a, sign[i] - start_end[a][0], start_end[a][1] - start_end[a][0]};
-                vector.addElement(cs);
-                cs = new int[]{b, 0, sign[i + 1] - start_end[b][0]};
-                vector.addElement(cs);
-            }
-        }
-
-        lg = vector.size();
-        int[][] signs = new int[lg][];
-        Enumeration e = vector.elements();
-
-        for (b = 0; e.hasMoreElements(); ++b) {
-            signs[b] = (int[]) ((int[]) e.nextElement());
-        }
-
-        for (i = 0; i < lg; ++i) {
-            for (j = signs[i][1]; j <= signs[i][2]; ++j) {
-                component.colorSigns[signs[i][0]][j] = 1;
-            }
-        }
-
-        return strs;
-    }
+    char[] tempChars = s.toCharArray();
+    int lg = tempChars.length;
+    int[] sign = new int[34];
+    int number = 0;
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < lg; i++) {
+      if (tempChars[i] == '$') {
+        sign[number] = i;
+        number++;
+      } else {
+        sb.append(tempChars[i]);
+      } 
+    } 
+    String[] strs = wrapText(sb.toString(), useWidth, font);
+    lg = strs.length;
+    component.colorSigns = new byte[lg][];
+    int[][] start_end = new int[lg][2];
+    for (int j = 0; j < lg; j++) {
+      int i1 = strs[j].length();
+      component.colorSigns[j] = new byte[i1];
+      if (j == 0) {
+        start_end[j][0] = 0;
+        start_end[j][1] = i1 - 1;
+      } else {
+        start_end[j][0] = start_end[j - 1][1] + 1;
+        start_end[j][1] = start_end[j][0] + i1 - 1;
+      } 
+    } 
+    Vector vector = new Vector(4);
+    for (int k = 0; k < number; k += 2) {
+      sign[k] = sign[k] - k;
+      sign[k + 1] = sign[k + 1] - k + 1 + 1;
+      int a = getColorPlace(sign[k], start_end);
+      int b = getColorPlace(sign[k + 1], start_end);
+      if (a == b) {
+        int[] cs = new int[3];
+        cs[0] = a;
+        cs[1] = sign[k] - start_end[a][0];
+        cs[2] = sign[k + 1] - start_end[a][0];
+        vector.addElement(cs);
+      } else {
+        int temp = b - a;
+        if (temp > 1)
+          for (int i1 = a + 1; i1 < b; i1++) {
+            int[] arrayOfInt = new int[3];
+            arrayOfInt[0] = i1;
+            arrayOfInt[1] = 0;
+            arrayOfInt[2] = strs[i1].length() - 1;
+            vector.addElement(arrayOfInt);
+          }  
+        int[] cs = new int[3];
+        cs[0] = a;
+        cs[1] = sign[k] - start_end[a][0];
+        cs[2] = start_end[a][1] - start_end[a][0];
+        vector.addElement(cs);
+        cs = new int[3];
+        cs[0] = b;
+        cs[1] = 0;
+        cs[2] = sign[k + 1] - start_end[b][0];
+        vector.addElement(cs);
+      } 
+    } 
+    lg = vector.size();
+    int[][] signs = new int[lg][];
+    Enumeration e = vector.elements();
+    int m = 0;
+    while (e.hasMoreElements()) {
+      signs[m] = (int[])e.nextElement();
+      m++;
+    } 
+    for (int n = 0; n < lg; n++) {
+      for (int i1 = signs[n][1]; i1 <= signs[n][2]; i1++)
+        component.colorSigns[signs[n][0]][i1] = 1; 
+    } 
+    return strs;
+  }
 
     public static final int getColorPlace(int place, int[][] colorPlace) {
         int lg = colorPlace.length;

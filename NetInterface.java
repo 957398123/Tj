@@ -235,7 +235,13 @@ public class NetInterface implements Runnable {
      */
     public void deCode() {
         while (receiverPool.size() > 0) {
-            ParseCompress.parse((byte[]) (receiverPool.elementAt(0)));
+            // 暂时处理，即使处理当前数据包发生错误，也要删除当前数据包
+            try {
+                ParseCompress.parse((byte[]) (receiverPool.elementAt(0)));
+            }catch(Exception e){
+                e.printStackTrace();
+                System.out.print("[decode command]:decode aommand have a error occur!");
+            }
             receiverPool.removeElementAt(0);
         }
     }

@@ -658,7 +658,7 @@ public class PCIncrementService {
                 } else if ("bybuy".equals(MainCanvas.mc.baseForm.getCurrentFocusForm().getName())) {
                     this.setBaoyue(0, specialShop.getCurrentId());
                     MainCanvas.ni.send(16781312);
-                    MainCanvas.ni.send(1342197760);
+                    MainCanvas.ni.send(Cmd.C_VALUEADDED_RENT);
                     MainCanvas.mc.baseForm.getCurrentFocusForm().setAboutForm(UIForm.makeAboutForm("waitInfo", "命令发送中，预计需要等待" + sendWaitTime + "秒", "", "", MainCanvas.screenW - 60));
                 } else if ("toCharge".equals(MainCanvas.mc.baseForm.getCurrentFocusForm().getName())) {
                     MainCanvas.mc.setRightMenuSubState(0);
@@ -1293,7 +1293,7 @@ public class PCIncrementService {
                             for(i = getInstance().otherBaoyueIndex; i < dingzhiLen; ++i) {
                                 if (getInstance().isSelect[i]) {
                                     getInstance().setBaoyue(1, MainCanvas.mc.monthlyItemID[i]);
-                                    MainCanvas.ni.send(1342197760);
+                                    MainCanvas.ni.send(Cmd.C_VALUEADDED_RENT);
                                     return;
                                 }
                             }
@@ -1437,7 +1437,7 @@ public class PCIncrementService {
             case 1342193664:
                 execDataOut.writeByte(payType);
                 break;
-            case 1342197760:
+            case Cmd.C_VALUEADDED_RENT:
                 execDataOut.writeByte(getInstance().connectMark);
                 execDataOut.writeShort(getInstance().baoyueItem);
                 execDataOut.writeByte(getInstance().conBaoyue);

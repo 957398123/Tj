@@ -287,7 +287,7 @@ public abstract class Cmd {
   
   public static final int C_NPC_EXCHANGE_DETAIL = 157286912;
   
-  public static final int C_DIALOG_LIST = 163577856;
+  public static final int C_DIALOG_LIST = 0x9C00000;
   
   public static final int C_DIALOG_CONTENT = 163578112;
   
@@ -558,7 +558,10 @@ public abstract class Cmd {
   
   public static final int S_NPC_EXCHANGE_DETAIL = 157287040;
   
-  public static final int S_DIALOG_LIST = 163577984;
+  /**
+   * 弹窗列表
+   */
+  public static final int S_DIALOG_LIST = 0x9C00080;
   
   public static final int S_DIALOG_CONTENT = 163578240;
   
