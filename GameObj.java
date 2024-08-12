@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 import java.util.Stack;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
@@ -424,6 +419,17 @@ public class GameObj {
     public void setRowCol(int r, int c) {
         row = r;
         col = c;
+    }
+    
+    /**
+     * 设置游戏对象在地图中位置
+     * @param c
+     * @param r
+     */
+    public void setObjPosition(int c, int r){
+        x = Map.getCurrentCellCenterX(c, r);
+        y = Map.getCurrentCellCenterY(c, r);
+        setRowCol(r, c);
     }
 
     void init(ByteArray ba) {

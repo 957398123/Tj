@@ -311,7 +311,7 @@ public abstract class Cmd {
   
   public static final int C_AUCTION_FORMULA = 234883072;
   
-  public static final int C_MAP_CHANGE = 536871168;
+  public static final int C_MAP_CHANGE = 0x20000100;
   
   public static final int C_RES_INITTED = 536871424;
   
@@ -331,7 +331,7 @@ public abstract class Cmd {
   
   public static final int C_PK_RESPONSION = 268435968;
   
-  public static final int C_PLAYER_MOVE = 33554688;
+  public static final int C_PLAYER_MOVE = 0x2000100;
   
   /**
    * 玩家开始战斗
@@ -581,7 +581,7 @@ public abstract class Cmd {
   
   public static final int S_AUCTION_FORMULA = 234883200;
   
-  public static final int S_MAP_CHANGE = 536871296;
+  public static final int S_MAP_CHANGE = 0x20000180;
   
   public static final int S_MAP_DATA_RECEIVE = 536871552;
   

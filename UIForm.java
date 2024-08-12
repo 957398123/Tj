@@ -312,6 +312,14 @@ public void draw(Graphics g) {
     this.focusComponent.setFocus(flag);
   }
   
+  /**
+   * 增加一个确认提示框
+   * @param formName
+   * @param message
+   * @param flag
+   * @param w
+   * @param h 
+   */
   public void addAboutForm(String formName, String message, byte flag, int w, int h) {
     UIForm aboutForm;
     String left = null;

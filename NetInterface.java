@@ -169,7 +169,7 @@ public class NetInterface implements Runnable {
         if (this.socket == null) {
             try {
                 (new Thread(this)).start();
-            } catch (Exception var5) {
+            } catch (Exception e) {
             }
         }
 
@@ -187,6 +187,7 @@ public class NetInterface implements Runnable {
                 receiverPool.addElement(data);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             receiver.stop();
             System.out.println("[recevie data]:receive data have a error occur!");
         }

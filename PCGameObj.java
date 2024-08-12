@@ -596,10 +596,11 @@ public class PCGameObj {
                 }
                 break;
             }
-            case 33554688:
+            case Cmd.C_PLAYER_MOVE: {
                 byteArray.writeInt((Player.getInstance()).x);
                 byteArray.writeInt((Player.getInstance()).y);
                 break;
+            }
             case 33557760:
                 byteArray.writeByte((Player.getInstance()).skillIndex);
                 break;

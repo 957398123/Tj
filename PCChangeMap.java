@@ -39,7 +39,7 @@ public class PCChangeMap {
             UILabel lblTitle, lblCancel;
             ByteArray execDataIn = new ByteArray(_data);
             switch (commID) {
-                case 536871296:
+                case Cmd.S_MAP_CHANGE:
                     (Player.getInstance()).path = null;
                     canPass = -1;
                     canPass = execDataIn.readByte();
@@ -72,7 +72,7 @@ public class PCChangeMap {
                                 (Player.getInstance()).col = Map.getCurrentColumn((Player.getInstance()).y, (Player.getInstance()).x);
                                 (Player.getInstance()).row = Map.getCurrentRow((Player.getInstance()).y, (Player.getInstance()).x);
                             }
-                            MainCanvas.ni.send(33554688);
+                            MainCanvas.ni.send(Cmd.C_PLAYER_MOVE);
                         }
                         (Player.getInstance()).isSendMoveMsg = true;
                         MainCanvas.resetKey();
@@ -230,12 +230,12 @@ public class PCChangeMap {
                         isTwoLoding = true;
                     }
                     break;
-                case 536872064:
+                case Cmd.S_WORLDMAP: {  // 接收世界地图
                     Map.currentWMapID = execDataIn.readInt();
                     Map.choosedPlace = --Map.currentWMapID;
                     Map.NUMBER_OF_PLACES = execDataIn.readShort();
                     if (Map.regionPos != null) {
-                        Map.regionPos = (int[][]) null;
+                        Map.regionPos = null;
                     }
                     Map.regionPos = new int[Map.NUMBER_OF_PLACES][2];
                     if (Map.regionProps != null) {
@@ -284,6 +284,7 @@ public class PCChangeMap {
                     }
                     MainCanvas.mc.releaseUI();
                     break;
+                }
                 case 536872832:
                     strHelpContent = execDataIn.readUTF();
                     subForm = new UIForm(0, 0, MainCanvas.screenW, MainCanvas.screenH, "announce");
@@ -312,9 +313,10 @@ public class PCChangeMap {
     public static byte[] compress(int _commID) {
         ByteArray execDataOut = new ByteArray();
         switch (_commID) {
-            case 536871168:
+            case Cmd.C_MAP_CHANGE: {
                 execDataOut.writeByte(Map.changeMapPointIndex);
                 break;
+            }
             case 536871424:
                 execDataOut.writeShort(Map.currentMapID);
                 break;

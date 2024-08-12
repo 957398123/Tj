@@ -39,6 +39,9 @@ public abstract class Cons {
   
   public static boolean isLocal = false;
   
+  /**
+   * 是否为中国移动端
+   */
   public static boolean isCmobile;
   
   public static boolean isTestC;

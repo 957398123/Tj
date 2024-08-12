@@ -160,7 +160,7 @@ public class Player extends OtherPlayer {
             }
         }
         if (isSendMoveMsg && MainCanvas.countTick % 5 == 0 && (oldRow != row || oldCol != col)) {
-            MainCanvas.ni.send(33554688);
+            MainCanvas.ni.send(Cmd.C_PLAYER_MOVE);
             oldRow = row;
             oldCol = col;
         }
@@ -204,12 +204,13 @@ public class Player extends OtherPlayer {
                 setRowCol(getRow(x, y), getCol(x, y));
                 getCollideRectAcmeColumnAndRow();
                 break;
-            case 1:
+            case 1: {  // 处理玩家移动按键
                 keyInMove();
                 setRowCol(getRow(x, y), getCol(x, y));
                 getCollideRectAcmeColumnAndRow();
                 checkChangeMap();
                 break;
+            }
             case 2:
                 keyInNomalFight();
                 break;
@@ -409,7 +410,7 @@ public class Player extends OtherPlayer {
                         MainCanvas.ni.send(134217984);
                     } else if (MainCanvas.templevel == 2) {
                         MainCanvas.mc.skillTreeFlag = true;
-                        MainCanvas.ni.send(117440768);
+                        MainCanvas.ni.send(Cmd.C_SKILL_REQUEST_INFOR);
                     }
                     disposePop();
                     return;
@@ -1153,6 +1154,11 @@ public class Player extends OtherPlayer {
         }
     }
 
+    /**
+     * 玩家是否能够移动
+     *
+     * @return
+     */
     private boolean canMove() {
         switch (direction) {
             case 3:
@@ -1396,6 +1402,9 @@ public class Player extends OtherPlayer {
         canUseSkill[0] = true;
     }
 
+    /**
+     * 检测是否更换地图
+     */
     private void checkChangeMap() {
         if (state == 5 || state == 4) {
             return;
@@ -1405,8 +1414,8 @@ public class Player extends OtherPlayer {
                 isSendMoveMsg = false;
                 Map.changeMapPointIndex = (byte) i;
                 setState((byte) 0);
-                MainCanvas.ni.send(33554688);
-                MainCanvas.ni.send(536871168);
+                MainCanvas.ni.send(Cmd.C_PLAYER_MOVE);
+                MainCanvas.ni.send(Cmd.C_MAP_CHANGE);
                 MainCanvas.mc.setGameState((byte) 8);
                 MainCanvas.mc.setOtherSubState((byte) 3);
                 break;
@@ -1553,6 +1562,9 @@ public class Player extends OtherPlayer {
         return !(followAimID == -1);
     }
 
+    /**
+     * 取消玩家
+     */
     public void resetAimID() {
         followAimID = -1;
         if (getState() != 5 && getState() != 4) {
@@ -1579,7 +1591,7 @@ public class Player extends OtherPlayer {
     public int getCastLength() {
         return castLength;
     }
-    
+
     public void setAimColRow(int aimCol, int aimRow) {
         if (aimCol != col || aimRow != row) {
             path = AStarTree.getInstance().findPath(col, row, aimCol, aimRow);

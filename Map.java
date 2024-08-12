@@ -7,6 +7,9 @@ import javax.microedition.lcdui.Image;
 
 public class Map {
     public static int MAP_H;
+    /**
+     * 要更改的地图索引
+     */
     public static byte changeMapPointIndex;
     private static KmkBM curBufMap;
     private static final byte ADD_ROW_COLUMN = 0;
@@ -26,6 +29,9 @@ public class Map {
     public static final byte TILE_WIDTH = 20;
     public static final byte TILE_HEIGHT = 10;
     public static final byte CURRENT_POINT_ARRAYDD = 3;
+    /**
+     * 当前地图出口数据
+     */
     public static int[][] curPointArray;
     public static byte curMapType;
     public static short currentMapID;
@@ -55,6 +61,9 @@ public class Map {
     public static int[][] regionProps;
     public static String[] regionName;
     public static int[][] regionLines;
+    /**
+     * 当前地图id
+     */
     public static int currentWMapID;
     private static final int COLOR_BLACK = 0;
     private static final int COLOR_SQUARE = 8415039;
@@ -63,6 +72,9 @@ public class Map {
     private static final byte SQUARE_SIZE = 17;
     private static final byte SQUARE_SIZE2 = 13;
     private static byte CHOOSED_PLACE_SIZE;
+    /**
+     * 世界地图界面，当前选择地图
+     */
     public static int choosedPlace;
     private static MImage mImgWorldMap;
     private static byte nowTick;
@@ -112,6 +124,10 @@ public class Map {
         drawPlaceName(g);
     }
 
+    /**
+     * 绘制地图出口提示
+     * @param g 
+     */
     private void drawExitName(Graphics g) {
         int[] rectX = new int[4];
         int[] rectY = new int[4];
@@ -258,8 +274,7 @@ public class Map {
             curBufMap.draw(currentWindowX, currentWindowY);
             curBufMap.drawScreen(argObjGraphics);
             argObjGraphics.setClip(0, 0, MainCanvas.screenW, MAP_H);
-        } catch (Exception var3) {
-            Exception e = var3;
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -547,6 +562,10 @@ public class Map {
 
     }
 
+    /**
+     * 绘制世界地图
+     * @param g 
+     */
     public static void drawWorldMap(Graphics g) {
         autoChangeMapX(choosedPlace);
         MainCanvas.drawGroundback(g);
@@ -564,6 +583,7 @@ public class Map {
         drawNowPlace(g, currentWMapID);
         drawChoosed(g, choosedPlace);
         g.setColor(10255690);
+        g.drawString("传送", 36 - 8, MainCanvas.screenH - 22, 20);
         g.drawString("返回", MainCanvas.screenW - 36 - 8, MainCanvas.screenH - 22, 20);
     }
 

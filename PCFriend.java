@@ -605,9 +605,10 @@ public class PCFriend {
                 execDataOut
                         .writeInt(MainCanvas.friendListID[MainCanvas.friendSelectWhich]);
                 break;
-            case 201327360:
+            case Cmd.C_FRIEND_LISTFRIEND: {  // 查询好友列表
                 execDataOut.writeByte(MainCanvas.requestFriendPlace);
                 break;
+            }
             case 201327872:
                 execDataOut.writeByte(MainCanvas.deleteFriendType);
                 if (MainCanvas.deleteFriendType == 0) {

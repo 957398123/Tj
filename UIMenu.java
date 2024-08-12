@@ -132,6 +132,10 @@ public class UIMenu extends UIComponent {
     return this.pointer;
   }
   
+  /**
+   * 设置当前选中选项
+   * @param pointer 
+   */
   public void setCurrentpointer(byte pointer) {
     this.pointer = pointer;
   }
@@ -288,6 +292,10 @@ public class UIMenu extends UIComponent {
     return mappingState;
   }
   
+  /**
+   * 设置启用/关闭菜单选项 0-禁用
+   * @param index 
+   */
   public void setNoUse(byte index) {
     if (index >= this.isCanUse.length)
       return; 

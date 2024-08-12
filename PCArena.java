@@ -825,7 +825,7 @@ public class PCArena implements CommandListener {
                 break;
             case 39:
                 MainCanvas.requestFriendPlace = 3;
-                MainCanvas.ni.send(201327360);
+                MainCanvas.ni.send(Cmd.C_FRIEND_LISTFRIEND);
                 break;
             case 40:
                 MainCanvas.ni.send(285215488);
