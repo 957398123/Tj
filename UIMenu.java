@@ -128,6 +128,10 @@ public class UIMenu extends UIComponent {
     return this.subMenu;
   }
   
+  /**
+   * 获取菜单当前选中选项
+   * @return 
+   */
   public byte getCurrentPointer() {
     return this.pointer;
   }

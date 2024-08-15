@@ -96,7 +96,7 @@ public class GameObj {
     public boolean canAttack = false;
     public byte skillIndex = 0;
     /**
-     * 1-寻径 5-死亡
+     * 0-静止 1-移动 2-普通攻击 4- 5-死亡 7-释放技能
      */
     public byte state;
     public byte curMotionAndSpecificIndex;

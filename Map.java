@@ -523,17 +523,28 @@ public class Map {
 
     }
 
+    /**
+     * 设置到地图格子可行走
+     * @param col
+     * @param row 
+     */
     public static void putInCell(int col, int row) {
         if (col < currentTotalColumn && row < currentTotalRow && col >= 0 && row >= 0) {
             if (currentMapData != null) {
-                currentMapData[col][row] = (short)(currentMapData[col][row] | 2048);
+                currentMapData[col][row] = (short)(currentMapData[col][row] | 0x800);
             }
         }
     }
 
+    /**
+     * putInCell会标记该区域可以行走
+     * @param col
+     * @param row
+     * @return 
+     */
     public boolean isFloor(int col, int row) {
         if (col < currentTotalColumn && row < currentTotalRow && col >= 0 && row >= 0) {
-            int tmpb = currentMapData[col][row] & 2047;
+            int tmpb = currentMapData[col][row] & 0x7FF;
             return tmpb != 0 && iconRefe[tmpb][4] == 1;
         } else {
             return false;

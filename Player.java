@@ -151,6 +151,8 @@ public class Player extends OtherPlayer {
      * 玩家tick
      */
     public void tick() {
+        ExpandAbility.beforePlayerTick(this);
+        // 这里是如果太长时间未通讯，退出
         if (totalTime <= 100) {
             long l = System.currentTimeMillis() - st;
             st = System.currentTimeMillis();
@@ -162,24 +164,23 @@ public class Player extends OtherPlayer {
                 }
             }
         }
+        // 如果玩家移动了，每隔固定时间发送移动消息
         if (isSendMoveMsg && MainCanvas.countTick % 5 == 0 && (oldRow != row || oldCol != col)) {
             MainCanvas.ni.send(Cmd.C_PLAYER_MOVE);
             oldRow = row;
             oldCol = col;
         }
-        if (UIGameRun.encryptImg == null) {
-            while (true);
-        }
-        if (CDQ_T > 300) {
-            while (true);
-        }
+        // 如果玩家血量为0，设置玩家死亡
         if (curHp <= 0) {
             setState((byte) 5);
         }
+        // 更新技能CD
         skillCDAdd(this);
+        // 更新普通攻击计数
         if (normalAttackCount != 30) {
             normalAttackCount = (byte) (normalAttackCount + 1);
         }
+        // 更新技能使用CD
         if (itemCount > 0) {
             itemCount = (short) (itemCount - 1);
             if (itemCount == 0 && userDefinedSkills != null) {
@@ -190,34 +191,40 @@ public class Player extends OtherPlayer {
                 }
             }
         }
+        // 更新buffer
         tickBuffer();
         tickHpChangeVectorPop();
         checkSkill();
+        // 未实现
         follow();
         // 如果有寻径，进行寻径
         if (path != null && path.length > 0) {
             movePath();
         }
+        // 如果有退出菜单
         if (MainCanvas.mc.topForm != null && "leaveForm".equals(MainCanvas.mc.topForm.getName())) {
             return;
         }
+        // 根据玩家状态处理
         switch (state) {
-            case 0:
+            case 0: {  // 静止
                 keyInStand();
                 setRowCol(getRow(x, y), getCol(x, y));
                 getCollideRectAcmeColumnAndRow();
                 break;
-            case 1: {  // 处理玩家移动按键
+            }
+            case 1: {  // 行走
                 keyInMove();
                 setRowCol(getRow(x, y), getCol(x, y));
                 getCollideRectAcmeColumnAndRow();
                 checkChangeMap();
                 break;
             }
-            case 2:
+            case 2: {  // 普通攻击
                 keyInNomalFight();
                 break;
-            case 5:
+            }
+            case 5: {  // 死亡
                 resetAimID();
                 MainCanvas.cancelBusiness();
                 MainCanvas.mc.setGameState((byte) 8);
@@ -225,7 +232,8 @@ public class Player extends OtherPlayer {
                     MainCanvas.mc.setOtherSubState((byte) 1);
                 }
                 break;
-            case 7:
+            }
+            case 7: {  // 释放技能状态
                 keyInSkillPre();
                 if (castLength == 0) {
                     if (!checkSkillObj(this, ObjManager.currentTarget, skillIndex, true)) {
@@ -254,25 +262,27 @@ public class Player extends OtherPlayer {
                     MainCanvas.ni.send(Cmd.C_PLAYER_FIGHT_START);
                 }
                 break;
-            case 9:
+            }
+            case 9: {
                 collectionCount = (byte) (collectionCount + 1);
                 keyInCollection();
                 if (collectionCount > 20) {
-                    MainCanvas.ni.send(50334208);
+                    MainCanvas.ni.send(Cmd.C_PET_COLLECTION);
                     MainCanvas.resetKey();
                     setState((byte) 0);
                     collectionCount = 0;
                 }
                 break;
+            }
         }
+        // 更新下一帧动作
         nextFrame();
+        // 设置当前可行走
         Map.putInCell(col, row);
         if (UIGameRun.encryptImg != null) {
             CDQ = UIGameRun.getWait();
-            if (CDQ < 120) {
-                while (true);
-            }
         }
+        ExpandAbility.afterPlayerTick(this);
     }
 
     private void keyInCollection() {
@@ -345,30 +355,18 @@ public class Player extends OtherPlayer {
     private void keyInStand() {
         if (MainCanvas.isPop) {
             pressPop();
-            return;
-        }
-        if (MainCanvas.isMenu) {
-            return;
-        }
-        if (pressNomalFightOrGetInfo()) {
-            return;
-        }
-        if (pressArrowKey()) {
-            return;
-        }
-        if (MainCanvas.isKeyPress1(16) && ObjManager.currentTarget != null) {
+        } else if (MainCanvas.isMenu) {
+        } else if (pressNomalFightOrGetInfo()) {
+        } else if (pressArrowKey()) {
+        } else if (MainCanvas.isKeyPress1(16) && ObjManager.currentTarget != null) {
+            // 按了#键更改选中目标
             ObjManager.getInstance().changeTarget();
             MainCanvas.resetKey();
-            return;
-        }
-        if (Cons.nineShort == 1 && MainCanvas.shortcut_9[Cons.nineShort]) {
+        } else if (Cons.nineShort == 1 && MainCanvas.shortcut_9[Cons.nineShort]) {
             ObjManager.getInstance().setCurrentTarget(getInstance());
             MainCanvas.shortcut_9[Cons.nineShort] = false;
-            return;
-        }
-        if (pressSkillKey()) {
+        } else if (pressSkillKey()) {  // 如果按下技能键
             setState((byte) 7);
-            return;
         }
     }
 
@@ -1442,6 +1440,10 @@ public class Player extends OtherPlayer {
         p.full();
     }
 
+    /**
+     * 更新技能CD
+     * @param player 
+     */
     private void skillCDAdd(GameObj player) {
         for (int i = 0; i < userDefinedSkills.length; i++) {
             int skillIndex = userDefinedSkills[i];
@@ -1561,12 +1563,17 @@ public class Player extends OtherPlayer {
         return temp;
     }
 
+    /**
+     * 返回当前玩家是否寻径中
+     *
+     * @return
+     */
     public boolean isFollow() {
         return !(followAimID == -1);
     }
 
     /**
-     * 取消玩家
+     * 取消寻径
      */
     public void resetAimID() {
         followAimID = -1;

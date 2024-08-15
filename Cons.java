@@ -262,11 +262,10 @@ public abstract class Cons {
   
   public static final String[] STR_LEFT_MENU = new String[] { "观察", "加为好友", "组队邀请", "私聊", "交易", "切磋邀请", "跟随" };
   
-  public static final String[] STR_RIGHT_MENU = new String[] { "1 商城", "2 人物", "3 背包", "4 社交", "5 任务", "6 地图", "7 队伍", "8 设置", "9 服务", "# 离开" };
-  
-  public static final String[] STR_RIGHT_CMENU = new String[] { 
-      "1 充值", "2 购买", "3 人物", "4 背包", "5 社交", "6 任务", "7 地图", "8 队伍", "9 设置", "0 服务", 
-      "# 离开" };
+  /**
+   * 右键菜单选项
+   */
+  public static final String[] STR_RIGHT_MENU = new String[] { "1 挂机", "2 人物", "3 背包", "4 社交", "5 任务", "6 地图", "7 队伍", "8 设置", "9 服务", "# 离开" };
   
   public static final String[] STR_RUN_MENU_MAN = new String[] { "属性", "背包", "技能" };
   

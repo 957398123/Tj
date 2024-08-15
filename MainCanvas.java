@@ -88,7 +88,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     private volatile Thread self;
     private long[] curTime = new long[1];
     /**
-     * 1-右菜单 2-左菜单
+     * 0-游戏中 1-右菜单 2-左键菜单 3-NPC对话面板 7-快速聊天 8-切换状态
      */
     public static byte gameState = 0;
     public static byte oldGameState = 0;
@@ -881,8 +881,11 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         }
         switch (getState()) {
             case 5: {  // 更新游戏中tick
+                ExpandAbility.beforemapRunSubTick();
                 mapRunSubTick();
+                ExpandAbility.aftermapRunSubTick();
                 PCArena.tick();
+                ExpandAbility.afterPCArenaTick();
                 UIGameRun.tickChatBar();
                 if (PCMarriage.isMetemOk) {
                     UIForm aboutForm = UIForm.makeAboutForm("meteConfirm", "恭喜您，转生成功！", "确定", "", 170);
@@ -894,7 +897,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 }
                 break;
             }
-            case 23: {
+            case 23: {  // 更新地图计数
                 UIGameRun.getInstance().updateMapCount();
                 break;
             }
@@ -1037,7 +1040,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     }
 
     /**
-     * 键盘按下
+     * 处理键盘按下
      *
      * @param keyCode
      */
@@ -1110,77 +1113,96 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         }
         keyFlagIm = keyFlag;
         switch (getState()) {
-            case 4:
+            case 4: {
                 keyInMenu();
                 resetKey();
                 break;
-            case 5:
+            }
+            case 5: {  // 处理游戏中按键
                 keyInGameRun();
                 break;
-            case 26:
-                UIGameRun.getInstance().keyInSoundClew();
-                resetKey();
-                break;
-            case 31:
-                PCIncrementService.getInstance().keyInAgree();
-                resetKey();
-                break;
-            case 10:
-                keyInLogon();
-                resetKey();
-                break;
-            case 11:
-                keyInSelectServer();
-                resetKey();
-                break;
-            case 12:
-                keyInSelectMan();
-                resetKey();
-                break;
-            case 14:
-                keyInLogin();
-                resetKey();
-                break;
-            case 22:
-                keyInLogin();
-                resetKey();
-                break;
-            case 15:
-                keyInCreatMan();
-                resetKey();
-                break;
-            case 17:
-                keyInInitgame();
-                resetKey();
-                break;
-            case 19:
-                keyInBackToMainMenu();
-                resetKey();
-                break;
-            case 9:
-                keyInAbout();
-                break;
-            case 7:
-                keyInNetSetup();
-                break;
-            case 27:
-                keyInMainHelp();
-                break;
-            case 28:
-                keyInMainSubHelp();
-                break;
-            case 29:
-                PCBindService.getInstance().action();
-                break;
-            case 30:
-                PCIncrementService.setState((byte) 16);
-                PCIncrementService.getInstance().userEvent();
-                break;
-            case 6:
+            }
+            case 6: {
                 if (Cons.isCmobile) {
                     Download.getInstance().keyInExit();
                 }
                 break;
+            }
+            case 7: {
+                keyInNetSetup();
+                break;
+            }
+            case 9: {
+                keyInAbout();
+                break;
+            }
+            case 10: {
+                keyInLogon();
+                resetKey();
+                break;
+            }
+            case 11: {
+                keyInSelectServer();
+                resetKey();
+                break;
+            }
+            case 12: {
+                keyInSelectMan();
+                resetKey();
+                break;
+            }
+            case 14: {
+                keyInLogin();
+                resetKey();
+                break;
+            }
+            case 15: {
+                keyInCreatMan();
+                resetKey();
+                break;
+            }
+            case 17: {
+                keyInInitgame();
+                resetKey();
+                break;
+            }
+            case 19: {
+                keyInBackToMainMenu();
+                resetKey();
+                break;
+            }
+            case 22: {
+                keyInLogin();
+                resetKey();
+                break;
+            }
+            case 26: {
+                UIGameRun.getInstance().keyInSoundClew();
+                resetKey();
+                break;
+            }
+            case 27: {
+                keyInMainHelp();
+                break;
+            }
+            case 28: {
+                keyInMainSubHelp();
+                break;
+            }
+            case 29: {
+                PCBindService.getInstance().action();
+                break;
+            }
+            case 30: {
+                PCIncrementService.setState((byte) 16);
+                PCIncrementService.getInstance().userEvent();
+                break;
+            }
+            case 31: {  // 增值服务同意
+                PCIncrementService.getInstance().keyInAgree();
+                resetKey();
+                break;
+            }
         }
     }
 
@@ -1257,7 +1279,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     }
 
     /**
-     * 判断是否按下了某个按键 0-9 对应0-9数字按键 10-左 11-上 12-右 13-下 14-ok键 17-左软键 18-右软键
+     * 判断是否按下了某个按键 0-9 对应0-9数字按键 10-左 11-上 12-右 13-下 14-ok键 16-#键 17-左软键 18-右软键
      *
      * @param keyLabel
      * @return
@@ -1276,6 +1298,12 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         return false;
     }
 
+    /**
+     * 判断是否按下了某个按键 0-9 对应0-9数字按键 10-左 11-上 12-右 13-下 14-ok键 16-#键 17-左软键 18-右软键
+     *
+     * @param keyLabel
+     * @return
+     */
     public static boolean isKeyPress1(int keyLabel) {
         if ((keyFlagIm >>> keyLabel & 0x1) == 1) {
             keyFlagIm &= 1 << keyLabel ^ 0xFFFFFFFF;
@@ -1885,6 +1913,11 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         gameState_rightMenuSubState = s;
     }
 
+    /**
+     * 获取右键菜单状态
+     *
+     * @return
+     */
     public int getRightMenuSubState() {
         return gameState_rightMenuSubState;
     }
@@ -2789,10 +2822,9 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         if (baseForm == null) {
                             baseForm = new UIForm(0, 0, screenW, screenH, "");
                             baseForm.setBackGround((byte) 9);
-                            menus[0] = new UIMenu(0, 0, 66, 120, null, Cons.isCmobile ? Cons.STR_RIGHT_CMENU : Cons.STR_RIGHT_MENU);
+                            // 设置菜单类型
+                            menus[0] = new UIMenu(0, 0, 66, 120, null, Cons.STR_RIGHT_MENU);
                             menus[0].setCurrentpointer(rightMenuId);
-                            menus[0].setNoUse((byte) 0);
-                            menus[0].setNoUse((byte) 8);
                             labels[0] = new UILabel(0, 0, 0, 0, "返回", 15718815, (byte) 0, (byte) 0);
                             baseForm.addComponentInCenter(labels[0], (byte) 6);
                             baseForm.addComponentInCenter(menus[0], (byte) 4);
@@ -3134,6 +3166,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     }
 
     private void keyInGameRun() {
+        // 如果玩家是寻径状态，并且按了方向键，取消寻径
         if (Player.getInstance().isFollow() && keyFilterInFollowing()) {
             Player.getInstance().resetAimID();
         }
@@ -3143,24 +3176,20 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         if (isPop) {
             return;
         }
-        switch (getGameState()) {
-            case 10:
-                PCIncrementService.getInstance().userEvent();
-                resetKey();
-                break;
-            case 0:
-                if (isKeyPress(18)) {
+        switch (getGameState()) {  // 游戏中状态
+            case 0: {  // 游戏中
+                if (isKeyPress(18)) {  // 如果按了右软键，显示右键菜单
                     releaseUI();
                     setGameState((byte) 1);
                     setRightMenuSubState(-1);
                     resetKey();
                     break;
                 }
-                if (isKeyPress(17)) {
+                if (isKeyPress(17)) {  // 如果按了左软键
                     if (ObjManager.currentTarget == null) {
                         return;
                     }
-                    if (ObjManager.currentTarget.type == 1) {
+                    if (ObjManager.currentTarget.type == 1) {  // 如果当前选择对象的是玩家
                         if ((Player.getInstance()).group != ObjManager.currentTarget.group || ObjManager.currentTarget.isEnemy) {
                             return;
                         }
@@ -3169,7 +3198,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         chatNowTarget = ObjManager.currentTarget.name;
                         selectedManId = chatFriendId = ObjManager.currentTarget.objID;
                         localChatChannel = 1;
-                    } else if (ObjManager.currentTarget.type == 3) {
+                    } else if (ObjManager.currentTarget.type == 3) {  // 如果当前选择对象的是NPC
                         NPCIndex = ObjManager.currentTarget.objID;
                         setGameState((byte) 3);
                         setNPCSubState((byte) 100);
@@ -3211,121 +3240,150 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                     Cons.zeroShortShow = 0;
                 }
                 break;
-            case 1:
+            }
+            case 1: {   // 右键菜单栏状态
                 switch (getRightMenuSubState()) {
-                    case 80:
-                        keyInValueAddedCatalogList();
-                        break;
-                    case -1:
+                    case -1: {
                         keyInRightMenu();
                         break;
-                    case 0:
+                    }
+                    case 0: {
                         PCIncrementService.getInstance().userEvent();
                         break;
-                    case 10:
-                        PCIncrementService.getInstance().actionToBuy();
-                        break;
-                    case 1:
+                    }
+                    case 1: {
                         keyInUIManAttribute();
                         break;
-                    case 24:
-                        keyInUIManTitle();
-                        break;
-                    case 2:
+                    }
+
+                    case 2: {
                         keyInUIManPackage();
                         break;
-                    case 20:
-                        keyInUIManSkill();
-                        break;
-                    case 3:
+                    }
+                    case 3: {
                         keyInSociety();
                         break;
-                    case 4:
+                    }
+                    case 4: {
                         keyInTask();
                         break;
-                    case 22:
-                    case 23:
-                        keyInPet();
-                        break;
-                    case 7:
-                        keyInSetup();
-                        break;
-                    case 5:
+                    }
+                    case 5: {
                         keyInAllMap();
                         break;
-                    case 8:
+                    }
+                    case 7: {
+                        keyInSetup();
+                        break;
+                    }
+                    case 8: {
                         keyInHelp();
                         break;
+                    }
+                    case 10: {
+                        PCIncrementService.getInstance().actionToBuy();
+                        break;
+                    }
+                    case 20: {
+                        keyInUIManSkill();
+                        break;
+                    }
+                    case 22:
+                    case 23: {
+                        keyInPet();
+                        break;
+                    }
+                    case 24: {
+                        keyInUIManTitle();
+                        break;
+                    }
+                    case 80: {
+                        keyInValueAddedCatalogList();
+                        break;
+                    }
                 }
                 resetKey();
                 break;
-            case 2:
+            }
+            case 2: {  // 左键菜单栏
                 switch (getLeftMenuSubState()) {
-                    case -1:
+                    case -1: {
                         keyInLeftMenu();
                         resetKey();
                         break;
-                    case 0:
+                    }
+                    case 0: {  // 其他玩家菜单
                         keyInOtherInfor();
                         break;
-                    case 7:
+                    }
+                    case 7: {
                         keyInCheatCheck();
                         break;
+                    }
                 }
                 break;
-            case 3:
+            }
+            case 3: {    //  NPC面板
                 switch (getNPCSubState()) {
-                    case 0:
+                    case 0: {
                         keyInNPCMenu();
                         break;
-                    case 120:
-                        keyInNPCTask();
-                        break;
-                    case 2:
+                    }
+                    case 2: {
                         keyInNPCTrade();
                         break;
-                    case 3:
+                    }
+                    case 3: {
                         keyInNPCFix();
                         break;
-                    case 4:
+                    }
+                    case 4: {
                         keyInNPCPetLearnSkills();
                         break;
-                    case 5:
+                    }
+                    case 5: {
                         keyInNPCAdoptPet();
                         break;
-                    case 6:
+                    }
+                    case 6: {
                         keyInNPCUnion();
                         break;
-                    case 8:
+                    }
+                    case 8: {
                         keyInNPCSmith();
                         break;
-                    case 9:
+                    }
+                    case 9: {
                         keyInNPCStore();
                         break;
-                    case 62:
-                        PCMarriage.getInstance().keyInMetempsyshosis();
-                        break;
-                    case 10:
+                    }
+                    case 10: {
                         keyInNPCExchange();
                         break;
-                    case 11:
+                    }
+                    case 11: {
                         keyInMail();
                         break;
+                    }
                     case 22:
                     case 23:
                     case 24:
-                    case 25:
+                    case 25: {
                         keyInNPCTop();
                         break;
-                    case 27:
+                    }
+                    case 27: {
                         keyInBattleGroundRank();
                         break;
-                    case 28:
+                    }
+                    case 28: {
                         keyInBattleGroundRate();
                         break;
-                    case 34:
+                    }
+                    case 34: {
                         PCArena.getInstance().keyPressed();
                         break;
+                    }
                     case 46:
                     case 47:
                     case 48:
@@ -3336,21 +3394,34 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                     case 53:
                     case 76:
                     case 77:
-                    case 78:
+                    case 78: {
                         ClanWar.getInstance().tick();
                         break;
-                    case 56:
+                    }
+                    case 56: {
                         keyInSilk();
                         break;
-                    case 83:
+                    }
+                    case 62: {
+                        PCMarriage.getInstance().keyInMetempsyshosis();
+                        break;
+                    }
+                    case 83: {
                         keyInNPCTitle();
                         break;
+                    }
+                    case 120: {
+                        keyInNPCTask();
+                        break;
+                    }
                 }
                 break;
-            case 7:
+            }
+            case 7: {  // 快速聊天
                 keyInFastChat();
                 break;
-            case 8:
+            }
+            case 8: {  // 切换状态，比如切换地图
                 switch (getOtherSubState()) {
                     case 0:
                         releaseUI();
@@ -3382,6 +3453,12 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         break;
                 }
                 break;
+            }
+            case 10: {   // 增值服务面板
+                PCIncrementService.getInstance().userEvent();
+                resetKey();
+                break;
+            }
         }
     }
     public static boolean isDeadLoad = false;
@@ -3713,43 +3790,51 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         }
     }
 
+    /**
+     * 处理右键菜单按键
+     */
     public void keyInRightMenu() {
         if (baseForm == null) {
             return;
         }
         UIComponent cmd = baseForm.getCommand();
+        String fouceFormName = baseForm.getCurrentFocusForm().getName();
+        // 如果没有弹窗
         if (baseForm.getCurrentFocusForm() == baseForm) {
             if (menus[0] != null && menus[0].getSubMenu() == null) {
                 for (int i = 0; i < keys.length; i++) {
+                    // 按了0-9j键
                     if (isKeyPress(keys[i])) {
                         if (i == 0) {
-                            menus[0].setCurrentpointer((byte) ((Cons.isCmobile ? Cons.STR_RIGHT_CMENU.length : Cons.STR_RIGHT_MENU.length) - 2));
+                            menus[0].setCurrentpointer((byte) (Cons.STR_RIGHT_MENU.length - 2));
                         } else {
                             menus[0].setCurrentpointer((byte) (i - 1));
                         }
-                        keyFlag |= 0x4000;
-                        menus[0].setSubMenu(null);
-                        menus[1] = null;
-                        menus[2] = null;
+                        keyFlag |= 0x4000; //按下确认键
                     }
                 }
+                // 按了#键
                 if (isKeyPress(16)) {
-                    menus[0].setCurrentpointer((byte) ((Cons.isCmobile ? Cons.STR_RIGHT_CMENU.length : Cons.STR_RIGHT_MENU.length) - 1));
-                    keyFlag |= 0x4000;
-                    menus[0].setSubMenu(null);
-                    menus[1] = null;
-                    menus[2] = null;
+                    menus[0].setCurrentpointer((byte) (Cons.STR_RIGHT_MENU.length - 1));
+                    keyFlag |= 0x4000;  //按下确认键
                 }
+                menus[0].setSubMenu(null);
+                menus[1] = null;
+                menus[2] = null;
             }
             if (isKeyPress(17) || isKeyPress(14)) {
                 byte s;
                 String confirm, name;
-                if ("arena".equals(baseForm.getCurrentFocusForm().getName())) {
+                if ("arena".equals(fouceFormName)) {
                     baseForm.setAboutForm((UIForm) null);
                 }
                 rightMenuId = menus[0].getCurrentPointer();
                 switch (menus[0].getCurrentPointer()) {
-                    case 1:
+                    case 0: {  // 挂机选项
+                        baseForm.addAboutForm("hangup", "确实要挂机吗？", (byte) 2, 140, 0);
+                        break;
+                    }
+                    case 1: {
                         if (menus[0].getSubMenu() == null) {
                             String[] attri = {"技能", "属性", "合成", "称号"};
                             menus[1] = new UIMenu((menus[0]).positionX + (menus[0]).width - 20, (menus[0]).positionY - 20 + 18, 80, 0, null, attri);
@@ -3786,7 +3871,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         }
                         if (menus[0].getSubMenu().getSubMenu() != null) {
                             switch (menus[0].getSubMenu().getCurrentPointer()) {
-                                case 0:
+                                case 0: {
                                     switch (menus[0].getSubMenu().getSubMenu().getCurrentPointer()) {
                                         case 0:
                                             baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
@@ -3800,9 +3885,11 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                                             break;
                                     }
                                     break;
+                                }
                             }
                         }
                         break;
+                    }
                     case 2:
                         baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                         ni.send(67109376);
@@ -3984,19 +4071,19 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 } else {
                     menus[0].setSubMenu((UIMenu) null);
                 }
-            } else if (actionInForm(cmd)) {
+            } else if (actionInForm(cmd)) {    // 处理当前菜单上下按键
             }
-        } else if ("confirm".equals(baseForm.getCurrentFocusForm().getName())) {
+        } else if ("confirm".equals(fouceFormName)) {
             if (isKeyPress(17)) {
                 switch (teamLeaderOperat) {
                     case 2:
                     case 3:
-                        menus[0].getSubMenu().setSubMenu((UIMenu) null);
+                        menus[0].getSubMenu().setSubMenu(null);
                         if (teamMates.size() <= 1) {
-                            menus[0].setSubMenu((UIMenu) null);
+                            menus[0].setSubMenu(null);
                         }
                         ni.send(100663808);
-                        baseForm.setAboutForm((UIForm) null);
+                        baseForm.setAboutForm(null);
                         baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                         return;
                     case 4:
@@ -4005,26 +4092,26 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         } else if (teamJob == 1) {
                             teamLeaderOperat = 1;
                         }
-                        menus[0].setSubMenu((UIMenu) null);
-                        baseForm.setAboutForm((UIForm) null);
+                        menus[0].setSubMenu(null);
+                        baseForm.setAboutForm(null);
                         startWait(baseForm);
                         ni.send(100664064);
                         return;
                 }
-                baseForm.setAboutForm((UIForm) null);
+                baseForm.setAboutForm(null);
             } else if (isKeyPress(18)) {
-                baseForm.setAboutForm((UIForm) null);
+                baseForm.setAboutForm(null);
             }
-        } else if ("message".equals(baseForm.getCurrentFocusForm().getName())) {
+        } else if ("message".equals(fouceFormName)) {
             if (isKeyPress(17)) {
-                baseForm.setAboutForm((UIForm) null);
-                menus[0].setSubMenu((UIMenu) null);
+                baseForm.setAboutForm(null);
+                menus[0].setSubMenu(null);
             }
-        } else if ("msg".equals(baseForm.getCurrentFocusForm().getName())) {
+        } else if ("msg".equals(fouceFormName)) {
             if (isKeyPress(17)) {
-                baseForm.setAboutForm((UIForm) null);
+                baseForm.setAboutForm(null);
             }
-        } else if ("sure".equals(baseForm.getCurrentFocusForm().getName())) {
+        } else if ("sure".equals(fouceFormName)) {  // 处理是否退出游戏按键
             if (isKeyPress(17)) {
                 if ((Player.getInstance()).hpStates.size() != 0) {
                     (Player.getInstance()).hpStates.removeAllElements();
@@ -4044,20 +4131,27 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                     }
                 }
             } else if (isKeyPress(18)) {
-                baseForm.setAboutForm((UIForm) null);
+                baseForm.setAboutForm(null);
             }
-        } else if ("specTools".equals(baseForm.getCurrentFocusForm().getName())) {
+        } else if ("specTools".equals(fouceFormName)) {
             if (isKeyPress(17)) {
-                baseForm.setAboutForm((UIForm) null);
+                baseForm.setAboutForm(null);
             }
-        } else if ("return".equals(baseForm.getCurrentFocusForm().getName())) {
+        } else if ("return".equals(fouceFormName)) {
             if (isKeyPress(17)) {
-                baseForm.setAboutForm((UIForm) null);
+                baseForm.setAboutForm(null);
             }
-        } else if ("announce".equals(baseForm.getCurrentFocusForm().getName())) {
+        } else if ("announce".equals(fouceFormName)) {
             if (isKeyPress(18)) {
-                baseForm.setAboutForm((UIForm) null);
+                baseForm.setAboutForm(null);
             } else if (actionInForm(cmd)) {
+            }
+        } else if ("hangup".equals(fouceFormName)) {  // 处理挂机选项
+            if (isKeyPress(17) || isKeyPress(18)) {
+                baseForm.setAboutForm(null);
+                // 设置游戏中
+                setGameState((byte) 0);
+                releaseUI();
             }
         }
     }
@@ -5240,9 +5334,10 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                         ni.send(162530304);
                         break;
-                    case 1:
+                    case 1: {
                         baseForm.addAboutForm("sure", "确实要放弃吗？", (byte) 2, 140, 0);
                         break;
+                    }
                     case 2:
                         baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                         questTargetID = taskId[tables[0].getCurrentPointer()];
@@ -11405,6 +11500,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         Map.getInstance().adjustWindow(player.x, player.y);
         ObjManager.getInstance().tick();
     }
+    
     public static MImage[] mImgUI = new MImage[40];
     public static MImage mImgStuff;
     public static MImage mImgSelect;

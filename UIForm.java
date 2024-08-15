@@ -316,7 +316,7 @@ public void draw(Graphics g) {
    * 增加一个确认提示框
    * @param formName
    * @param message
-   * @param flag
+   * @param flag 消息类型
    * @param w
    * @param h 
    */

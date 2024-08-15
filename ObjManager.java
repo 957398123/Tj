@@ -25,20 +25,26 @@ public class ObjManager {
     }
 
     public void tick() {
+        ExpandAbility.beforeObjManagerTick(this);
         if (currentTarget == null) {
             currentTarget = Player.getInstance();
         }
         for (int i = 0; i < vectorObj.size(); i++) {
-            ((GameObj) vectorObj.elementAt(i)).tick();
-            if (((GameObj) vectorObj.elementAt(i)).type == 1) {
-                if (((GameObj) vectorObj.elementAt(i)).curHp <= 0) {
-                    ((GameObj) vectorObj.elementAt(i)).setState((byte) 5);
+            GameObj obj = (GameObj) vectorObj.elementAt(i);
+            ExpandAbility.beforeGameObjectTick(obj);
+            obj.tick();
+            ExpandAbility.afterGameObjectTick(obj);
+            if (obj.type == 1) {
+                if (obj.curHp <= 0) {
+                    obj.setState((byte) 5);
                 }
             }
         }
+        // 如果选中目标超出范围
         if (currentTarget != null && !canBeSetTarget(currentTarget, 90)) {
             setCurrentTarget(Player.getInstance());
         }
+        ExpandAbility.afterObjManagerTick(this);
     }
 
     public static void addObj(GameObj obj) {
@@ -101,6 +107,12 @@ public class ObjManager {
         return isAllMove;
     }
 
+    /**
+     * 判断当前选择目标是否超出范围
+     * @param target
+     * @param size
+     * @return 
+     */
     private static boolean canBeSetTarget(GameObj target, int size) {
         return (target.x - Map.currentWindowX >= 0 && target.x - Map.currentWindowX <= MainCanvas.screenW && target.y - Map.currentWindowY >= 0 && target.y - Map.currentWindowY <= MainCanvas.screenH
                 && Math.abs(target.x - (Player.getInstance()).x)
@@ -139,6 +151,10 @@ public class ObjManager {
         }
     }
 
+    /**
+     * 设置当前选择对象
+     * @param obj 
+     */
     public void setCurrentTarget(GameObj obj) {
         if (obj == null) {
             return;
@@ -160,6 +176,9 @@ public class ObjManager {
         }
     }
 
+    /**
+     * 更改选中目标
+     */
     public void changeTarget() {
         if (currentTarget == null) {
             for (int i = 0; i < vectorObj.size(); i++) {
