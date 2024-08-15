@@ -1,4 +1,6 @@
+
 public class Monster extends GameObj {
+
     private static final int MONSTER_MP = 100;
 
     public Monster() {
@@ -23,9 +25,9 @@ public class Monster extends GameObj {
         row = Map.getCurrentRow(y, x);
         setAimRowAndColumn(row, col);
         Map.putInCell(col, row);
-        setState((byte)0);
+        setState((byte) 0);
         initEditorRes();
-        setDirection((byte)2);
+        setDirection((byte) 2);
     }
 
     public void setState(byte s) {
@@ -39,11 +41,13 @@ public class Monster extends GameObj {
     public void tick() {
         super.tick();
         switch (state) {
-            case 1:
+            case 1: {
                 findPath();
-            default:
+            }
+            default: {
                 nextFrame();
                 Map.putInCell(col, row);
+            }
         }
     }
 }

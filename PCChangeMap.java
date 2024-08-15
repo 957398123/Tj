@@ -33,13 +33,13 @@ public class PCChangeMap {
         String hexID = Integer.toHexString(commID);
         System.out.println("[handle command]:command id:0x" + hexID + ",type:PCChangeMap");
         try {
-            int canPass, mapDataLength, n, nLines, i;
+            int canPass, mapDataLength;
             UIForm subForm;
             UIRim frame, rimTitle;
             UILabel lblTitle, lblCancel;
             ByteArray execDataIn = new ByteArray(_data);
             switch (commID) {
-                case Cmd.S_MAP_CHANGE:
+                case Cmd.S_MAP_CHANGE: {  // 接收服务器地图数据
                     (Player.getInstance()).path = null;
                     canPass = -1;
                     canPass = execDataIn.readByte();
@@ -200,10 +200,12 @@ public class PCChangeMap {
                     }
                     isReceivedMapInfo = true;
                     break;
-                case 536873344:
+                }
+                case Cmd.S_STORY_RECEIVE: {
                     UIGameRun.loadingTip = execDataIn.readUTF();
                     break;
-                case 536871552:
+                }
+                case Cmd.S_MAP_DATA_RECEIVE: {
                     mapDataLength = execDataIn.readInt();
                     try {
                         if (bufferMapID != -1) {
@@ -230,62 +232,71 @@ public class PCChangeMap {
                         isTwoLoding = true;
                     }
                     break;
+                }
                 case Cmd.S_WORLDMAP: {  // 接收世界地图
                     Map.currentWMapID = execDataIn.readInt();
                     Map.choosedPlace = --Map.currentWMapID;
+                    // 读取地图数量
                     Map.NUMBER_OF_PLACES = execDataIn.readShort();
                     if (Map.regionPos != null) {
                         Map.regionPos = null;
                     }
+                    // 区域位置
                     Map.regionPos = new int[Map.NUMBER_OF_PLACES][2];
                     if (Map.regionProps != null) {
-                        Map.regionProps = (int[][]) null;
+                        Map.regionProps = null;
                     }
+                    // 区域属性
                     Map.regionProps = new int[Map.NUMBER_OF_PLACES][6];
                     if (Map.regionName != null) {
                         Map.regionName = null;
                     }
+                    // 地图名称
                     Map.regionName = new String[Map.NUMBER_OF_PLACES];
-                    for (n = 0; n < Map.NUMBER_OF_PLACES; n++) {
-                        Map.regionName[n] = execDataIn.readUTF();
-                        Map.regionPos[n][0] = execDataIn.readShort();
-                        Map.regionPos[n][1] = execDataIn.readShort();
-                        Map.regionProps[n][0] = execDataIn.readByte();
-                        Map.regionProps[n][1] = execDataIn.readByte();
-                        Map.regionProps[n][2] = execDataIn.readShort();
-                        Map.regionProps[n][3] = execDataIn.readShort();
-                        Map.regionProps[n][4] = execDataIn.readShort();
-                        Map.regionProps[n][5] = execDataIn.readShort();
+                    for (int i = 0; i < Map.NUMBER_OF_PLACES; ++i) {
+                        // 设置地图名称
+                        Map.regionName[i] = execDataIn.readUTF();
+                        // 设置地图位置，移动地图时需要
+                        Map.regionPos[i][0] = execDataIn.readShort();
+                        Map.regionPos[i][1] = execDataIn.readShort();
+                        // 设置地图属性
+                        // 地图图片类型
+                        Map.regionProps[i][0] = execDataIn.readByte();
+                        // 地图类型 0-主城 1-中立领地 2-副本 3-新手村 4-天人领地 5-修罗领地
+                        Map.regionProps[i][1] = execDataIn.readByte();
+                        //  上方向地图索引 -1为不可行走
+                        Map.regionProps[i][2] = execDataIn.readShort();
+                        //  下方向地图索引 -1为不可行走
+                        Map.regionProps[i][3] = execDataIn.readShort();
+                        //  左方向地图索引 -1为不可行走
+                        Map.regionProps[i][4] = execDataIn.readShort();
+                        //  右方向地图索引 -1为不可行走
+                        Map.regionProps[i][5] = execDataIn.readShort();
                     }
-                    nLines = execDataIn.readShort();
+                    int nLines = execDataIn.readShort();
                     if (Map.regionLines != null) {
-                        Map.regionLines = (int[][]) null;
+                        Map.regionLines = null;
                     }
+                    // 绘制地图方框
                     Map.regionLines = new int[nLines][4];
-                    for (i = 0; i < nLines; i++) {
+                    for (int i = 0; i < nLines; i++) {
                         Map.regionLines[i][0] = execDataIn.readShort();
                         Map.regionLines[i][1] = execDataIn.readShort();
                         Map.regionLines[i][2] = execDataIn.readShort();
                         Map.regionLines[i][3] = execDataIn.readShort();
                     }
-                    if (MainCanvas.mc.getGameState() == 1) {
-                        MainCanvas.mc.setRightMenuSubState(5);
-                        MainCanvas.mc.setUIMApState((byte) 0);
-                    } else if (MainCanvas.mc.getGameState() == 3) {
+                    if (MainCanvas.mc.getGameState() == 3) {
                         MainCanvas.mc.setGameState((byte) 1);
-                        MainCanvas.mc
-                                .setRightMenuSubState(5);
-                        MainCanvas.mc.setUIMApState((byte) 0);
                         MainCanvas.mc.baseForm.setAboutForm(null);
                     } else {
                         MainCanvas.mc.setGameState((byte) 1);
-                        MainCanvas.mc.setRightMenuSubState(5);
-                        MainCanvas.mc.setUIMApState((byte) 0);
                     }
+                    MainCanvas.mc.setRightMenuSubState(5);
+                    MainCanvas.mc.setUIMApState((byte) 0);
                     MainCanvas.mc.releaseUI();
                     break;
                 }
-                case 536872832:
+                case Cmd.S_SYSNOTICE: {
                     strHelpContent = execDataIn.readUTF();
                     subForm = new UIForm(0, 0, MainCanvas.screenW, MainCanvas.screenH, "announce");
                     frame = new UIRim(0, 0, MainCanvas.screenW - 1, MainCanvas.screenH - 1, (byte) 4);
@@ -304,6 +315,7 @@ public class PCChangeMap {
                     subForm.addComponentInCenter(lblCancel, (byte) 6);
                     MainCanvas.mc.baseForm.setAboutForm(subForm);
                     break;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

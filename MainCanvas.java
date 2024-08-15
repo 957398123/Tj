@@ -79,7 +79,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     public static byte CHARH = Cons.FONT_SIZE[MOBILE_TELEPHONE_TYPE][1];
     public static Font[] font;
     /**
-     * 当前游戏界面 5-游戏中
+     * 当前游戏界面 5-游戏中 23-加载地图中
      */
     private static byte curState = 0;
     private static byte oldState = 0;
@@ -87,9 +87,16 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     private long paintTaken;
     private volatile Thread self;
     private long[] curTime = new long[1];
-    public static byte gameState = 0, oldGameState = 0;
+    /**
+     * 1-右菜单 2-左菜单
+     */
+    public static byte gameState = 0;
+    public static byte oldGameState = 0;
     public static byte gameState_gameRunState = 0;
     public static byte oldGameState_gameRunState = 0;
+    /**
+     * 5-世界地图
+     */
     public static int gameState_rightMenuSubState = -1;
     public static int oldGameState_rightMenuSubState = -1;
     public static byte gameState_menuManState = 0;
@@ -873,7 +880,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
             countTick = 0;
         }
         switch (getState()) {
-            case 5:
+            case 5: {  // 更新游戏中tick
                 mapRunSubTick();
                 PCArena.tick();
                 UIGameRun.tickChatBar();
@@ -886,15 +893,18 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                     PCIncrementService.getInstance().tick();
                 }
                 break;
-            case 23:
+            }
+            case 23: {
                 UIGameRun.getInstance().updateMapCount();
                 break;
+            }
         }
     }
 
     /**
      * 绘制界面逻辑
-     * @param g 
+     *
+     * @param g
      */
     public void paint(Graphics g) {
         // 设置黑色背景
@@ -903,7 +913,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         // 设置字体
         g.setFont(font[1]);
         switch (getState()) {
-            case 33:{
+            case 33: {
                 AdvertiseSplash.getInstance().moreGamePaint(g);
                 AdvertiseSplash.getInstance().moreGameTick();
                 break;
@@ -1028,7 +1038,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
 
     /**
      * 键盘按下
-     * @param keyCode 
+     *
+     * @param keyCode
      */
     public void keyPressed(int keyCode) {
         switch (keyCode) {
@@ -1175,7 +1186,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
 
     /**
      * 按键释放
-     * @param keyCode 
+     *
+     * @param keyCode
      */
     public void keyReleased(int keyCode) {
         switch (keyCode) {
@@ -1244,6 +1256,12 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         }
     }
 
+    /**
+     * 判断是否按下了某个按键 0-9 对应0-9数字按键 10-左 11-上 12-右 13-下 14-ok键 17-左软键 18-右软键
+     *
+     * @param keyLabel
+     * @return
+     */
     public static boolean isKeyPress(int keyLabel) {
         if (mc.getNPCSubState() == 7) {
             return isKeyPress1(keyLabel);
@@ -1344,21 +1362,9 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
 
     public void commandAction(Command command, Displayable displayable) {
         switch (getState()) {
-            case 5:
+            case 5: {  // 游戏中
                 switch (getGameState()) {
-                    case 7:
-                        if (command == commonOk) {
-                            break;
-                        }
-                        if (command == chatBack || command == commonBack) {
-                            localChatChannel = 0;
-                            aMidlet.display.setCurrent((Displayable) this);
-                            clearAdvanceUIItem();
-                            releaseUI();
-                            setGameState((byte) 0);
-                        }
-                        break;
-                    case 1:
+                    case 1: {  // 右菜单
                         switch (getRightMenuSubState()) {
                             case -1:
                                 if (command == commonOk) {
@@ -1530,7 +1536,17 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                             dramatisPackage.setSubMenu((UIMenu) null);
                         }
                         break;
-                    case 3:
+                    }
+                    case 2: {
+                        if (command == chatBack) {
+                            aMidlet.display.setCurrent((Displayable) this);
+                            clearAdvanceUIItem();
+                            releaseUI();
+                            setGameState((byte) 0);
+                        }
+                        break;
+                    }
+                    case 3: {
                         switch (getNPCSubState()) {
                             case 11:
                                 switch (getNPCMailState()) {
@@ -1674,40 +1690,28 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                                 break;
                         }
                         break;
-                    case 2:
-                        if (command == chatBack) {
+                    }
+                    case 7: {
+                        if (command == commonOk) {
+                            break;
+                        }
+                        if (command == chatBack || command == commonBack) {
+                            localChatChannel = 0;
                             aMidlet.display.setCurrent((Displayable) this);
                             clearAdvanceUIItem();
                             releaseUI();
                             setGameState((byte) 0);
                         }
                         break;
+                    }
                 }
                 if (command == commonBack || command == chatBack) {
                     aMidlet.display.setCurrent((Displayable) this);
                     clearAdvanceUIItem();
                 }
                 break;
-            case 15:
-                if (displayable == commonForm) {
-                    if (command == commonOk) {
-                        String s = commonTextField.getString();
-                        if (Util.checkLegal(s, (byte) 6, commonForm, false)) {
-                            texts[0].setLabel(s);
-                            aMidlet.display.setCurrent((Displayable) this);
-                            setState((byte) 15);
-                            clearAdvanceUIItem();
-                        }
-                        break;
-                    }
-                    if (command == commonBack) {
-                        aMidlet.display.setCurrent((Displayable) this);
-                        setState((byte) 15);
-                        clearAdvanceUIItem();
-                    }
-                }
-                break;
-            case 12:
+            }
+            case 12: {
                 if (displayable == commonForm) {
                     if (command == commonOk) {
                         String s = commonTextField.getString();
@@ -1729,12 +1733,34 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                     }
                 }
                 break;
-            default:
+            }
+            case 15: {
+                if (displayable == commonForm) {
+                    if (command == commonOk) {
+                        String s = commonTextField.getString();
+                        if (Util.checkLegal(s, (byte) 6, commonForm, false)) {
+                            texts[0].setLabel(s);
+                            aMidlet.display.setCurrent((Displayable) this);
+                            setState((byte) 15);
+                            clearAdvanceUIItem();
+                        }
+                        break;
+                    }
+                    if (command == commonBack) {
+                        aMidlet.display.setCurrent((Displayable) this);
+                        setState((byte) 15);
+                        clearAdvanceUIItem();
+                    }
+                }
+                break;
+            }
+            default: {
                 if (command == commonBack || command == chatBack) {
                     aMidlet.display.setCurrent((Displayable) this);
                     clearAdvanceUIItem();
                 }
                 break;
+            }
         }
         resetKey();
     }
@@ -1822,6 +1848,11 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         }
     }
 
+    /**
+     * 获取游戏中状态
+     *
+     * @return
+     */
     public byte getGameState() {
         return gameState;
     }
@@ -2737,23 +2768,23 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         g.drawString("关闭", rectComStateX + rectComW - (CHARW + 2) * 2, rectComStateY + 2, 0);
     }
 
-    private final void drawGameRun(Graphics g) {
+    private void drawGameRun(Graphics g) {
         switch (getGameState()) {
-            case 0:
+            case 0: {
                 showGame(g);
                 break;
-            case 10:
-                PCIncrementService.getInstance().draw(g);
-                break;
-            case 1:
+            }
+            case 1: {  // 有菜单
                 switch (getRightMenuSubState()) {
-                    case 80:
+                    case 80: {
                         drawUIValueAddedCatalogList(g);
                         break;
-                    case 100:
+                    }
+                    case 100: {
                         drawRightMenuWait(g);
                         break;
-                    case -1:
+                    }
+                    case -1: {
                         showGame(g);
                         if (baseForm == null) {
                             baseForm = new UIForm(0, 0, screenW, screenH, "");
@@ -2769,25 +2800,32 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         }
                         baseForm.draw(g);
                         break;
-                    case 0:
+                    }
+                    case 0: {
                         PCIncrementService.getInstance().draw(g);
                         break;
-                    case 10:
+                    }
+                    case 10: {
                         PCIncrementService.getInstance().draw(g);
                         break;
-                    case 1:
+                    }
+                    case 1: {
                         drawUIManAttribute(g);
                         break;
-                    case 24:
+                    }
+                    case 24: {
                         UIGameRun.getInstance().drawTitleList(g);
                         break;
-                    case 2:
+                    }
+                    case 2: {
                         drawUIManPackage(g);
                         break;
-                    case 20:
+                    }
+                    case 20: {
                         drawUIManSkill(g);
                         break;
-                    case 3:
+                    }
+                    case 3: {
                         switch (getUIFriendState()) {
                             case 0:
                                 drawUIFriendLookup(g);
@@ -2803,10 +2841,12 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                                 break;
                         }
                         break;
-                    case 4:
+                    }
+                    case 4: {
                         drawUITask(g);
                         break;
-                    case 22:
+                    }
+                    case 22: {
                         switch (getUIPetState()) {
                             case 2:
                                 drawUIPetThingslist(g);
@@ -2825,10 +2865,12 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                                 break;
                         }
                         break;
-                    case 23:
+                    }
+                    case 23: {
                         drawUICompose(g);
                         break;
-                    case 7:
+                    }
+                    case 7: {
                         switch (getUISetupState()) {
                             case 0:
                                 drawUISetupDirection(g);
@@ -2844,7 +2886,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                                 break;
                         }
                         break;
-                    case 5:
+                    }
+                    case 5: {
                         switch (getUIMapState()) {
                             case 0:
                                 Map.drawWorldMap(g);
@@ -2854,22 +2897,26 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                                 break;
                         }
                         break;
-                    case 8:
+                    }
+                    case 8: {
                         switch (getUIHelpState()) {
                             case 2:
                                 PCBindService.getInstance().draw(g);
                                 break;
                         }
                         break;
-                    case 9:
+                    }
+                    case 9: {
                         showGame(g);
                         if (baseForm != null) {
                             baseForm.draw(g);
                         }
                         break;
+                    }
                 }
                 break;
-            case 2:
+            }
+            case 2: {  // 左菜单
                 switch (getLeftMenuSubState()) {
                     case -1:
                         showGame(g);
@@ -2917,7 +2964,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         break;
                 }
                 break;
-            case 3:
+            }
+            case 3: {  // NPC菜单
                 if (getNPCSubState() == 7) {
                     tickAuction();
                 }
@@ -3013,11 +3061,13 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         break;
                 }
                 break;
-            case 7:
+            }
+            case 7: {  // 快速聊天
                 showGame(g);
                 drawFastChat(g);
                 break;
-            case 8:
+            }
+            case 8: {
                 showGame(g);
                 switch (getOtherSubState()) {
                     case 0:
@@ -3046,6 +3096,11 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         break;
                 }
                 break;
+            }
+            case 10: {  // 增值服务
+                PCIncrementService.getInstance().draw(g);
+                break;
+            }
         }
     }
 
@@ -3673,7 +3728,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                             menus[0].setCurrentpointer((byte) (i - 1));
                         }
                         keyFlag |= 0x4000;
-                        menus[0].setSubMenu((UIMenu) null);
+                        menus[0].setSubMenu(null);
                         menus[1] = null;
                         menus[2] = null;
                     }
@@ -3681,7 +3736,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 if (isKeyPress(16)) {
                     menus[0].setCurrentpointer((byte) ((Cons.isCmobile ? Cons.STR_RIGHT_CMENU.length : Cons.STR_RIGHT_MENU.length) - 1));
                     keyFlag |= 0x4000;
-                    menus[0].setSubMenu((UIMenu) null);
+                    menus[0].setSubMenu(null);
                     menus[1] = null;
                     menus[2] = null;
                 }
@@ -6676,10 +6731,13 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         }
     }
 
+    /**
+     * 处理地图选项菜单按钮
+     */
     public void keyInAllMap() {
         UIComponent cmd;
         switch (getUIMapState()) {
-            case 0:
+            case 0: {  // 世界地图界面按钮处理
                 if (isKeyPress(18)) {
                     if (shortcut_9[Cons.nineShort]) {
                         switch (worldmapplace) {
@@ -6698,25 +6756,23 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                     for (int i = 0; i < shortcut_9.length; i++) {
                         shortcut_9[i] = false;
                     }
-                    Map.regionLines = (int[][]) null;
+                    Map.regionLines = null;
                     Map.regionName = null;
-                    Map.regionPos = (int[][]) null;
-                    Map.regionProps = (int[][]) null;
+                    Map.regionPos = null;
+                    Map.regionProps = null;
                 }
                 if (isKeyPress(11) || isKeyPress(2)) {
                     Map.goNearByPlace((byte) 1);
-                }
-                if (isKeyPress(13) || isKeyPress(8)) {
+                } else if (isKeyPress(13) || isKeyPress(8)) {
                     Map.goNearByPlace((byte) 2);
-                }
-                if (isKeyPress(10) || isKeyPress(4)) {
+                } else if (isKeyPress(10) || isKeyPress(4)) {
                     Map.goNearByPlace((byte) 3);
-                }
-                if (isKeyPress(12) || isKeyPress(6)) {
+                } else if (isKeyPress(12) || isKeyPress(6)) {
                     Map.goNearByPlace((byte) 4);
                 }
                 break;
-            case 1:
+            }
+            case 1: {  // NPC位置界面按钮处理
                 cmd = baseForm.getCommand();
                 if (isKeyPress(18)) {
                     setGameState((byte) 1);
@@ -6735,6 +6791,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                     Player.getInstance().setState((byte) 1);
                 }
                 break;
+            }
         }
     }
 
@@ -6749,7 +6806,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         }
     }
 
-public void keyInNPCMenu() {
+    public void keyInNPCMenu() {
         if (this.baseForm != null) {
             UIComponent cmd = this.baseForm.getCommand();
             if (!isKeyPress(17) && !isKeyPress(14)) {
@@ -6762,24 +6819,24 @@ public void keyInNPCMenu() {
                                 NPCMenu = null;
                                 PCArena.releaseInstance();
                                 this.releaseUI();
-                                this.setGameState((byte)0);
+                                this.setGameState((byte) 0);
                                 ObjManager.currentTarget = Player.getInstance();
                                 ObjManager.showTarget = null;
                             }
                         } else {
-                            NPCMenu.setSubMenu((UIMenu)null);
+                            NPCMenu.setSubMenu((UIMenu) null);
                         }
                     } else if ("detail".startsWith(this.baseForm.getCurrentFocusForm().getName())) {
-                        this.baseForm.setAboutForm((UIForm)null);
+                        this.baseForm.setAboutForm((UIForm) null);
                         this.labels[5].setStr("选择");
                     } else if ("mss2".equals(this.baseForm.getCurrentFocusForm().getName())) {
-                        this.baseForm.setAboutForm((UIForm)null);
+                        this.baseForm.setAboutForm((UIForm) null);
                     }
                 } else if (this.actionInForm(cmd)) {
                 }
             } else if (this.baseForm.getSubForm() == null) {
-                this.baseForm.setAboutForm((UIForm)null);
-                this.baseForm.addAboutForm("waiting", "请稍候…", (byte)0, screenW - 30, 0);
+                this.baseForm.setAboutForm((UIForm) null);
+                this.baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                 switch (NPCMenu.getMappingPointer()) {
                     case 1:
                         if (NPCMenu.getSubMenu() == null) {
@@ -6808,17 +6865,17 @@ public void keyInNPCMenu() {
                         ni.send(155189248);
                         break;
                     case 5:
-                        this.setNPCSubState((byte)5);
+                        this.setNPCSubState((byte) 5);
                         this.releaseUI();
                         break;
                     case 6:
                         ni.send(251658496);
-                        this.baseForm.addAboutForm("waiting", "请稍候…", (byte)0, screenW - 30, 0);
+                        this.baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                         break;
                     case 7:
-                        this.baseForm.setAboutForm((UIForm)null);
-                        this.setNPCSubState((byte)7);
-                        this.setAuctionState((byte)-10);
+                        this.baseForm.setAboutForm((UIForm) null);
+                        this.setNPCSubState((byte) 7);
+                        this.setAuctionState((byte) -10);
                         break;
                     case 8:
                         packageSend = 2;
@@ -6833,9 +6890,9 @@ public void keyInNPCMenu() {
                         break;
                     case 11:
                         if (NPCMenu.getSubMenu() == null) {
-                            this.menus[1] = new UIMenu(0, 0, 80, 0, (String)null, Cons.MAIL_MENU);
+                            this.menus[1] = new UIMenu(0, 0, 80, 0, (String) null, Cons.MAIL_MENU);
                             NPCMenu.setSubMenu(this.menus[1]);
-                            this.baseForm.setAboutForm((UIForm)null);
+                            this.baseForm.setAboutForm((UIForm) null);
                         } else {
                             PCMail.initMailState();
                             switch (NPCMenu.getSubMenu().getCurrentPointer()) {
@@ -6855,19 +6912,19 @@ public void keyInNPCMenu() {
                         break;
                     case 21:
                         if (NPCMenu.getSubMenu() == null) {
-                            this.menus[1] = new UIMenu(0, 0, 80, 0, (String)null, Cons.MENU_DIVORCE);
+                            this.menus[1] = new UIMenu(0, 0, 80, 0, (String) null, Cons.MENU_DIVORCE);
                             NPCMenu.setSubMenu(this.menus[1]);
-                            this.baseForm.setAboutForm((UIForm)null);
+                            this.baseForm.setAboutForm((UIForm) null);
                         } else {
                             switch (NPCMenu.getSubMenu().getCurrentPointer()) {
                                 case 0:
                                     ni.send(1073742336);
-                                    NPCMenu.setSubMenu((UIMenu)null);
+                                    NPCMenu.setSubMenu((UIMenu) null);
                                     this.releaseUI();
                                     return;
                                 case 1:
                                     ni.send(1073742592);
-                                    NPCMenu.setSubMenu((UIMenu)null);
+                                    NPCMenu.setSubMenu((UIMenu) null);
                                     this.releaseUI();
                             }
                         }
@@ -6876,7 +6933,7 @@ public void keyInNPCMenu() {
                     case 23:
                     case 24:
                     case 25:
-                        this.baseForm.addAboutForm("waiting", "请稍候…", (byte)0, screenW - 30, 0);
+                        this.baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                         ni.send(1610612992);
                         break;
                     case 26:
@@ -6933,7 +6990,7 @@ public void keyInNPCMenu() {
                         if (NPCMenu.getMappingPointer() < 120) {
                             setMessage(this.baseForm, "此功能还未开放");
                         } else {
-                            this.baseForm.addAboutForm("waiting", "请稍候…", (byte)0, screenW - 30, 0);
+                            this.baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                             ni.send(1610612992);
                         }
                         break;
@@ -6949,13 +7006,13 @@ public void keyInNPCMenu() {
                         ni.send(163708928);
                         break;
                     case 31:
-                        this.initAwardForm((byte)31);
+                        this.initAwardForm((byte) 31);
                         break;
                     case 32:
-                        this.initAwardForm((byte)32);
+                        this.initAwardForm((byte) 32);
                         this.loginRewardUesrId();
 
-                        while(this.isGetingUserID) {
+                        while (this.isGetingUserID) {
                             try {
                                 Thread.sleep(100L);
                             } catch (Exception var3) {
@@ -6964,7 +7021,7 @@ public void keyInNPCMenu() {
 
                         return;
                     case 33:
-                        this.initAwardForm((byte)33);
+                        this.initAwardForm((byte) 33);
                         break;
                     case 36:
                     case 37:
@@ -7049,11 +7106,11 @@ public void keyInNPCMenu() {
                     case 74:
                         this.releaseUI();
                         ni.send(163578880);
-                        this.setGameState((byte)8);
-                        this.setOtherSubState((byte)3);
+                        this.setGameState((byte) 8);
+                        this.setOtherSubState((byte) 3);
                         break;
                     case 68:
-                        pet.addComposite((byte)0, (byte)9, Cons.COMPOSITE_SKILL[9], (byte)1, 0, 0, Cons.PET_SKILL_IMAGE_ID[9]);
+                        pet.addComposite((byte) 0, (byte) 9, Cons.COMPOSITE_SKILL[9], (byte) 1, 0, 0, Cons.PET_SKILL_IMAGE_ID[9]);
                         this.composeListTitle = "材料合成列表";
                         pet.setSkillIndexAndLevelIndex(0, 1);
                         pet.material = 1;
@@ -7090,7 +7147,7 @@ public void keyInNPCMenu() {
                         ni.send(285219328);
                         break;
                     case 120:
-                        for(byte i = 0; i < 2; ++i) {
+                        for (byte i = 0; i < 2; ++i) {
                             this.taskStuffId[i] = 0;
                             this.taskStuffImageId[i] = 0;
                             this.taskDetail[i] = null;
@@ -7099,15 +7156,15 @@ public void keyInNPCMenu() {
                         ni.send(162529280);
                 }
             } else if ("message".equals(this.baseForm.getSubForm().getName())) {
-                this.baseForm.setAboutForm((UIForm)null);
+                this.baseForm.setAboutForm((UIForm) null);
             } else if ("msg".equals(this.baseForm.getSubForm().getName())) {
-                this.baseForm.setAboutForm((UIForm)null);
+                this.baseForm.setAboutForm((UIForm) null);
             } else if ("arena".equals(this.baseForm.getSubForm().getName())) {
-                this.baseForm.setAboutForm((UIForm)null);
+                this.baseForm.setAboutForm((UIForm) null);
             } else if ("msge".equals(this.baseForm.getCurrentFocusForm().getName())) {
-                this.baseForm.setAboutForm((UIForm)null);
+                this.baseForm.setAboutForm((UIForm) null);
             } else if ("mss2".equals(this.baseForm.getCurrentFocusForm().getName())) {
-                this.baseForm.addAboutForm("waiting", "请稍候…", (byte)0, screenW - 30, 0);
+                this.baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                 ni.send(1879048704);
             }
 
@@ -11312,7 +11369,8 @@ public void keyInNPCMenu() {
 
     /**
      * 绘制NPC位置面板（寻径用）
-     * @param g 
+     *
+     * @param g
      */
     public void drawUINPCPos(Graphics g) {
         if (baseForm == null) {

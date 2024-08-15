@@ -95,6 +95,9 @@ public class GameObj {
     public boolean enCodeSuccess = false;
     public boolean canAttack = false;
     public byte skillIndex = 0;
+    /**
+     * 1-寻径 5-死亡
+     */
     public byte state;
     public byte curMotionAndSpecificIndex;
     public byte curFrameIndex;

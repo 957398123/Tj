@@ -1,8 +1,10 @@
 
 class AStarTree {
+    // 起点
 
     private int curCol;
     private int curRow;
+    // 终点
     private int aimCol;
     private int aimRow;
     public static final int ID_COL = 0;
@@ -11,8 +13,11 @@ class AStarTree {
     public static final int ID_H = 3;
     public static final int ID_FID = 4;
     public static final int ID_F = 5;
+    // 开放列表 [col, row, g(n), h(n), fid, f(n)]
     int[][] open;
+    // 关闭列表
     int[][] closed;
+    // 路径
     int[][] path;
     private static AStarTree instance = null;
 
@@ -20,14 +25,22 @@ class AStarTree {
         if (instance == null) {
             instance = new AStarTree();
         }
-
         return instance;
     }
 
     public AStarTree() {
     }
 
-    public final int[][] findPath(int curCol, int curRow, int aimCol, int aimRow) {
+    /**
+     * 查找路径
+     *
+     * @param curCol
+     * @param curRow
+     * @param aimCol
+     * @param aimRow
+     * @return
+     */
+    public int[][] findPath(int curCol, int curRow, int aimCol, int aimRow) {
         this.curCol = curCol;
         this.curRow = curRow;
         this.aimCol = aimCol;
@@ -35,136 +48,159 @@ class AStarTree {
         return startFind();
     }
 
-    private final int[][] startFind() {
-        this.path = (int[][]) null;
-        this.open = new int[2][];
-        int AG = this.getH(this.curCol, this.curRow);
-        this.open[0] = new int[0];
-        this.open[1] = new int[]{this.curCol, this.curRow, 0, AG, 0, AG};
-        this.closed = new int[0][];
-
-        while (this.open.length > 0) {
-            this.openAddClosed();
-            int fatherId = this.closed.length - 1;
-            if (this.closed[fatherId][0] == this.aimCol && this.closed[fatherId][1] == this.aimRow) {
-                this.getPath();
+    /**
+     * 开始查找路径
+     *
+     * @return
+     */
+    private int[][] startFind() {
+        // 初始化路径
+        path = null;
+        // 初始化openlist
+        open = new int[2][];
+        // 获取起点g-cost，启发式估计
+        int AG = getH(curCol, curRow);
+        open[0] = new int[0];
+        open[1] = new int[]{curCol, curRow, 0, AG, 0, AG};
+        // 初始化关闭列表
+        closed = new int[0][];
+        while (open.length > 0) {
+            // 找成本最低的格子从开放列表中删除，加入关闭列表，并且重新排序开放列表
+            openAddClosed();
+            // 这里以关闭列表索引作为标识，因为关闭列表是不会再排序的
+            int fatherId = closed.length - 1;
+            // 如果找到了终点
+            if (closed[fatherId][0] == aimCol && closed[fatherId][1] == aimRow) {
+                getPath();
                 break;
             }
-
-            this.makeStar(fatherId);
+            // 处理当前格子
+            makeStar(fatherId);
         }
-
-        this.open = (int[][]) null;
-        this.closed = (int[][]) null;
-        return this.path;
+        open = null;
+        closed = null;
+        return path;
     }
 
     private void getPath() {
-        this.path = new int[0][];
-        this.path = resizeArray(this.path, 0, 1);
+        path = new int[0][];
+        path = resizeArray(path, 0, 1);
 
-        for (this.path[this.path.length - 1] = this.closed[this.closed.length - 1]; this.path[0][2] != 0; this.path[0] = this.closed[this.path[1][4]]) {
-            this.path = resizeArray(this.path, 0, 1);
+        for (path[path.length - 1] = closed[closed.length - 1]; path[0][2] != 0; path[0] = closed[path[1][4]]) {
+            path = resizeArray(path, 0, 1);
         }
-
-        this.curCol = this.aimCol;
-        this.curRow = this.aimRow;
+        curCol = aimCol;
+        curRow = aimRow;
     }
 
     void makeStar(int id) {
-        int col = this.closed[id][0];
-        int row = this.closed[id][1];
+        // 获取当前位置
+        int col = closed[id][0];
+        int row = closed[id][1];
         boolean up = false;
         boolean down = false;
         boolean left = false;
         boolean right = false;
+        // 检查斜右上方是否可走
         int dCol = col;
         int dRow = row - 1;
-        if (dRow >= 0 && this.checkMap(dCol, dRow)) {
+        if (dRow >= 0 && checkMap(dCol, dRow)) {
             up = true;
-            if (this.checkOpen(dCol, dRow, id) && this.checkClosed(dCol, dRow)) {
-                this.addPoint(dCol, dRow, id);
+            if (checkOpen(dCol, dRow, id) && checkClosed(dCol, dRow)) {
+                addPoint(dCol, dRow, id);
             }
         }
-
+        // 检查斜左下方是否可走
         dCol = col;
         dRow = row + 1;
-        if (dRow < Map.currentTotalRow && this.checkMap(dCol, dRow)) {
+        if (dRow < Map.currentTotalRow && checkMap(dCol, dRow)) {
             down = true;
-            if (this.checkOpen(dCol, dRow, id) && this.checkClosed(dCol, dRow)) {
-                this.addPoint(dCol, dRow, id);
+            if (checkOpen(dCol, dRow, id) && checkClosed(dCol, dRow)) {
+                addPoint(dCol, dRow, id);
             }
         }
-
+        // 检查斜左上方是否可走
         dCol = col - 1;
         dRow = row;
         if (dCol >= 0 && this.checkMap(dCol, dRow)) {
             left = true;
-            if (this.checkOpen(dCol, dRow, id) && this.checkClosed(dCol, dRow)) {
-                this.addPoint(dCol, dRow, id);
+            if (checkOpen(dCol, dRow, id) && checkClosed(dCol, dRow)) {
+                addPoint(dCol, dRow, id);
             }
         }
-
+        // 检查斜右下方是否可走
         dCol = col + 1;
         dRow = row;
-        if (dCol < Map.currentTotalColumn && this.checkMap(dCol, dRow)) {
+        if (dCol < Map.currentTotalColumn && checkMap(dCol, dRow)) {
             right = true;
-            if (this.checkOpen(dCol, dRow, id) && this.checkClosed(dCol, dRow)) {
-                this.addPoint(dCol, dRow, id);
+            if (checkOpen(dCol, dRow, id) && checkClosed(dCol, dRow)) {
+                addPoint(dCol, dRow, id);
             }
         }
 
+        // 检测正上方是否可以行走
         dCol = col - 1;
         dRow = row - 1;
-        if (up && left && this.checkMap(dCol, dRow) && this.checkOpen(dCol, dRow, id) && this.checkClosed(dCol, dRow)) {
-            this.addPoint(dCol, dRow, id);
+        if (up && left && checkMap(dCol, dRow) && checkOpen(dCol, dRow, id) && checkClosed(dCol, dRow)) {
+            addPoint(dCol, dRow, id);
         }
-
+        // 检测正右方是否可以行走
         dCol = col + 1;
         dRow = row - 1;
-        if (up && right && this.checkMap(dCol, dRow) && this.checkOpen(dCol, dRow, id) && this.checkClosed(dCol, dRow)) {
-            this.addPoint(dCol, dRow, id);
+        if (up && right && checkMap(dCol, dRow) && checkOpen(dCol, dRow, id) && checkClosed(dCol, dRow)) {
+            addPoint(dCol, dRow, id);
         }
 
+        // 检测正下方是否可以行走
         dCol = col + 1;
         dRow = row + 1;
-        if (down && right && this.checkMap(dCol, dRow) && this.checkOpen(dCol, dRow, id) && this.checkClosed(dCol, dRow)) {
-            this.addPoint(dCol, dRow, id);
+        if (down && right && checkMap(dCol, dRow) && checkOpen(dCol, dRow, id) && checkClosed(dCol, dRow)) {
+            addPoint(dCol, dRow, id);
         }
-
+        // 检测正左方是否可以行走
         dCol = col - 1;
         dRow = row + 1;
-        if (down && left && this.checkMap(dCol, dRow) && this.checkOpen(dCol, dRow, id) && this.checkClosed(dCol, dRow)) {
-            this.addPoint(dCol, dRow, id);
+        if (down && left && checkMap(dCol, dRow) && checkOpen(dCol, dRow, id) && checkClosed(dCol, dRow)) {
+            addPoint(dCol, dRow, id);
         }
-
     }
 
+    /**
+     * 检测是否要更新open
+     * @param col
+     * @param row
+     * @param fid
+     * @return 
+     */
     boolean checkOpen(int col, int row, int fid) {
-        for (int i = this.open.length - 1; i > 0; --i) {
-            if (this.open[i][0] == col && this.open[i][1] == row) {
-                int tmpG = this.getG(col, row, fid);
-                if (tmpG < this.open[i][2]) {
-                    this.open[i][2] = tmpG;
-                    this.open[i][4] = fid;
-                    this.open[i][5] = this.open[i][2] + this.open[i][3];
-                    this.resetPointResize(i);
+        for (int i = open.length - 1; i > 0; --i) {
+            if (open[i][0] == col && open[i][1] == row) {
+                int tmpG = getG(col, row, fid);
+                // 如果当前成本更低，直接更新
+                if (tmpG < open[i][2]) {
+                    open[i][2] = tmpG;
+                    open[i][4] = fid;
+                    open[i][5] = open[i][2] + open[i][3];
+                    resetPointResize(i);
                 }
-
                 return false;
             }
         }
-
         return true;
     }
 
+    /**
+     * 检测是否在关闭列表
+     * @param col
+     * @param row
+     * @return 
+     */
     boolean checkClosed(int col, int row) {
-        for (int i = this.closed.length - 1; i >= 0; --i) {
-            if (this.closed[i][0] == col && this.closed[i][1] == row) {
+        for (int i = closed.length - 1; i >= 0; --i) {
+            if (closed[i][0] == col && closed[i][1] == row) {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -172,6 +208,12 @@ class AStarTree {
         return Map.getInstance().isFloor(col, row);
     }
 
+    /**
+     * 将当前加入开放列表，更新成本和排序
+     * @param col
+     * @param row
+     * @param fId 
+     */
     void addPoint(int col, int row, int fId) {
         this.open = resizeArray(this.open, this.open.length, 1);
         int g = this.getG(col, row, fId);
@@ -180,33 +222,33 @@ class AStarTree {
         this.addPointResize();
     }
 
-    private final void addPointResize() {
+    private void addPointResize() {
         this.resetPointResize(this.open.length - 1);
     }
 
-    private final void removePointResize() {
-        int last = this.open.length - 1;
-        this.open[1] = this.open[last];
-        this.open = resizeArray(this.open, last, -1);
-        last = this.open.length - 1;
-
+    /**
+     * 最小堆删除操作
+     */
+    private void removePointResize() {
+        int last = open.length - 1;
+        open[1] = open[last];
+        open = resizeArray(open, last, -1);
+        last = open.length - 1;
         int childMin;
         for (int head = 1; (head << 1) + 1 <= last; head = childMin) {
             int child1 = head << 1;
             int child2 = child1 + 1;
-            childMin = this.open[child1][5] < this.open[child2][5] ? child1 : child2;
-            if (this.open[head][5] <= this.open[childMin][5]) {
+            childMin = open[child1][5] < open[child2][5] ? child1 : child2;
+            if (open[head][5] <= open[childMin][5]) {
                 break;
             }
-
-            int[] tmp = this.open[head];
-            this.open[head] = this.open[childMin];
-            this.open[childMin] = tmp;
+            int[] tmp = open[head];
+            open[head] = open[childMin];
+            open[childMin] = tmp;
         }
-
     }
 
-    private final void resetPointResize(int i) {
+    private void resetPointResize(int i) {
         for (int last = i; last > 1; last >>= 1) {
             int half = last >> 1;
             if (this.open[last][5] >= this.open[half][5]) {
@@ -220,18 +262,40 @@ class AStarTree {
 
     }
 
-    private final int getG(int col, int row, int fId) {
-        int fx = this.closed[fId][0];
-        int fy = this.closed[fId][1];
-        int fg = this.closed[fId][2];
+    /**
+     * g(n)
+     * @param col
+     * @param row
+     * @param fId
+     * @return 
+     */
+    private int getG(int col, int row, int fId) {
+        int fx = closed[fId][0];
+        int fy = closed[fId][1];
+        int fg = closed[fId][2];
         return fx - col != 0 && fy - row != 0 ? fg + 14 : fg + 10;
     }
 
-    private final int getH(int col, int row) {
+    /**
+     * 获取启发式预估代价，这里是曼哈顿距离
+     *
+     * @param col
+     * @param row
+     * @return
+     */
+    private int getH(int col, int row) {
         return Math.abs(this.aimCol - col) * 10 + Math.abs(this.aimRow - row) * 10;
     }
 
-    public static final int[][] resizeArray(int[][] array, int index, int var) {
+    /**
+     * 重置数组大小
+     *
+     * @param array
+     * @param index
+     * @param var
+     * @return
+     */
+    public static int[][] resizeArray(int[][] array, int index, int var) {
         int len = array.length;
         int[][] tmp = array;
         array = new int[len + var][];
@@ -241,14 +305,16 @@ class AStarTree {
         } else {
             System.arraycopy(tmp, index - var, array, index, len + var - index);
         }
-
-        tmp = (int[][]) null;
+        tmp = null;
         return array;
     }
 
     private void openAddClosed() {
-        this.closed = resizeArray(this.closed, this.closed.length, 1);
-        this.closed[this.closed.length - 1] = this.open[1];
-        this.removePointResize();
+        // 扩容关闭列表1空间
+        closed = resizeArray(closed, closed.length, 1);
+        // 将当前遍历的格子（城北最低）加入关闭列表
+        closed[closed.length - 1] = open[1];
+        // 从开放列表中删除当前格子，并且排序
+        removePointResize();
     }
 }

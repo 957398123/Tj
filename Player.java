@@ -147,6 +147,9 @@ public class Player extends OtherPlayer {
     public int[][] path;
     public boolean findpath;
 
+    /**
+     * 玩家tick
+     */
     public void tick() {
         if (totalTime <= 100) {
             long l = System.currentTimeMillis() - st;

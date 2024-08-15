@@ -1,4 +1,6 @@
+
 public class OtherPlayer extends GameObj {
+
     public OtherPlayer() {
         type = 1;
     }
@@ -26,10 +28,10 @@ public class OtherPlayer extends GameObj {
         curMp = initIn.readInt();
         col = Map.getCurrentColumn(y, x);
         row = Map.getCurrentRow(y, x);
-        setDirection((byte)2);
+        setDirection((byte) 2);
         setAimRowAndColumn(row, col);
         Map.putInCell(col, row);
-        setState((byte)0);
+        setState((byte) 0);
         initEditorRes(imgID);
         if (imgID <= 3) {
             group = 1;
@@ -50,11 +52,13 @@ public class OtherPlayer extends GameObj {
     public void tick() {
         super.tick();
         switch (state) {
-            case 1:
+            case 1: {  // 寻径
                 findPath();
-            default:
+            }
+            default: {
                 nextFrame();
                 Map.putInCell(col, row);
+            }
         }
     }
 

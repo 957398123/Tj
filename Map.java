@@ -571,16 +571,18 @@ public class Map {
         MainCanvas.drawGroundback(g);
         g.setClip(5, 5, MainCanvas.screenW - 10, MainCanvas.screenH - 10);
         g.setColor(65280);
+        // 绘制地图连线
         drawLines(g);
-
+        // 绘制地图边框
         for(int i = 0; i < NUMBER_OF_PLACES; ++i) {
             g.setClip(5, 5, MainCanvas.screenW - 10, MainCanvas.screenH - 10);
             drawOne(g, i);
         }
-
         g.setClip(0, 0, MainCanvas.screenW, MainCanvas.screenH);
         drawBGofWorldMap(g, 2, 2, MainCanvas.screenW - 4, MainCanvas.screenH - 4);
+        // 绘制玩家图标
         drawNowPlace(g, currentWMapID);
+        // 绘制当前选中地图
         drawChoosed(g, choosedPlace);
         g.setColor(10255690);
         g.drawString("传送", 36 - 8, MainCanvas.screenH - 22, 20);
@@ -598,15 +600,21 @@ public class Map {
         MainCanvas.mImgUI[3].draw(g, x + w - 11, y + h - 12, 3, false);
     }
 
+    /**
+     * 绘制地图连线
+     * @param g 
+     */
     private static void drawLines(Graphics g) {
-        g.setColor(6431768);
-
+        g.setColor(0x00622418);
         for(int i = 0; i < regionLines.length; ++i) {
             g.fillRect(MAP_X + regionLines[i][0], MAP_Y + regionLines[i][1], regionLines[i][2], regionLines[i][3]);
         }
-
     }
 
+    /**
+     * 世界地图移动到对应方向最近的地图
+     * @param direction 1-上 2-下 3-左 4-右
+     */
     public static void goNearByPlace(byte direction) {
         --direction;
         int result;
@@ -620,11 +628,14 @@ public class Map {
         } else {
             result = choosedPlace;
         }
-
         autoChangeMapX(result);
         choosedPlace = result;
     }
 
+    /**
+     * 自动对齐世界地图，即过场动画
+     * @param index 地图id
+     */
     private static void autoChangeMapX(int index) {
         int x = regionPos[index][0];
         int y = regionPos[index][1];
@@ -736,25 +747,21 @@ public class Map {
     public void resetObjGameObjArray() {
     }
 
-    private static final void adjustWin(int sx, int sy) {
+    private static void adjustWin(int sx, int sy) {
         int bufWinIndex = bufWin.length - 1;
-
         int dx;
         for(dx = 0; dx < bufWinIndex; ++dx) {
             bufWin[dx][0] = bufWin[dx + 1][0];
             bufWin[dx][1] = bufWin[dx + 1][1];
         }
-
         bufWin[bufWinIndex][0] = sx;
         bufWin[bufWinIndex][1] = sy;
         dx = 0;
         int dy = 0;
-
         for(int i = 0; i <= bufWinIndex; ++i) {
             dx += bufWin[i][0];
             dy += bufWin[i][1];
         }
-
         dx /= bufWinIndex + 1;
         dy /= bufWinIndex + 1;
         MAP_X = dx + MAP_X >> 1;
@@ -811,10 +818,10 @@ public class Map {
         MAP_TX = 0;
         MAP_TY = 0;
         NUMBER_OF_PLACES = 0;
-        regionPos = (int[][])null;
-        regionProps = (int[][])null;
+        regionPos = null;
+        regionProps = null;
         regionName = null;
-        regionLines = (int[][])null;
+        regionLines = null;
         currentWMapID = 0;
         CHOOSED_PLACE_SIZE = 15;
         choosedPlace = -1;
