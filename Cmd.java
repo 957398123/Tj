@@ -95,7 +95,10 @@ public abstract class Cmd {
   
   public static final int C_MAINCANVAS_SERVER_LIST = 16778752;
   
-  public static final int C_TEST_CLIENT_ACTIVE = 16781056;
+  /**
+   * 心跳包
+   */
+  public static final int C_TEST_CLIENT_ACTIVE = 0x1000F00;
   
   public static final int C_ACTIVE_BREAK = 16780800;
   
@@ -331,6 +334,9 @@ public abstract class Cmd {
   
   public static final int C_PK_RESPONSION = 268435968;
   
+  /**
+   * 玩家移动
+   */
   public static final int C_PLAYER_MOVE = 0x2000100;
   
   /**
@@ -340,7 +346,10 @@ public abstract class Cmd {
   
   public static final int C_PLAYER_DEAD_TP = 33557504;
   
-  public static final int C_PLAYER_SKILLPRE = 33557760;
+  /**
+   * 释放技能
+   */
+  public static final int C_PLAYER_SKILLPRE = 0x2000D00;
   
   public static final int C_VALUEADDED_LIST = 1342177536;
   
@@ -609,9 +618,15 @@ public abstract class Cmd {
   
   public static final int S_MAINCANVAS_DEL_GAMEOBJ = 33555584;
   
-  public static final int S_MAINCANVAS_FIGHT = 33555840;
+  /**
+   * 更新状态
+   */
+  public static final int S_MAINCANVAS_FIGHT = 0x2000580;
   
-  public static final int S_MAINCANVAS_FIGHT_HPMP = 33556096;
+  /**
+   * 更新HP和MP
+   */
+  public static final int S_MAINCANVAS_FIGHT_HPMP = 0x2000680;
   
   public static final int S_MAINCANVAS_FIGHT_DEAD = 33556352;
   

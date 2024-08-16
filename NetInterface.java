@@ -215,7 +215,7 @@ public class NetInterface implements Runnable {
 
             if (System.currentTimeMillis() - this.startTime >= 30000L) {
                 Player.CDQ_T = MainCanvas.sendTick;
-                MainCanvas.ni.send(16781056);
+                MainCanvas.ni.send(Cmd.C_TEST_CLIENT_ACTIVE);
                 this.first = true;
             } else if (System.currentTimeMillis() - this.startTime < 0L) {
                 this.first = true;

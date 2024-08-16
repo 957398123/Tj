@@ -15,9 +15,13 @@ public class Player extends OtherPlayer {
     private int[][] projectionAcme = new int[8][2];
     public static final int FOLLOW_NO_AIM = -1;
     /**
-     * 寻径目标
+     * 是否寻径中
      */
     public int followAimID = -1;
+    /**
+     * 是否挂机中
+     */
+    public boolean hangup = false;
     public static byte[] userDefinedSkills;
     public static short itemCount = 0;
     public static boolean[] canUseSkill;
@@ -102,13 +106,17 @@ public class Player extends OtherPlayer {
         p.maxExp = xp;
     }
 
+    /**
+     * 设置游戏对象状态
+     * @param s 
+     */
     public void setState(byte s) {
         super.setState(s);
         if (state == 7) {
             short[] skillData = getSkillData(profession, skillIndex);
             castLength = skillData[4] * 1000;
             castTick = System.currentTimeMillis();
-            MainCanvas.ni.send(33557760);
+            MainCanvas.ni.send(Cmd.C_PLAYER_SKILLPRE);
         }
         if (state == 4) {
             if (hpStates.size() != 0) {
@@ -443,21 +451,31 @@ public class Player extends OtherPlayer {
         MainCanvas.contentPointer = 0;
     }
 
+    /**
+     * 普通攻击或者获取信息
+     *
+     * @return 是否处理成功
+     */
     private boolean pressNomalFightOrGetInfo() {
+        // 如果按了中间键或者5键
         if (MainCanvas.isKeyPress(14) || (Cons.use5 && MainCanvas.isKeyPress(5))) {
             MainCanvas.resetKey();
+            // 如果是在左菜单或者普通攻击CD中，返回
             if (MainCanvas.mc.getGameState() == 2 || normalAttackCount < 30) {
                 return false;
             }
+            // 如果未选取其他目标
             GameObj oldTarget = ObjManager.currentTarget;
-            if (ObjManager.currentTarget == this || ObjManager.currentTarget == null || ObjManager.currentTarget.type == 3 || (ObjManager.currentTarget.type == 1 && ObjManager.currentTarget.group == group && ObjManager.currentTarget != pkObj)) {
+            if (oldTarget == this || oldTarget == null) {
                 GameObj tmpTargetObj = getNomalFightObj(this, 25, 24);
                 if (tmpTargetObj != null) {
                     ObjManager.getInstance().setCurrentTarget(tmpTargetObj);
                 }
             }
             GameObj newTarget = ObjManager.currentTarget;
+            // 如果按了攻击键后是同一个目标
             if (newTarget == oldTarget) {
+                // 如果还是自己
                 if (newTarget == null || newTarget == this) {
                     skillIndex = 0;
                     setState((byte) 2);
@@ -624,6 +642,11 @@ public class Player extends OtherPlayer {
         return result;
     }
 
+    /**
+     * 处理方向按键
+     *
+     * @return
+     */
     private boolean pressArrowKey() {
         boolean isPressArrowKey = false;
         switch (state) {
@@ -762,11 +785,16 @@ public class Player extends OtherPlayer {
         return isPressArrowKey;
     }
 
+    /**
+     * 获取可以攻击对象
+     *
+     * @param obj
+     * @param w 宽
+     * @param h 高
+     * @return
+     */
     private GameObj getNomalFightObj(GameObj obj, int w, int h) {
         GameObj[] returnObj = new GameObj[ObjManager.vectorObj.size()];
-        for (int i = 0; i < returnObj.length; i++) {
-            returnObj[i] = null;
-        }
         int tmpX = obj.x;
         int tmpY = obj.y;
         int tmpNum = 0;
@@ -792,31 +820,26 @@ public class Player extends OtherPlayer {
                 tmpY -= h >> 1;
                 break;
         }
+        // 获取所有可以选择到的对象
         byte objIndex = 0;
         for (int j = 0; j < ObjManager.vectorObj.size(); j++) {
             GameObj tmpObj = (GameObj) ObjManager.vectorObj.elementAt(j);
             if (tmpObj != this) {
+                // 如果重叠
                 if (collidesREC(tmpObj.x - 1, tmpObj.y - 1, 2, 2, tmpX, tmpY, w, h)) {
                     returnObj[objIndex] = tmpObj;
-                    objIndex = (byte) (objIndex + 1);
+                    ++objIndex;
                 }
             }
         }
         GameObj selectReturnObj = null;
         for (int k = 0; k < returnObj.length; k++) {
-            if (returnObj[k] != null) {
-                if (selectReturnObj == null) {
+            obj = returnObj[k];
+            if (obj != null) {
+                // 如果是怪物或者不同阵营
+                if ((obj.type == 2 || obj.group != group) && obj != this) {
                     selectReturnObj = returnObj[k];
-                } else {
-                    if ((returnObj[k]).type == 2 || (returnObj[k]).group != group) {
-                        selectReturnObj = returnObj[k];
-                        break;
-                    }
-                    if ((returnObj[k]).type == 3 && selectReturnObj.type != 2) {
-                        selectReturnObj = returnObj[k];
-                    } else if ((selectReturnObj.x - obj.x) * (selectReturnObj.x - obj.x) + (selectReturnObj.y - obj.y) * (selectReturnObj.y - obj.y) > ((returnObj[k]).x - obj.x) * ((returnObj[k]).x - obj.x) + ((returnObj[k]).y - obj.y) * ((returnObj[k]).y - obj.y) && selectReturnObj.type != 3) {
-                        selectReturnObj = returnObj[k];
-                    }
+                    break;
                 }
             }
         }
@@ -1442,7 +1465,8 @@ public class Player extends OtherPlayer {
 
     /**
      * 更新技能CD
-     * @param player 
+     *
+     * @param player
      */
     private void skillCDAdd(GameObj player) {
         for (int i = 0; i < userDefinedSkills.length; i++) {

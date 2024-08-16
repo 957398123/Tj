@@ -601,9 +601,10 @@ public class PCGameObj {
                 byteArray.writeInt((Player.getInstance()).y);
                 break;
             }
-            case 33557760:
-                byteArray.writeByte((Player.getInstance()).skillIndex);
+            case Cmd.C_PLAYER_SKILLPRE: {
+                byteArray.writeByte(player.skillIndex);
                 break;
+            }
             case 268435712:
                 byteArray.writeInt(targetId);
                 break;

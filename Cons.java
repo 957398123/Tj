@@ -861,6 +861,9 @@ public abstract class Cons {
   
   public static boolean use2468 = false;
   
+  /**
+   * 是否使用5键为攻击键
+   */
   public static boolean use5 = false;
   
   public static boolean cmwap = false;

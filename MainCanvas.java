@@ -4147,7 +4147,10 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
             } else if (actionInForm(cmd)) {
             }
         } else if ("hangup".equals(fouceFormName)) {  // 处理挂机选项
-            if (isKeyPress(17) || isKeyPress(18)) {
+            if (isKeyPress(14) || isKeyPress(17) || isKeyPress(18)) {
+                if(isKeyPress(14) || isKeyPress(17)){
+                    Player.getInstance().hangup = true;
+                }
                 baseForm.setAboutForm(null);
                 // 设置游戏中
                 setGameState((byte) 0);

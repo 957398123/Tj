@@ -65,6 +65,9 @@ public class GameObj {
      */
     public byte type;
     public byte imgID;
+    /**
+     * 阵营标识
+     */
     public byte group;
     public short accuracy;
     public byte level;

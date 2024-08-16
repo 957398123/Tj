@@ -368,11 +368,12 @@ public class PCLogin {
                 execDataOut.writeByte(MainCanvas.playerAdd[3]);
                 execDataOut.writeUTF(MainCanvas.playerAddName);
                 break;
-            case 16781056:
+            case Cmd.C_TEST_CLIENT_ACTIVE: {
                 execDataOut.writeShort(MainCanvas.sendTick);
                 MainCanvas.sendTick = 0;
                 Player.CDQ_T = 0;
                 break;
+            }
             case 16779264:
                 execDataOut.writeByte(MainCanvas.byCurEncryptID);
                 break;
