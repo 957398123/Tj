@@ -19,7 +19,6 @@ public class OtherPlayer extends GameObj {
         if (currentImgID == -1) {
             setCurWeapon(tempWeapon);
         }
-
         level = initIn.readByte();
         name = initIn.readUTF();
         maxHp = initIn.readInt();

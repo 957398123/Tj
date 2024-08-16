@@ -875,6 +875,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     }
 
     public void tick() {
+        ExpandAbility.startTick();
         countTick++;
         if (countTick >= 600) {
             countTick = 0;
@@ -902,6 +903,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 break;
             }
         }
+        ExpandAbility.endTick();
     }
 
     /**
@@ -1038,7 +1040,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         }
         processOvertime(g, false);
     }
-
+    
     /**
      * 处理键盘按下
      *
@@ -1112,6 +1114,18 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
             }
         }
         keyFlagIm = keyFlag;
+        handKeyPress();
+    }
+    
+    public void setKeyValue(int keyCode){
+        keyFlagIm = keyFlag = keyCode;
+    }
+    
+    public void restKeyFlag(){
+        this.keyFlag = 0;
+    }
+    
+    public void handKeyPress(){
         switch (getState()) {
             case 4: {
                 keyInMenu();
@@ -3209,13 +3223,13 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                     resetKey();
                     break;
                 }
-                if (isKeyPress(15)) {
+                if (isKeyPress(15)) {  // 快速聊天
                     releaseUI();
                     setGameState((byte) 7);
                     resetKey();
                     break;
                 }
-                if (isKeyPress(9)) {
+                if (isKeyPress(9)) { // 9键盘
                     switch (Cons.nineShort) {
                         case 0:
                             Cons.use2468 = !Cons.use2468;
@@ -4149,7 +4163,9 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         } else if ("hangup".equals(fouceFormName)) {  // 处理挂机选项
             if (isKeyPress(14) || isKeyPress(17) || isKeyPress(18)) {
                 if(isKeyPress(14) || isKeyPress(17)){
-                    Player.getInstance().hangup = true;
+                    Player.getInstance().isHangup = true;
+                }else {
+                    Player.getInstance().isHangup = false;
                 }
                 baseForm.setAboutForm(null);
                 // 设置游戏中

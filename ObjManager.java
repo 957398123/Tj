@@ -113,7 +113,7 @@ public class ObjManager {
      * @param size
      * @return 
      */
-    private static boolean canBeSetTarget(GameObj target, int size) {
+    public static boolean canBeSetTarget(GameObj target, int size) {
         return (target.x - Map.currentWindowX >= 0 && target.x - Map.currentWindowX <= MainCanvas.screenW && target.y - Map.currentWindowY >= 0 && target.y - Map.currentWindowY <= MainCanvas.screenH
                 && Math.abs(target.x - (Player.getInstance()).x)
                 * Math.abs(target.x - (Player.getInstance()).x)

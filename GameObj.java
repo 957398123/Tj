@@ -64,9 +64,16 @@ public class GameObj {
      * 1-其它玩家 2-怪物 3-NPC 4-玩家本身 5-其它物品
      */
     public byte type;
+    /**
+     * 职业类型
+     * 0 1 2 3 group1 3-医师
+     * 4 5 6 7 group2
+     */
     public byte imgID;
     /**
      * 阵营标识
+     * 1-天人界
+     * 2-修罗界
      */
     public byte group;
     public short accuracy;

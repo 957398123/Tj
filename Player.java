@@ -21,7 +21,7 @@ public class Player extends OtherPlayer {
     /**
      * 是否挂机中
      */
-    public boolean hangup = false;
+    public boolean isHangup = false;
     public static byte[] userDefinedSkills;
     public static short itemCount = 0;
     public static boolean[] canUseSkill;
@@ -786,14 +786,14 @@ public class Player extends OtherPlayer {
     }
 
     /**
-     * 获取可以攻击对象
+     * 获取指定范围内可以攻击对象
      *
      * @param obj
      * @param w 宽
      * @param h 高
      * @return
      */
-    private GameObj getNomalFightObj(GameObj obj, int w, int h) {
+    public GameObj getNomalFightObj(GameObj obj, int w, int h) {
         GameObj[] returnObj = new GameObj[ObjManager.vectorObj.size()];
         int tmpX = obj.x;
         int tmpY = obj.y;
