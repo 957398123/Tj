@@ -145,39 +145,43 @@ public class ExpandAbility {
         }
         // 判断当前是不是挂机中
         if (player.isHangup) {
-            // 判断当前是否选中地方单位
-            ObjManager manager = ObjManager.getInstance();
-            GameObj target = ObjManager.currentTarget;
-            // 如果当前未选中，或者不是可攻击对象
-            if (target == null || !Util.isEnemy(player, target)) {
-                // 选择最近的可攻击对象作为目标
-                target = player.getNearFightObj();
-            }
-            if (target != null && target != player) {
-                // 判断当前对象是否可以被选择
-                if (ObjManager.canBeSetTarget(target, 80)) {
-                    // 设置为当前选择对象
-                    manager.setCurrentTarget(target);
-                    // 如果是寻径中，取消寻径
-                    if (player.isFollow()) {
-                        player.resetAimID();
-                    }
-                    // 根据职业类型路由到对应的挂机逻辑
-                    int occu = player.imgID;
-                    switch (occu) {
-                        case 3: {
-                            battleApothecary(player, target);
-                            break;
-                        }
-                    }
-                } else {  // 设置寻径，这里必须实时寻径
-                    player.setAimColRow(target.col, target.row);
+            if (player.state != 5) {  // 玩家没有死亡
+                // 判断当前是否选中地方单位
+                ObjManager manager = ObjManager.getInstance();
+                GameObj target = ObjManager.currentTarget;
+                // 如果当前未选中，或者不是可攻击对象
+                if (target == null || !Util.isEnemy(player, target)) {
+                    // 选择最近的可攻击对象作为目标
+                    target = player.getNearFightObj();
                 }
+                if (target != null && target != player) {
+                    // 判断当前对象是否可以被选择
+                    if (ObjManager.canBeSetTarget(target, 80)) {
+                        // 设置为当前选择对象
+                        manager.setCurrentTarget(target);
+                        // 如果是寻径中，取消寻径
+                        if (player.isFollow()) {
+                            player.resetAimID();
+                        }
+                        // 如果选取的角色死亡
+                        if (target.state == 5) {
+                            player.setState((byte) 0);
+                        }
+                        // 根据职业类型路由到对应的挂机逻辑
+                        int occu = player.imgID;
+                        switch (occu) {
+                            case 3: {  // 医生
+                                battleApothecary(player, target);
+                                break;
+                            }
+                        }
+                    } else {  // 设置寻径，这里必须实时寻径
+                        player.setAimColRow(target.col, target.row);
+                    }
+                }
+            }else {  //按#键复活
+                keyPressed(NUM_11);
             }
-        }
-        // 判断beforePlayerTick是否经过了3秒
-        if (curTime - lastPlayTick >= 3000) {
-            lastPlayTick = 0;
         }
     }
 
@@ -291,17 +295,23 @@ public class ExpandAbility {
 
     /**
      * 医生战斗逻辑
+     *
      * @param player
-     * @param target 
+     * @param target
      */
     public static void battleApothecary(Player player, GameObj target) {
         // 首先判断是否已经攻击目标，或者角色至少有一半蓝，才继续打怪
-        if(target.curHp > 0 && target.curHp < target.maxHp || (player.curHp > (player.maxHp / 2) && player.curMp > (player.maxMp / 2))){
+        if (target.curHp > 0 && target.curHp < target.maxHp || (player.curHp > (player.maxHp / 2) && player.curMp > (player.maxMp / 10) * 7)) {
             // 判断是否可以释放技能，这里注意吟唱技能时没有内置CD的
-            if(player.canCastSkill(1)){
+            if (player.canCastSkill(1)) {
                 player.oldSkillTargetId = target.objID;
                 player.skillIndex = 1;
                 player.setState((byte) 7);
+            }else{ // 普通攻击
+                // 这里直接瞬移
+                player.setObjPosition(target.col, target.row);
+                // 按普通攻击键
+                keyPressed(SOFT_OK);
             }
         }
     }

@@ -891,7 +891,7 @@ public class Player extends OtherPlayer {
         int dis = 0;
         for (int i = 0; i < ObjManager.vectorObj.size(); i++) {
             GameObj tmpObj = (GameObj) ObjManager.vectorObj.elementAt(i);
-            if (tmpObj != this && Util.isEnemy(tmpObj, this)) {
+            if (tmpObj != this && tmpObj.type == 2) {
                 int dCol = col - tmpObj.col;
                 int dRow = row - tmpObj.row;
                 int tDis = dCol * dCol + dRow * dRow;
