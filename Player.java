@@ -8,6 +8,9 @@ public class Player extends OtherPlayer {
     public byte collectionCount = 0;
     public boolean isSendMoveMsg = true;
     private static final byte COLLECTION_MAX = 20;
+    /**
+     * 技能CD时间
+     */
     public static long[] skillCD = new long[15];
     public static byte normalAttackCount = 30;
     private static final byte NORMAL_ATTACK_COUNT_MAX = 30;
@@ -22,6 +25,9 @@ public class Player extends OtherPlayer {
      * 是否挂机中
      */
     public boolean isHangup = false;
+    /**
+     * 用户自定义技能键
+     */
     public static byte[] userDefinedSkills;
     public static short itemCount = 0;
     public static boolean[] canUseSkill;
@@ -108,7 +114,8 @@ public class Player extends OtherPlayer {
 
     /**
      * 设置游戏对象状态
-     * @param s 
+     *
+     * @param s
      */
     public void setState(byte s) {
         super.setState(s);
@@ -148,7 +155,7 @@ public class Player extends OtherPlayer {
     private byte arrowTick;
     int[][] canMoveIndex;
     int[][] stepIndex;
-    private int oldSkillTargetId;
+    public int oldSkillTargetId;
     /**
      * 玩家寻径路径（A星算法）
      */
@@ -168,7 +175,7 @@ public class Player extends OtherPlayer {
             if (l < 92L) {
                 cheatTime++;
                 if (cheatTime > 60) {
-                    MainCanvas.mc.aMidlet.exitMIDlet();
+                    //MainCanvas.mc.aMidlet.exitMIDlet();
                 }
             }
         }
@@ -202,6 +209,7 @@ public class Player extends OtherPlayer {
         // 更新buffer
         tickBuffer();
         tickHpChangeVectorPop();
+        // 更新技能CD
         checkSkill();
         // 未实现
         follow();
@@ -258,6 +266,7 @@ public class Player extends OtherPlayer {
                     MainCanvas.ni.send(Cmd.C_PLAYER_FIGHT_START);
                     break;
                 }
+                // 如果施法时间到了
                 if (System.currentTimeMillis() - castTick >= castLength) {
                     if (!checkSkillObj(this, ObjManager.currentTarget, skillIndex, true)) {
                         castTick = 0L;
@@ -306,6 +315,9 @@ public class Player extends OtherPlayer {
         }
     }
 
+    /**
+     * 释放技能时按键处理
+     */
     private void keyInSkillPre() {
         if (MainCanvas.isPop) {
             pressPop();
@@ -319,6 +331,9 @@ public class Player extends OtherPlayer {
         }
     }
 
+    /**
+     * 普通攻击时按键处理
+     */
     private void keyInNomalFight() {
         if (MainCanvas.isPop) {
             pressPop();
@@ -330,11 +345,14 @@ public class Player extends OtherPlayer {
         if (pressArrowKey()) {
             return;
         }
-        if (pressSkillKey()) {
+        if (pressSkillKey()) {  // 如果普通攻击时，按了技能键
             setState((byte) 7);
         }
     }
 
+    /**
+     * 移动时按键处理
+     */
     private void keyInMove() {
         if (MainCanvas.isPop) {
             pressPop();
@@ -351,7 +369,7 @@ public class Player extends OtherPlayer {
             path = null;
             return;
         }
-        if (pressSkillKey()) {
+        if (pressSkillKey()) {  // 如果按了技能键
             setState((byte) 7);
         } else if (path != null && path.length > 0) {
             setState((byte) 1);
@@ -360,6 +378,9 @@ public class Player extends OtherPlayer {
         }
     }
 
+    /**
+     * 静止时按键处理
+     */
     private void keyInStand() {
         if (MainCanvas.isPop) {
             pressPop();
@@ -378,6 +399,9 @@ public class Player extends OtherPlayer {
         }
     }
 
+    /**
+     * 弹窗
+     */
     private void pressPop() {
         if (MainCanvas.isKeyPress(12) && MainCanvas.strPop.length > 1 && MainCanvas.popPointer != MainCanvas.strPop.length - 1) {
             MainCanvas.popPointer = (byte) (MainCanvas.popPointer + 1);
@@ -435,7 +459,7 @@ public class Player extends OtherPlayer {
                         MainCanvas.mc.setNPCSubState((byte) 100);
                         MainCanvas.waitCnt = 0;
                         MainCanvas.mc.releaseUI();
-                        MainCanvas.ni.send(150994944);
+                        MainCanvas.ni.send(Cmd.C_NPC_LIST);
                     }
                     disposePop();
                     return;
@@ -444,6 +468,9 @@ public class Player extends OtherPlayer {
         }
     }
 
+    /**
+     * 销毁弹框
+     */
     private void disposePop() {
         MainCanvas.bindPopState = 0;
         MainCanvas.isPop = false;
@@ -486,7 +513,7 @@ public class Player extends OtherPlayer {
                     MainCanvas.mc.setNPCSubState((byte) 100);
                     MainCanvas.waitCnt = 0;
                     MainCanvas.mc.releaseUI();
-                    MainCanvas.ni.send(150994944);
+                    MainCanvas.ni.send(Cmd.C_NPC_LIST);
                 } else if (newTarget.type == 2) {
                     skillIndex = 0;
                     if (theSecendCheck(this, 25, 24, ObjManager.currentTarget)) {
@@ -529,10 +556,16 @@ public class Player extends OtherPlayer {
         return false;
     }
 
+    /**
+     * 处理技能按键
+     *
+     * @return
+     */
     private boolean pressSkillKey() {
         if (MainCanvas.isMenu) {
             return false;
         }
+        // 如果正在释放技能中，忽略按键
         if (state == 7) {
             return false;
         }
@@ -564,6 +597,7 @@ public class Player extends OtherPlayer {
         }
         if (result) {
             if (canUseSkill[currentPressKey]) {
+                // 如果快捷键是物品
                 if (userDefinedSkills[currentPressKey] > 14) {
                     skillIndex = -1;
                     for (int i = 0; i < userDefinedSkills.length; i++) {
@@ -577,7 +611,7 @@ public class Player extends OtherPlayer {
                         MainCanvas.sound.playSound(1, 1, true);
                     }
                     MainCanvas.useStuffPlace = 0;
-                    MainCanvas.ni.send(67110144);
+                    MainCanvas.ni.send(Cmd.C_STUFF_USE_STUFF);
                     return false;
                 }
                 skillIndex = userDefinedSkills[currentPressKey];
@@ -602,14 +636,14 @@ public class Player extends OtherPlayer {
                             MainCanvas.mc.setNPCSubState((byte) 100);
                             MainCanvas.waitCnt = 0;
                             MainCanvas.mc.releaseUI();
-                            MainCanvas.ni.send(150994944);
-                        } else if (newTarget.type == 2) {
+                            MainCanvas.ni.send(Cmd.C_NPC_LIST);
+                        } else if (newTarget.type == 2) {  // 怪物
                             skillIndex = 0;
                             if (theSecendCheck(this, 25, 24, ObjManager.currentTarget)) {
                                 MainCanvas.ni.send(Cmd.C_PLAYER_FIGHT_START);
                             }
                             setState((byte) 2);
-                        } else if (newTarget.type == 1) {
+                        } else if (newTarget.type == 1) {  // 其他玩家
                             if (newTarget.group == group) {
                                 if (pkObj == newTarget) {
                                     skillIndex = 0;
@@ -845,6 +879,37 @@ public class Player extends OtherPlayer {
         }
         return selectReturnObj;
     }
+    
+    /**
+     * 获取最近可攻击的单位
+     * @return 
+     */
+    public GameObj getNearFightObj(){
+        GameObj fightObj = null;
+        // 获取所有可以选择到的对象
+        int fightIndex = -1;
+        int dis = 0;
+        for (int i = 0; i < ObjManager.vectorObj.size(); i++) {
+            GameObj tmpObj = (GameObj) ObjManager.vectorObj.elementAt(i);
+            if (tmpObj != this && Util.isEnemy(tmpObj, this)) {
+                int dCol = col - tmpObj.col;
+                int dRow = row - tmpObj.row;
+                int tDis = dCol * dCol + dRow * dRow;
+                if(dis != 0){
+                    if(tDis < dis){
+                        dis = tDis;
+                        fightIndex = i;
+                    }
+                }else {
+                    dis = tDis;
+                }
+            }
+        }
+        if(fightIndex > -1){
+            fightObj = (GameObj)ObjManager.vectorObj.elementAt(fightIndex);
+        }
+        return fightObj;
+    }
 
     /**
      * 碰撞检测
@@ -907,15 +972,6 @@ public class Player extends OtherPlayer {
                 && ay + ah > by;
     }
 
-    private static boolean inDistance(int playerX, int playerY, int targetX, int targetY, int distance) {
-        int dis = (playerX - targetX) * (playerX - targetX);
-        dis += (playerY - targetY) * (playerY - targetY);
-        int dis2 = distance * distance;
-        if (dis < dis2) {
-            return true;
-        }
-        return false;
-    }
 
     public byte getSkillIndex(int index) {
         byte result = -1;
@@ -928,6 +984,14 @@ public class Player extends OtherPlayer {
         return result;
     }
 
+    /**
+     * 检测是否能够对目标释放技能
+     *
+     * @param skillIndex 技能索引
+     * @param caster 释放者
+     * @param target 目标
+     * @return
+     */
     public boolean canUseSkill(int skillIndex, GameObj caster, GameObj target) {
         if (skillIndex == 0) {
             if (normalAttackCount < 30) {
@@ -988,7 +1052,45 @@ public class Player extends OtherPlayer {
         }
         return null;
     }
+    
+    /**
+     * 检测指定技能是否可以释放
+     * @return 
+     */
+    public boolean canCastSkill(int skillIndex){
+        // 默认CD时间
+        int dTime = 300;
+        boolean result = false;
+        // 首先获取技能数据
+        short[] skillData = getSkillData(profession, skillIndex);
+        // 如果没有在施法状态，并且技能存在
+        if(state != 7 && state != 5 && skillData != null){
+            // 检测是否有足够的MP
+            if(getSkillMP(skillIndex) <= curMp){
+                // 检测施法CD
+                short sCastLength = skillData[4];
+                short sCastCD = skillData[5];
+                long curTime = System.currentTimeMillis();
+                if(sCastLength != 0){  // 吟唱类技能
+                    if((curTime - castTick) > (castLength + dTime)){
+                        result = true;
+                    }
+                }else if(sCastCD != 0){
+                    if((curTime - skillCD[skillIndex]) > sCastCD*1000 + dTime){
+                        result = true;
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
+    /**
+     * 能否对当前选择目标使用技能
+     *
+     * @param skillIndex
+     * @return
+     */
     public boolean canUseSkill(int skillIndex) {
         return canUseSkill(skillIndex, this, ObjManager.currentTarget);
     }
@@ -1005,21 +1107,24 @@ public class Player extends OtherPlayer {
                     canUseSkill[i] = false;
                 } else {
                     switch (userDefinedSkills[i]) {
-                        case 15:
+                        case 15: {
                             if (PCSkillTree.canUseRed) {
                                 canUseSkill[i] = true;
                             }
                             break;
-                        case 16:
+                        }
+                        case 16: {
                             if (PCSkillTree.canUseBlue) {
                                 canUseSkill[i] = true;
                             }
                             break;
-                        case 17:
+                        }
+                        case 17: {
                             if (PCSkillTree.canUsePurple) {
                                 canUseSkill[i] = true;
                             }
                             break;
+                        }
                     }
                 }
             }
@@ -1050,6 +1155,10 @@ public class Player extends OtherPlayer {
         g.fillRect(startX + 2, 222, len + 1, 2);
     }
 
+    /**
+     * 绘制技能释放条
+     * @param g 
+     */
     public void drawSkillPre(Graphics g) {
         if (state != 7) {
             return;
@@ -1486,7 +1595,13 @@ public class Player extends OtherPlayer {
         }
     }
 
-    private boolean skillCDCheck(GameObj player, int skillIndex) {
+    /**
+     * 获取当前技能是否CD中
+     *
+     * @param player
+     * @param skillIndex 技能索引
+     */
+    public boolean skillCDCheck(GameObj player, int skillIndex) {
         if (skillIndex > 14 || skillIndex < 0) {
             return false;
         }
@@ -1517,6 +1632,14 @@ public class Player extends OtherPlayer {
         }
     }
 
+    /**
+     * 检测是否可以选择目标对象为施法目标
+     * @param player
+     * @param target
+     * @param skillIndex
+     * @param ifcheckoldtarget
+     * @return 
+     */
     private boolean checkSkillObj(GameObj player, GameObj target, int skillIndex, boolean ifcheckoldtarget) {
         short[] skillData = getSkillData(player.profession, skillIndex);
         short skillType = skillData[1];

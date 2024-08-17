@@ -227,6 +227,12 @@ public class UIGameRun {
       g.fillRect(-2 + XP_BAR_W / 10 * i, XP_START_Y + 1, 1, 3); 
   }
   
+  /**
+   * 绘制技能条
+   * @param g
+   * @param dy
+   * @param drawCanUse 
+   */
   public static void drawShortcutBar(Graphics g, int dy, boolean drawCanUse) {
     int barH = 21;
     if (Cons.showShortCut || MainCanvas.mc

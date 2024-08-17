@@ -23,6 +23,9 @@ public class UISkillTree extends UIComponent {
     private Vector arrows = new Vector();
     private Enumeration e = null;
     private MImage arrowImg = null;
+    /**
+     * 当前选中技能
+     */
     private Skill focusSkill = null;
     private MImage skillImg = null;
     private short skillPointNum = 0;

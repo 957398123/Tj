@@ -1749,9 +1749,10 @@ public class PCNPC {
             case 163643392:
                 execDataOut.writeByte(battleGroundIndex);
                 break;
-            case 150994944:
+            case Cmd.C_NPC_LIST: {
                 execDataOut.writeInt(MainCanvas.mc.NPCIndex);
                 break;
+            }
             case 152043520:
                 execDataOut.writeInt(MainCanvas.mc.NPCIndex);
                 break;

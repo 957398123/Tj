@@ -109,6 +109,9 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     public static byte oldGameState_menuTaskState = 0;
     public static byte gameState_menuFriendState = 0;
     public static byte oldGameState_menuFriendState = 0;
+    /**
+     * 游戏中设置菜单状态
+     */
     public static byte gameState_menuSetupState = 0;
     public static byte oldGameState_menuSetupState = 0;
     public static byte gameState_NPCMailState = 0;
@@ -1040,7 +1043,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         }
         processOvertime(g, false);
     }
-    
+
     /**
      * 处理键盘按下
      *
@@ -1116,16 +1119,16 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         keyFlagIm = keyFlag;
         handKeyPress();
     }
-    
-    public void setKeyValue(int keyCode){
+
+    public void setKeyValue(int keyCode) {
         keyFlagIm = keyFlag = keyCode;
     }
-    
-    public void restKeyFlag(){
+
+    public void restKeyFlag() {
         this.keyFlag = 0;
     }
-    
-    public void handKeyPress(){
+
+    public void handKeyPress() {
         switch (getState()) {
             case 4: {
                 keyInMenu();
@@ -1359,7 +1362,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
             }
             if (localChatChannel == 8) {
                 useStuffPlace = 1;
-                ni.send(67110144);
+                ni.send(Cmd.C_STUFF_USE_STUFF);
             }
             ni.send(83886336);
             String tempString = chatText.getString();
@@ -3218,7 +3221,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         setNPCSubState((byte) 100);
                         waitCnt = 0;
                         releaseUI();
-                        ni.send(150994944);
+                        ni.send(Cmd.C_NPC_LIST);
                     }
                     resetKey();
                     break;
@@ -4162,9 +4165,9 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
             }
         } else if ("hangup".equals(fouceFormName)) {  // 处理挂机选项
             if (isKeyPress(14) || isKeyPress(17) || isKeyPress(18)) {
-                if(isKeyPress(14) || isKeyPress(17)){
+                if (isKeyPress(14) || isKeyPress(17)) {
                     Player.getInstance().isHangup = true;
-                }else {
+                } else {
                     Player.getInstance().isHangup = false;
                 }
                 baseForm.setAboutForm(null);
@@ -4376,7 +4379,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                                         dramatisPackage.setSubMenu((UIMenu) null);
                                         baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                                         useStuffPlace = 1;
-                                        ni.send(67110144);
+                                        ni.send(Cmd.C_STUFF_USE_STUFF);
                                         break;
                                     }
                                     if (oneIndex == 325) {
@@ -4419,7 +4422,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                                         dramatisPackage.setSubMenu((UIMenu) null);
                                         baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                                         useStuffPlace = 1;
-                                        ni.send(67110144);
+                                        ni.send(Cmd.C_STUFF_USE_STUFF);
                                         break;
                                     }
                                     if (oneIndex == 348) {
@@ -4436,7 +4439,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                                         dramatisPackage.setSubMenu((UIMenu) null);
                                         baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                                         useStuffPlace = 1;
-                                        ni.send(67110144);
+                                        ni.send(Cmd.C_STUFF_USE_STUFF);
                                         break;
                                     }
                                     dramatisPackage.setSubMenu((UIMenu) null);
@@ -5023,7 +5026,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         if (pet.material != 1) {
                             ni.send(50334976);
                         } else {
-                            ni.send(150994944);
+                            ni.send(Cmd.C_NPC_LIST);
                         }
                         waitCnt = 0;
                         break;
@@ -5343,7 +5346,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 if (transferstatusQuest && !questNoPlace) {
                     questStoneStatus = 0;
                     baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
-                    ni.send(67110144);
+                    ni.send(Cmd.C_STUFF_USE_STUFF);
                 }
                 questNoPlace = false;
                 baseForm.setAboutForm((UIForm) null);
@@ -5362,21 +5365,21 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         questTargetID = taskId[tables[0].getCurrentPointer()];
                         questTargetPlace = 1;
                         questStoneStatus = 1;
-                        ni.send(67110144);
+                        ni.send(Cmd.C_STUFF_USE_STUFF);
                         break;
                     case 3:
                         baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                         questTargetID = taskId[tables[0].getCurrentPointer()];
                         questTargetPlace = 3;
                         questStoneStatus = 1;
-                        ni.send(67110144);
+                        ni.send(Cmd.C_STUFF_USE_STUFF);
                         break;
                     case 4:
                         baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
                         questTargetID = taskId[tables[0].getCurrentPointer()];
                         questTargetPlace = 2;
                         questStoneStatus = 1;
-                        ni.send(67110144);
+                        ni.send(Cmd.C_STUFF_USE_STUFF);
                         break;
                 }
             }
@@ -5590,7 +5593,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                                 if (transferstatus) {
                                     friendTransferTarget = friendListID[tables[0].getCurrentPointer()];
                                     baseForm.addAboutForm("waiting", "请稍候…", (byte) 0, screenW - 30, 0);
-                                    ni.send(67110144);
+                                    ni.send(Cmd.C_STUFF_USE_STUFF);
                                 }
                                 break;
                         }
@@ -6619,13 +6622,16 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         }
     }
 
+    /**
+     * 右菜单栏-设置
+     */
     public void keyInSetup() {
         if (baseForm == null) {
             return;
         }
         UIComponent cmd = baseForm.getCommand();
         switch (getUISetupState()) {
-            case 0:
+            case 0: {  // 方向键位
                 if (isKeyPress(17)) {
                     byte[] data = new byte[2];
                     data[0] = rbs[0].getChooseItemIndex();
@@ -6644,7 +6650,151 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 }
                 if (actionInForm(cmd));
                 break;
-            case 3:
+            }
+            case 1: {   // 设置技能
+                if (baseForm == null) {
+                    return;
+                }
+                cmd = baseForm.getCommand();
+                if (isKeyPress(17)) {  // 清空技能条
+                    if (baseForm.getCurrentFocusForm() == baseForm) {
+                        baseForm.addAboutForm("confirm", "要清空所有快捷键吗?", (byte) 2, 160, 30);
+                        break;
+                    }
+                    if ("confirm".equals(baseForm.getCurrentFocusForm().getName())) {
+                        for (int i = 0; i < 9; i++) {
+                            Player.defineKey(i, -1);
+                        }
+                        baseForm.setAboutForm((UIForm) null);
+                    }
+                    break;
+                }
+                if (isKeyPress(18)) {  // 按了返回，保存技能条
+                    if (baseForm.getCurrentFocusForm() == baseForm) {
+                        Util.saveRecord(Player.userDefinedSkills, (Player.getInstance()).objID + "sc");
+                        if (skillSub) {
+                            setRightMenuSubState(20);
+                            skillSub = false;
+                            releaseUI();
+                            break;
+                        }
+                        setGameState((byte) 1);
+                        setRightMenuSubState(-1);
+                        releaseUI();
+                        break;
+                    }
+                    if ("confirm".equals(baseForm.getCurrentFocusForm().getName())) {
+                        baseForm.setAboutForm((UIForm) null);
+                    }
+                    break;
+                }
+                // 
+                if (actionInForm(cmd)) {
+                    if (cmd == tree) {
+                        if ((Player.getInstance()).profession > 0 && tree.getCurrSkillId() < 15 && tree.getCurrSkillId() > 0) {
+                            StringBuffer bs = new StringBuffer();
+                            String skillName = "";
+                            switch ((Player.getInstance()).profession) {
+                                case 1:
+                                    skillName = Cons.STR_SWORDMAN_SKILL[tree.getCurrSkillId()];
+                                    bs.append(skillName);
+                                    if (tree.getCurrSkillLevel() == 0) {
+                                        bs.append(" 未学 ");
+                                        break;
+                                    }
+                                    bs.append(" " + tree.getCurrSkillLevel() + "级");
+                                    break;
+                                case 2:
+                                    skillName = Cons.STR_TAOIST_SKILL[tree.getCurrSkillId()];
+                                    bs.append(skillName);
+                                    if (tree.getCurrSkillLevel() == 0) {
+                                        bs.append(" 未学 ");
+                                        break;
+                                    }
+                                    bs.append(" " + tree.getCurrSkillLevel() + "级");
+                                    break;
+                                case 3: {  // 医生技能
+                                    skillName = Cons.STR_APOTHECARY_SKILL[tree.getCurrSkillId()];
+                                    bs.append(skillName);
+                                    if (tree.getCurrSkillLevel() == 0) {
+                                        bs.append(" 未学 ");
+                                        break;
+                                    }
+                                    bs.append(" " + tree.getCurrSkillLevel() + "级");
+                                    break;
+                                }
+                                case 4:
+                                    skillName = Cons.STR_ASSASSIN_SKILL[tree.getCurrSkillId()];
+                                    bs.append(skillName);
+                                    if (tree.getCurrSkillLevel() == 0) {
+                                        bs.append(" 未学 ");
+                                        break;
+                                    }
+                                    bs.append(" " + tree.getCurrSkillLevel() + "级");
+                                    break;
+                            }
+                            labels[0].setStr(bs.toString());
+                            int color = 65280;
+                            if (tree.getCurrSkillLevel() == 0) {
+                                color = 16711680;
+                            }
+                            labels[0].setGreenColor(color);
+                            labels[0].setGreenChars(skillName.length() + 1, skillName.length() + 3);
+                            labels[1].setStr(Cons.SKILL_DETAIL[(Player.getInstance()).profession - 1][tree.getCurrSkillId()][0] + Cons.SKILL_DETAIL[(Player.getInstance()).profession - 1][tree.getCurrSkillId()][1]);
+                            break;
+                        }
+                        if (tree.getCurrSkillId() >= 15) {
+                            labels[0].setStr(Cons.SKILL_DETAIL_EX[tree.getCurrSkillId() - 15][0]);
+                            labels[1].setStr(Cons.SKILL_DETAIL_EX[tree.getCurrSkillId() - 15][1]);
+                            break;
+                        }
+                        labels[0].setStr(Cons.SKILL_DETAIL_EX[3][0]);
+                        labels[1].setStr(Cons.SKILL_DETAIL_EX[3][1]);
+                    }
+                    break;
+                }
+                // 处理方向键
+                if (cmd == tree) {
+                    for (byte i = 1; i <= 9; i = (byte) (i + 1)) {
+                        if (isKeyPress(KEYS[i])) {
+                            if (tree.isCurrSkillValid()) {
+                                Player.defineKey(i, tree.getCurrSkillId());
+                            }
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            case 2: {  // 显示设置
+                if (isKeyPress(17)) {
+                    byte[] temp = new byte[Cons.STR_CHAT_OPERATION.length];
+                    for (int i = 0; i < temp.length; i++) {
+                        temp[i] = rbs[i].getChooseItemIndex();
+                    }
+                    Cons.showOtherPlayer = (rbs[0] != null && rbs[0].getChooseItemIndex() == 0);
+                    Cons.showName = (rbs[1] != null && rbs[1].getChooseItemIndex() == 0);
+                    Cons.newPlayerHelp = (rbs[2] != null && rbs[2].getChooseItemIndex() == 0);
+                    Cons.showEffect = false;
+                    Cons.channelOption = (short) (Cons.channelOption & 0x1F);
+                    Cons.channelOption = (short) (Cons.channelOption | rbs[3].getChooseItemIndex() << 5);
+                    Util.saveRecord(temp, (Player.getInstance()).name + "op");
+                    setGameState((byte) 1);
+                    setRightMenuSubState(-1);
+                    releaseUI();
+                    ni.send(83886592);
+                    break;
+                }
+                if (isKeyPress(18)) {
+                    setGameState((byte) 1);
+                    setRightMenuSubState(-1);
+                    releaseUI();
+                    break;
+                }
+                if (actionInForm(cmd));
+                break;
+            }
+            case 3: {  // 游戏设置
                 if (isKeyPress(17)) {
                     Cons.channelOption = (short) (Cons.channelOption >> 5);
                     Cons.channelOption = (short) (Cons.channelOption << 5);
@@ -6704,144 +6854,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 }
                 if (actionInForm(cmd));
                 break;
-            case 2:
-                if (isKeyPress(17)) {
-                    byte[] temp = new byte[Cons.STR_CHAT_OPERATION.length];
-                    for (int i = 0; i < temp.length; i++) {
-                        temp[i] = rbs[i].getChooseItemIndex();
-                    }
-                    Cons.showOtherPlayer = (rbs[0] != null && rbs[0].getChooseItemIndex() == 0);
-                    Cons.showName = (rbs[1] != null && rbs[1].getChooseItemIndex() == 0);
-                    Cons.newPlayerHelp = (rbs[2] != null && rbs[2].getChooseItemIndex() == 0);
-                    Cons.showEffect = false;
-                    Cons.channelOption = (short) (Cons.channelOption & 0x1F);
-                    Cons.channelOption = (short) (Cons.channelOption | rbs[3].getChooseItemIndex() << 5);
-                    Util.saveRecord(temp, (Player.getInstance()).name + "op");
-                    setGameState((byte) 1);
-                    setRightMenuSubState(-1);
-                    releaseUI();
-                    ni.send(83886592);
-                    break;
-                }
-                if (isKeyPress(18)) {
-                    setGameState((byte) 1);
-                    setRightMenuSubState(-1);
-                    releaseUI();
-                    break;
-                }
-                if (actionInForm(cmd));
-                break;
-            case 1:
-                if (baseForm == null) {
-                    return;
-                }
-                cmd = baseForm.getCommand();
-                if (isKeyPress(17)) {
-                    if (baseForm.getCurrentFocusForm() == baseForm) {
-                        baseForm.addAboutForm("confirm", "要清空所有快捷键吗?", (byte) 2, 160, 30);
-                        break;
-                    }
-                    if ("confirm".equals(baseForm.getCurrentFocusForm().getName())) {
-                        for (int i = 0; i < 9; i++) {
-                            Player.defineKey(i, -1);
-                        }
-                        baseForm.setAboutForm((UIForm) null);
-                    }
-                    break;
-                }
-                if (isKeyPress(18)) {
-                    if (baseForm.getCurrentFocusForm() == baseForm) {
-                        Util.saveRecord(Player.userDefinedSkills, (Player.getInstance()).objID + "sc");
-                        if (skillSub) {
-                            setRightMenuSubState(20);
-                            skillSub = false;
-                            releaseUI();
-                            break;
-                        }
-                        setGameState((byte) 1);
-                        setRightMenuSubState(-1);
-                        releaseUI();
-                        break;
-                    }
-                    if ("confirm".equals(baseForm.getCurrentFocusForm().getName())) {
-                        baseForm.setAboutForm((UIForm) null);
-                    }
-                    break;
-                }
-                if (actionInForm(cmd)) {
-                    if (cmd == tree) {
-                        if ((Player.getInstance()).profession > 0 && tree.getCurrSkillId() < 15 && tree.getCurrSkillId() > 0) {
-                            StringBuffer bs = new StringBuffer();
-                            String skillName = "";
-                            switch ((Player.getInstance()).profession) {
-                                case 1:
-                                    skillName = Cons.STR_SWORDMAN_SKILL[tree.getCurrSkillId()];
-                                    bs.append(skillName);
-                                    if (tree.getCurrSkillLevel() == 0) {
-                                        bs.append(" 未学 ");
-                                        break;
-                                    }
-                                    bs.append(" " + tree.getCurrSkillLevel() + "级");
-                                    break;
-                                case 2:
-                                    skillName = Cons.STR_TAOIST_SKILL[tree.getCurrSkillId()];
-                                    bs.append(skillName);
-                                    if (tree.getCurrSkillLevel() == 0) {
-                                        bs.append(" 未学 ");
-                                        break;
-                                    }
-                                    bs.append(" " + tree.getCurrSkillLevel() + "级");
-                                    break;
-                                case 3:
-                                    skillName = Cons.STR_APOTHECARY_SKILL[tree.getCurrSkillId()];
-                                    bs.append(skillName);
-                                    if (tree.getCurrSkillLevel() == 0) {
-                                        bs.append(" 未学 ");
-                                        break;
-                                    }
-                                    bs.append(" " + tree.getCurrSkillLevel() + "级");
-                                    break;
-                                case 4:
-                                    skillName = Cons.STR_ASSASSIN_SKILL[tree.getCurrSkillId()];
-                                    bs.append(skillName);
-                                    if (tree.getCurrSkillLevel() == 0) {
-                                        bs.append(" 未学 ");
-                                        break;
-                                    }
-                                    bs.append(" " + tree.getCurrSkillLevel() + "级");
-                                    break;
-                            }
-                            labels[0].setStr(bs.toString());
-                            int color = 65280;
-                            if (tree.getCurrSkillLevel() == 0) {
-                                color = 16711680;
-                            }
-                            labels[0].setGreenColor(color);
-                            labels[0].setGreenChars(skillName.length() + 1, skillName.length() + 3);
-                            labels[1].setStr(Cons.SKILL_DETAIL[(Player.getInstance()).profession - 1][tree.getCurrSkillId()][0] + Cons.SKILL_DETAIL[(Player.getInstance()).profession - 1][tree.getCurrSkillId()][1]);
-                            break;
-                        }
-                        if (tree.getCurrSkillId() >= 15) {
-                            labels[0].setStr(Cons.SKILL_DETAIL_EX[tree.getCurrSkillId() - 15][0]);
-                            labels[1].setStr(Cons.SKILL_DETAIL_EX[tree.getCurrSkillId() - 15][1]);
-                            break;
-                        }
-                        labels[0].setStr(Cons.SKILL_DETAIL_EX[3][0]);
-                        labels[1].setStr(Cons.SKILL_DETAIL_EX[3][1]);
-                    }
-                    break;
-                }
-                if (cmd == tree) {
-                    for (byte i = 1; i <= 9; i = (byte) (i + 1)) {
-                        if (isKeyPress(KEYS[i])) {
-                            if (tree.isCurrSkillValid()) {
-                                Player.defineKey(i, tree.getCurrSkillId());
-                            }
-                            break;
-                        }
-                    }
-                }
-                break;
+            }
         }
     }
 
@@ -11519,7 +11532,6 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         Map.getInstance().adjustWindow(player.x, player.y);
         ObjManager.getInstance().tick();
     }
-    
     public static MImage[] mImgUI = new MImage[40];
     public static MImage mImgStuff;
     public static MImage mImgSelect;
@@ -11584,11 +11596,16 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     public void loadResource() {
     }
 
+    /**
+     * 处理UI组件的按键逻辑
+     * @param cmd
+     * @return 
+     */
     public boolean actionInForm(UIComponent cmd) {
         if (cmd == null) {
             return false;
         }
-        if (isKeyPress(13)) {
+        if (isKeyPress(13)) { // 下
             baseForm.setDirectionFocus(13);
             for (byte i = 0; i < 8; i = (byte) (i + 1)) {
                 if (baseForm.getCommand() == rims[i]) {
@@ -11608,7 +11625,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
             }
             return true;
         }
-        if (isKeyPress(11)) {
+        if (isKeyPress(11)) {   // 上
             baseForm.setDirectionFocus(11);
             for (byte i = 0; i < 8; i = (byte) (i + 1)) {
                 if (baseForm.getCommand() == rims[i]) {
@@ -11628,7 +11645,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
             }
             return true;
         }
-        if (isKeyPress(10)) {
+        if (isKeyPress(10)) {   // 左
             baseForm.setDirectionFocus(10);
             for (byte i = 0; i < 8; i = (byte) (i + 1)) {
                 if (baseForm.getCommand() == rims[i]) {
@@ -11658,7 +11675,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
             }
             return true;
         }
-        if (isKeyPress(12)) {
+        if (isKeyPress(12)) {  // 右
             baseForm.setDirectionFocus(12);
             for (byte i = 0; i < 8; i = (byte) (i + 1)) {
                 if (baseForm.getCommand() == rims[i]) {

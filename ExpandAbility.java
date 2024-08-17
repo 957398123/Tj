@@ -151,7 +151,7 @@ public class ExpandAbility {
             // 如果当前未选中，或者不是可攻击对象
             if (target == null || !Util.isEnemy(player, target)) {
                 // 选择最近的可攻击对象作为目标
-                target = player.getNomalFightObj(player, 200, 200);
+                target = player.getNearFightObj();
             }
             if (target != null && target != player) {
                 // 判断当前对象是否可以被选择
@@ -166,18 +166,17 @@ public class ExpandAbility {
                     int occu = player.imgID;
                     switch (occu) {
                         case 3: {
-                            doctorBattle(player);
+                            battleApothecary(player, target);
                             break;
                         }
                     }
-                } else if (!player.isFollow()) {  // 设置寻径
+                } else {  // 设置寻径，这里必须实时寻径
                     player.setAimColRow(target.col, target.row);
                 }
             }
         }
         // 判断beforePlayerTick是否经过了3秒
         if (curTime - lastPlayTick >= 3000) {
-            System.out.println("beforePlayerTick=3s");
             lastPlayTick = 0;
         }
     }
@@ -290,7 +289,20 @@ public class ExpandAbility {
         return runTime;
     }
 
-    public static void doctorBattle(Player player) {
-        
+    /**
+     * 医生战斗逻辑
+     * @param player
+     * @param target 
+     */
+    public static void battleApothecary(Player player, GameObj target) {
+        // 首先判断是否已经攻击目标，或者角色至少有一半蓝，才继续打怪
+        if(target.curHp > 0 && target.curHp < target.maxHp || (player.curHp > (player.maxHp / 2) && player.curMp > (player.maxMp / 2))){
+            // 判断是否可以释放技能，这里注意吟唱技能时没有内置CD的
+            if(player.canCastSkill(1)){
+                player.oldSkillTargetId = target.objID;
+                player.skillIndex = 1;
+                player.setState((byte) 7);
+            }
+        }
     }
 }

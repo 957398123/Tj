@@ -1873,7 +1873,7 @@ public class PCPackage {
                     execDataOut.writeByte(MainCanvas.mc.equipPlace);
                     execDataOut.writeByte(MainCanvas.dramatisPackage.stuffPlace);
                     break;
-                case 67110144:
+                case Cmd.C_STUFF_USE_STUFF: {
                     execDataOut.writeByte(MainCanvas.useStuffPlace);
                     if (MainCanvas.useStuffPlace == 0) {
                         execDataOut.writeShort(itemID);
@@ -1891,6 +1891,7 @@ public class PCPackage {
                         execDataOut.writeByte(MainCanvas.mc.questStoneStatus);
                     }
                     break;
+                }
                 case 67110400:
                     execDataOut.writeByte(MainCanvas.mc.equipPlace);
                     break;

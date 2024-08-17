@@ -81,8 +81,14 @@ public class GameObj {
     public int buffer;
     public int maxHp;
     public int maxMp;
+    /**
+     * 当前Hp
+     */
     public int curHp;
     public int lastHp;
+    /**
+     * 当前Mp
+     */
     public int curMp;
     public Stack hpStates;
     public int[][] hpChange = new int[3][3];
@@ -104,9 +110,12 @@ public class GameObj {
     public boolean deCodeSuccess = false;
     public boolean enCodeSuccess = false;
     public boolean canAttack = false;
+    /**
+     * 0是没有释放技能
+     */
     public byte skillIndex = 0;
     /**
-     * 0-静止 1-移动 2-普通攻击 4- 5-死亡 7-释放技能
+     * 0-静止 1-移动 2-普通攻击 4- 5-死亡 7-准备释放技能 8-释放技能中
      */
     public byte state;
     public byte curMotionAndSpecificIndex;
@@ -595,6 +604,12 @@ public class GameObj {
         return Util.isEnemy(this, target);
     }
 
+    /**
+     * 设置对目标使用技能动画
+     * @param targetGameObj
+     * @param skillIndex
+     * @param direction 
+     */
     public void useSkill(GameObj targetGameObj, int skillIndex, byte direction) {
         if (targetGameObj != null) {
             if (skillIndex == 0) {
@@ -2086,6 +2101,24 @@ public class GameObj {
         if (title == null) {
             title = "";
         }
-
+    }
+    
+    /**
+     * 判断游戏对象距离
+     * @param playerX
+     * @param playerY
+     * @param targetX
+     * @param targetY
+     * @param distance
+     * @return 
+     */
+    public static boolean inDistance(int playerX, int playerY, int targetX, int targetY, int distance) {
+        int dis = (playerX - targetX) * (playerX - targetX);
+        dis += (playerY - targetY) * (playerY - targetY);
+        int dis2 = distance * distance;
+        if (dis < dis2) {
+            return true;
+        }
+        return false;
     }
 }

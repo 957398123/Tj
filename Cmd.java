@@ -138,7 +138,10 @@ public abstract class Cmd {
   
   public static final int C_STUFF_EQUIP_STUFF = 67109888;
   
-  public static final int C_STUFF_USE_STUFF = 67110144;
+  /**
+   * 使用物品
+   */
+  public static final int C_STUFF_USE_STUFF = 0x4000500;
   
   public static final int C_STUFF_REMOVE_STUFF = 67110400;
   
@@ -206,7 +209,7 @@ public abstract class Cmd {
   
   public static final int C_BUFINESS_SEE_OTHER_STUFF = 218105088;
   
-  public static final int C_NPC_LIST = 150994944;
+  public static final int C_NPC_LIST = 0x9000000;
   
   public static final int C_NPC_TRADE = 152043520;
   
