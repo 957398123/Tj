@@ -889,20 +889,16 @@ public class Player extends OtherPlayer {
     public GameObj getNearFightObj() {
         GameObj fightObj = null;
         // 获取所有可以选择到的对象
-        int dis = 0;
+        int dis = Integer.MAX_VALUE;
         for (int i = 0; i < ObjManager.vectorObj.size(); i++) {
             GameObj tmpObj = (GameObj) ObjManager.vectorObj.elementAt(i);
             if (tmpObj != null && Util.isEnemy(this, tmpObj)) {
                 int dCol = col - tmpObj.col;
                 int dRow = row - tmpObj.row;
                 int tDis = dCol * dCol + dRow * dRow;
-                if (dis != 0) {
-                    if (tDis < dis) {
-                        dis = tDis;
-                        fightObj = tmpObj;
-                    }
-                } else {
+                if (tDis < dis) {
                     dis = tDis;
+                    fightObj = tmpObj;
                 }
             }
         }
@@ -1838,11 +1834,11 @@ public class Player extends OtherPlayer {
     public boolean isBeAttack() {
         return curHp - lastHp < 0;
     }
-    
+
     public void useSkill(GameObj targetGameObj, int skillIndex, byte direction) {
-        if(skillType == 2 || skillType == 5){
+        if (skillType == 2 || skillType == 5) {
             super.useSkill(this, skillIndex, direction);
-        }else{
+        } else {
             super.useSkill(targetGameObj, skillIndex, direction);
         }
     }
