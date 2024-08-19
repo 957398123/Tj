@@ -85,12 +85,18 @@ public class GameObj {
      * 当前Hp
      */
     public int curHp;
+    /**
+     * 玩家上次Hp
+     */
     public int lastHp;
     /**
      * 当前Mp
      */
     public int curMp;
     public Stack hpStates;
+    /**
+     * 收到的血量变化
+     */
     public int[][] hpChange = new int[3][3];
     public static final short HP_CHANGE_COUNT = 6;
     public byte action = 0;
@@ -293,7 +299,7 @@ public class GameObj {
 
     public void setEventState(byte _state) {
     }
-
+    
     public void setState(byte s) {
         if (state != s) {
             int i;
@@ -517,7 +523,7 @@ public class GameObj {
             lastHp = curHp;
             return;
         }
-
+        // 血量发生变化，提示被攻击
         if (curHp - lastHp < 0) {
             hpStates.push(new Integer(-hpChg));
             if (type == 4 && MainCanvas.mc.baseForm != null) {
@@ -562,6 +568,10 @@ public class GameObj {
 
     }
 
+    /**
+     * 设置当前攻击对象
+     * @param obj 
+     */
     public void setPkObj(GameObj obj) {
         pkObj = obj;
     }
@@ -1156,10 +1166,11 @@ public class GameObj {
         if (selectTick >= SELECT_SEQUENCE.length * 2) {
             selectTick = 0;
         }
+        Player player = Player.getInstance();
         // 动画索引
         int frameIndex = SELECT_SEQUENCE[selectTick >> 1];
         // 判断与玩家是否敌对关系
-        if (Util.isEnemy(this, Player.getInstance())) {
+        if (Util.isEnemy(this, player)) {
             frameIndex += 3;
         }
         int tx = x - Map.currentWindowX - 13;
@@ -1168,8 +1179,8 @@ public class GameObj {
         if (selArcTick >= SELARC_WH.length) {
             selArcTick = 0;
         }
-        if (Util.isEnemy(this, Player.getInstance()) && type != 2 && type != 5 && (pkObj == null || pkObj != null && pkObj != Player.getInstance())) {
-            int no = Math.abs(Player.getInstance().level - level);
+        if (Util.isEnemy(this, Player.getInstance()) && type != 2 && type != 5 && (pkObj == null || pkObj != null && pkObj != player)) {
+            int no = Math.abs(player.level - level);
             if (no <= 5) {
                 g.setColor(16711680);
             }
@@ -1523,16 +1534,20 @@ public class GameObj {
 
     }
 
+    /**
+     * 绘制所有的血量更改
+     * @param g 
+     */
     public void drawHpChange(Graphics g) {
         if (Cons.showNum) {
             int i = 0;
-
+            Player player = Player.getInstance();
             for(int kk = hpChange.length; i < kk; ++i) {
                 if (hpChange[i][0] == 0) {
                     int[] tmpNum = null;
                     int tmp = hpChange[i][2];
                     if (tmp == 0) {
-                        if (type != 4 && (this != ObjManager.currentTarget || type == 2 || this == Player.getInstance().pkObj)) {
+                        if (type != 4 && (this != ObjManager.currentTarget || type == 2 || this == player.pkObj)) {
                             MainCanvas.mImgUI[37].draw(g, x - Map.currentWindowX - 13, y - Map.currentWindowY - hpChange[i][1] * 2 - 25, 1, false);
                         } else {
                             MainCanvas.mImgUI[37].draw(g, x - Map.currentWindowX - 13, y - Map.currentWindowY - hpChange[i][1] * 2 - 25, 0, false);
@@ -1559,7 +1574,7 @@ public class GameObj {
                         }
 
                         MImage tmpImg = null;
-                        if (type == 4 || this == ObjManager.currentTarget && type != 2 && Player.getInstance().pkObj != null && this != Player.getInstance().pkObj) {
+                        if (type == 4 || this == ObjManager.currentTarget && type != 2 && player.pkObj != null && this != player.pkObj) {
                             if (hpChange[i][2] > 0) {
                                 tmpImg = MainCanvas.imgGreenNum;
                             } else {
@@ -1586,7 +1601,6 @@ public class GameObj {
                 }
             }
         }
-
     }
 
     private void drawPES(Graphics g) {
@@ -2121,4 +2135,13 @@ public class GameObj {
         }
         return false;
     }
+    
+    public int getPercentageHp(){
+        return (curHp / maxHp) * 100;
+    }
+    
+    public int getPercentageMp(){
+        return (curMp / maxMp) * 100;
+    }
+    
 }

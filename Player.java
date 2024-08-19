@@ -879,34 +879,31 @@ public class Player extends OtherPlayer {
         }
         return selectReturnObj;
     }
-    
+
     /**
      * 获取最近可攻击的单位
-     * @return 
+     *
+     * @return
      */
-    public GameObj getNearFightObj(){
+    public GameObj getNearFightObj() {
         GameObj fightObj = null;
         // 获取所有可以选择到的对象
-        int fightIndex = -1;
         int dis = 0;
         for (int i = 0; i < ObjManager.vectorObj.size(); i++) {
             GameObj tmpObj = (GameObj) ObjManager.vectorObj.elementAt(i);
-            if (tmpObj != this && tmpObj.type == 2) {
+            if (Util.isEnemy(tmpObj, this)) {
                 int dCol = col - tmpObj.col;
                 int dRow = row - tmpObj.row;
                 int tDis = dCol * dCol + dRow * dRow;
-                if(dis != 0){
-                    if(tDis < dis){
+                if (dis != 0) {
+                    if (tDis < dis) {
                         dis = tDis;
-                        fightIndex = i;
+                        fightObj = tmpObj;
                     }
-                }else {
+                } else {
                     dis = tDis;
                 }
             }
-        }
-        if(fightIndex > -1){
-            fightObj = (GameObj)ObjManager.vectorObj.elementAt(fightIndex);
         }
         return fightObj;
     }
@@ -971,7 +968,6 @@ public class Player extends OtherPlayer {
                 && ay < by + bh
                 && ay + ah > by;
     }
-
 
     public byte getSkillIndex(int index) {
         byte result = -1;
@@ -1052,31 +1048,67 @@ public class Player extends OtherPlayer {
         }
         return null;
     }
+
+    /**
+     * 对指定对象释放技能
+     * @param obj
+     * @param skillIndex 
+     */
+    public void caskSkill(GameObj obj, int skillIndex) {
+        oldSkillTargetId = obj.objID;
+        this.skillIndex = (byte)skillIndex;
+        setState((byte) 7);
+    }
     
     /**
-     * 检测指定技能是否可以释放
+     * 是否能够普通攻击到指定对象
      * @return 
      */
-    public boolean canCastSkill(int skillIndex){
+    public boolean canNormalAttack(GameObj obj){
+        return theSecendCheck(this, 25, 24, obj);
+    }
+    
+    /**
+     * 普通攻击是否CD中
+     * @return 
+     */
+    public boolean isNormalAttackCD(){
+        return normalAttackCount < 30;
+    }
+    
+    /**
+     * 玩家普通攻击
+     */
+    public void normalAttck(){
+        MainCanvas.ni.send(Cmd.C_PLAYER_FIGHT_START);
+        setState((byte) 2);
+    }
+
+    /**
+     * 检测指定技能是否可以释放
+     *
+     * @return
+     */
+    public boolean canCastSkill(int skillIndex) {
         // 默认CD时间
         int dTime = 300;
         boolean result = false;
         // 首先获取技能数据
         short[] skillData = getSkillData(profession, skillIndex);
         // 如果没有在施法状态，并且技能存在
-        if(state != 7 && state != 5 && skillData != null){
+        if (state != 7 && state != 5 && skillData != null) {
             // 检测是否有足够的MP
-            if(getSkillMP(skillIndex) <= curMp){
+            if (getSkillMP(skillIndex) <= curMp) {
                 // 检测施法CD
                 short sCastLength = skillData[4];
                 short sCastCD = skillData[5];
                 long curTime = System.currentTimeMillis();
-                if(sCastLength != 0){  // 吟唱类技能
-                    if((curTime - castTick) > (castLength + dTime)){
+                if (sCastLength != 0) {  // 吟唱类技能
+                    if ((curTime - castTick) > (castLength + dTime)) {
                         result = true;
                     }
-                }else if(sCastCD != 0){
-                    if((curTime - skillCD[skillIndex]) > sCastCD*1000 + dTime){
+                } else if (sCastCD != 0) {
+                    if ((curTime - skillCD[skillIndex]) > sCastCD * 1000 + dTime) {
                         result = true;
                     }
                 }
@@ -1157,7 +1189,8 @@ public class Player extends OtherPlayer {
 
     /**
      * 绘制技能释放条
-     * @param g 
+     *
+     * @param g
      */
     public void drawSkillPre(Graphics g) {
         if (state != 7) {
@@ -1634,11 +1667,12 @@ public class Player extends OtherPlayer {
 
     /**
      * 检测是否可以选择目标对象为施法目标
+     *
      * @param player
      * @param target
      * @param skillIndex
      * @param ifcheckoldtarget
-     * @return 
+     * @return
      */
     private boolean checkSkillObj(GameObj player, GameObj target, int skillIndex, boolean ifcheckoldtarget) {
         short[] skillData = getSkillData(player.profession, skillIndex);
@@ -1801,5 +1835,9 @@ public class Player extends OtherPlayer {
 
     public byte getDirection() {
         return direction;
+    }
+
+    public boolean isBeAttack() {
+        return curHp - lastHp < 0;
     }
 }

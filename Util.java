@@ -671,6 +671,12 @@ public abstract class Util {
         return num > 0 ? num : -num;
     }
 
+    /**
+     * 判断两个游戏对象是否敌对关系
+     * @param obj
+     * @param target
+     * @return 
+     */
     public static boolean isEnemy(GameObj obj, GameObj target) {
         if (obj == null) {
             return false;

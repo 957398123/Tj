@@ -3,6 +3,9 @@ public class PCGameObj {
 
     public static boolean isPK = false;
     public static byte isRock = 0;
+    /**
+     * 玩家PK对象
+     */
     public static GameObj PEObj = null;
     public static int targetId = 0;
     public static byte pkResponse = 0;
@@ -533,19 +536,19 @@ public class PCGameObj {
                 UIGameRun.releaseChat();
                 break;
             }
-            case 0x10000380: {
+            case 0x10000380: {  // 开始切磋
                 PCChat.addChatScreen((byte) 7, "切磋开始了");
                 isPK = true;
                 UIGameRun.releaseChat();
                 pkObjID_1 = byteArray.readInt();
                 pkObjID_2 = byteArray.readInt();
-                if (pkObjID_1 == (Player.getInstance()).objID) {
+                if (pkObjID_1 == player.objID) {
                     PEObj = ObjManager.getObj(pkObjID_2);
                 } else {
                     PEObj = ObjManager.getObj(pkObjID_1);
                 }
-                Player.getInstance().setPkObj(PEObj);
-                PEObj.setPkObj(Player.getInstance());
+                player.setPkObj(PEObj);
+                PEObj.setPkObj(player);
                 ObjManager.getInstance().setCurrentTarget(PEObj);
                 break;
             }
@@ -555,9 +558,9 @@ public class PCGameObj {
                 PCChat.addChatScreen((byte) 7, byteArray.readUTF());
                 PCChat.addChat(MainCanvas.chatNowChannel, MainCanvas.chatNowString);
                 UIGameRun.releaseChat();
-                if ((Player.getInstance()).pkObj == PEObj) {
-                    (Player.getInstance()).pkObj.setPkObj(null);
-                    Player.getInstance().setPkObj(null);
+                if (player.pkObj == PEObj) {
+                    player.pkObj.setPkObj(null);
+                    player.setPkObj(null);
                 }
                 PEObj = null;
                 break;
@@ -590,7 +593,7 @@ public class PCGameObj {
                         MainCanvas.mc.setGameState((byte) 8);
                         MainCanvas.mc.setOtherSubState((byte) 3);
                     }
-                    if ((Player.getInstance()).skillIndex == 0) {
+                    if (player.skillIndex == 0) {
                         Player.normalAttackCount = 0;
                     }
                 }

@@ -304,15 +304,9 @@ public class ExpandAbility {
         if (target.curHp > 0 && target.curHp < target.maxHp || (player.curHp > (player.maxHp / 2) && player.curMp > (player.maxMp / 10) * 7)) {
             // 判断是否可以释放技能，这里注意吟唱技能时没有内置CD的
             if (player.canCastSkill(1)) {
-                player.oldSkillTargetId = target.objID;
-                player.skillIndex = 1;
-                player.setState((byte) 7);
-            }else{ // 普通攻击
-                // 这里直接瞬移
-                player.setObjPosition(target.col, target.row);
-                // 按普通攻击键
-                keyPressed(SOFT_OK);
+                player.caskSkill(target, 1);
             }
+            }else{ // 普通攻击
         }
     }
 }

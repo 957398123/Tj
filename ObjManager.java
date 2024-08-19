@@ -114,11 +114,12 @@ public class ObjManager {
      * @return 
      */
     public static boolean canBeSetTarget(GameObj target, int size) {
+        Player player = Player.getInstance();
         return (target.x - Map.currentWindowX >= 0 && target.x - Map.currentWindowX <= MainCanvas.screenW && target.y - Map.currentWindowY >= 0 && target.y - Map.currentWindowY <= MainCanvas.screenH
-                && Math.abs(target.x - (Player.getInstance()).x)
-                * Math.abs(target.x - (Player.getInstance()).x)
-                + Math.abs(target.y - (Player.getInstance()).y)
-                * Math.abs(target.y - (Player.getInstance()).y) < size * size);
+                && Math.abs(target.x - player.x)
+                * Math.abs(target.x - player.x)
+                + Math.abs(target.y - player.y)
+                * Math.abs(target.y - player.y) < size * size);
     }
 
     public static GameObj getObj(int objID) {
@@ -159,14 +160,16 @@ public class ObjManager {
         if (obj == null) {
             return;
         }
-        if (obj != Player.getInstance()) {
+        // 获取当前玩家实例
+        Player player = Player.getInstance();
+        if (obj != player) {
             if (obj.isEnemy) {
-                Player.getInstance().setPkObj(obj);
-            } else if (obj == (Player.getInstance()).pkObj && !PCGameObj.isPK) {
-                Player.getInstance().setPkObj(null);
+                player.setPkObj(obj);
+            } else if (obj == player.pkObj && !PCGameObj.isPK) {
+                player.setPkObj(null);
             } else if (PCGameObj.isPK) {
-                Player.getInstance().setPkObj(PCGameObj.PEObj);
-                PCGameObj.PEObj.setPkObj(Player.getInstance());
+                player.setPkObj(PCGameObj.PEObj);
+                PCGameObj.PEObj.setPkObj(player);
             }
             showTarget = obj;
             currentTarget = obj;

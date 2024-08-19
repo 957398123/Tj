@@ -179,6 +179,11 @@ public class PCChat {
         MainCanvas.chatColor[0] = Cons.chatChannalColor[channel];
     }
 
+    /**
+     * 增加聊天信息
+     * @param channel
+     * @param str 
+     */
     public static void addChatScreen(byte channel, String str) {
         MainCanvas.chatNowString = str;
         MainCanvas.chatNowChannel = channel;
