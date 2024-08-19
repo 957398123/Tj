@@ -121,6 +121,10 @@ public class GameObj {
      */
     public byte skillIndex = 0;
     /**
+     * 当前技能类型
+     */
+    public short skillType = 0;
+    /**
      * 0-静止 1-移动 2-普通攻击 4- 5-死亡 7-准备释放技能 8-释放技能中
      */
     public byte state;
@@ -608,10 +612,6 @@ public class GameObj {
             default:
                 return 0;
         }
-    }
-
-    public boolean isEnemy(GameObj target) {
-        return Util.isEnemy(this, target);
     }
 
     /**
@@ -1179,7 +1179,7 @@ public class GameObj {
         if (selArcTick >= SELARC_WH.length) {
             selArcTick = 0;
         }
-        if (Util.isEnemy(this, Player.getInstance()) && type != 2 && type != 5 && (pkObj == null || pkObj != null && pkObj != player)) {
+        if (Util.isEnemy(this, player) && type != 2 && type != 5 && (pkObj == null || pkObj != null && pkObj != player)) {
             int no = Math.abs(player.level - level);
             if (no <= 5) {
                 g.setColor(16711680);
@@ -2137,11 +2137,18 @@ public class GameObj {
     }
     
     public int getPercentageHp(){
-        return (curHp / maxHp) * 100;
+        int r = 0;
+        if(maxHp != 0){
+            r = (int)(((double) curHp / maxHp) * 100);
+        }
+        return r;
     }
     
     public int getPercentageMp(){
-        return (curMp / maxMp) * 100;
+        int r = 0;
+        if(maxMp != 0){
+            r = (int)(((double) curMp / maxMp) * 100);
+        }
+        return r;
     }
-    
 }

@@ -678,17 +678,13 @@ public abstract class Util {
      * @return 
      */
     public static boolean isEnemy(GameObj obj, GameObj target) {
-        if (obj == null) {
+        if (obj == null || target == null) {
             return false;
-        } else if (target == null) {
-            return false;
-        } else if (obj.isEnemy) {
+        }else if (obj.isEnemy || target.isEnemy) {
             return true;
-        } else if (obj.type == 2) {
+        } else if (obj.type == 2 || target.type == 2) {
             return true;
-        } else if (target.type == 2) {
-            return true;
-        } else if (obj.type != 3 && target.type != 3) {
+        } else if (obj.type != 5 && target.type != 5) {
             if (target.group != obj.group) {
                 return true;
             } else {

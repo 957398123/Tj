@@ -145,42 +145,13 @@ public class ExpandAbility {
         }
         // 判断当前是不是挂机中
         if (player.isHangup) {
-            if (player.state != 5) {  // 玩家没有死亡
-                // 判断当前是否选中地方单位
-                ObjManager manager = ObjManager.getInstance();
-                GameObj target = ObjManager.currentTarget;
-                // 如果当前未选中，或者不是可攻击对象
-                if (target == null || !Util.isEnemy(player, target)) {
-                    // 选择最近的可攻击对象作为目标
-                    target = player.getNearFightObj();
+            // 根据职业类型路由到对应的挂机逻辑
+            int occu = player.imgID;
+            switch (occu) {
+                case 3: {  // 医生
+                    battleApothecary(player);
+                    break;
                 }
-                if (target != null && target != player) {
-                    // 判断当前对象是否可以被选择
-                    if (ObjManager.canBeSetTarget(target, 80)) {
-                        // 设置为当前选择对象
-                        manager.setCurrentTarget(target);
-                        // 如果是寻径中，取消寻径
-                        if (player.isFollow()) {
-                            player.resetAimID();
-                        }
-                        // 如果选取的角色死亡
-                        if (target.state == 5) {
-                            player.setState((byte) 0);
-                        }
-                        // 根据职业类型路由到对应的挂机逻辑
-                        int occu = player.imgID;
-                        switch (occu) {
-                            case 3: {  // 医生
-                                battleApothecary(player, target);
-                                break;
-                            }
-                        }
-                    } else {  // 设置寻径，这里必须实时寻径
-                        player.setAimColRow(target.col, target.row);
-                    }
-                }
-            }else {  //按#键复活
-                keyPressed(NUM_11);
             }
         }
     }
@@ -299,14 +270,53 @@ public class ExpandAbility {
      * @param player
      * @param target
      */
-    public static void battleApothecary(Player player, GameObj target) {
-        // 首先判断是否已经攻击目标，或者角色至少有一半蓝，才继续打怪
-        if (target.curHp > 0 && target.curHp < target.maxHp || (player.curHp > (player.maxHp / 2) && player.curMp > (player.maxMp / 10) * 7)) {
-            // 判断是否可以释放技能，这里注意吟唱技能时没有内置CD的
-            if (player.canCastSkill(1)) {
-                player.caskSkill(target, 1);
+    public static void battleApothecary(Player player) {
+        if (player.state != 5) {  // 玩家没有死亡
+            // 检查是否进战斗
+            int hpPer = player.getPercentageHp();
+            int mpPer = player.getPercentageMp();
+            // 获取当前选中目标
+            GameObj target = ObjManager.currentTarget;
+            boolean isEnemy = Util.isEnemy(target, player);
+            // 进了战斗，或者状态良好，继续战斗
+            if (isEnemy || (hpPer > 80 && mpPer > 80)) {
+                // 如果当前未选中，或者不是可攻击对象
+                if (!isEnemy) {
+                    // 选择最近的可攻击对象作为目标
+                    target = player.getNearFightObj();
+                }
+                if (target != null) {
+                    if (ObjManager.canBeSetTarget(target, 80)) {  // 判断当前对象是否可以被选择
+                        // 判断当前是否选中地方单位
+                        ObjManager manager = ObjManager.getInstance();
+                        // 设置为当前选择对象
+                        manager.setCurrentTarget(target);
+                        // 如果是寻径中，取消寻径
+                        if (player.isFollow()) {
+                            player.resetAimID();
+                        }
+                        // 判断是否可以释放技能，这里注意吟唱技能时没有内置CD的
+                        if (player.canCastSkill(1)) {  // 释放飓风之牙
+                            player.caskSkill(target, 1);
+                        } else { // 判断是否可以普通攻击
+                            // 判断当前是否能攻击到
+                            if (player.canNormalAttack(target)) {
+                                if (Player.normalAttackCount > 30) {  // 如果普通攻击CD好了
+                                    // 瞬移进行普通攻击
+                                    player.setObjPosition(target.col, target.row);
+                                    player.normalAttck();
+                                }
+                            }
+                        }
+                    } else {  // 寻径，这里必须实时更新
+                        player.setAimColRow(target.col, target.row);
+                    }
+                }
+            } else if (hpPer < 50 && player.canCastSkill(2)) {  // 使用心疗术
+                player.caskSkill(player, 2);
             }
-            }else{ // 普通攻击
+        } else {  //按#键复活
+            keyPressed(NUM_11);
         }
     }
 }

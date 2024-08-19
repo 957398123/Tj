@@ -121,6 +121,7 @@ public class Player extends OtherPlayer {
         super.setState(s);
         if (state == 7) {
             short[] skillData = getSkillData(profession, skillIndex);
+            skillType = skillData[1];
             castLength = skillData[4] * 1000;
             castTick = System.currentTimeMillis();
             MainCanvas.ni.send(Cmd.C_PLAYER_SKILLPRE);
@@ -891,7 +892,7 @@ public class Player extends OtherPlayer {
         int dis = 0;
         for (int i = 0; i < ObjManager.vectorObj.size(); i++) {
             GameObj tmpObj = (GameObj) ObjManager.vectorObj.elementAt(i);
-            if (Util.isEnemy(tmpObj, this)) {
+            if (tmpObj != null && Util.isEnemy(this, tmpObj)) {
                 int dCol = col - tmpObj.col;
                 int dRow = row - tmpObj.row;
                 int tDis = dCol * dCol + dRow * dRow;
@@ -1051,35 +1052,38 @@ public class Player extends OtherPlayer {
 
     /**
      * 对指定对象释放技能
+     *
      * @param obj
-     * @param skillIndex 
+     * @param skillIndex
      */
     public void caskSkill(GameObj obj, int skillIndex) {
         oldSkillTargetId = obj.objID;
-        this.skillIndex = (byte)skillIndex;
+        this.skillIndex = (byte) skillIndex;
         setState((byte) 7);
     }
-    
+
     /**
      * 是否能够普通攻击到指定对象
-     * @return 
+     *
+     * @return
      */
-    public boolean canNormalAttack(GameObj obj){
+    public boolean canNormalAttack(GameObj obj) {
         return theSecendCheck(this, 25, 24, obj);
     }
-    
+
     /**
      * 普通攻击是否CD中
-     * @return 
+     *
+     * @return
      */
-    public boolean isNormalAttackCD(){
+    public boolean isNormalAttackCD() {
         return normalAttackCount < 30;
     }
-    
+
     /**
      * 玩家普通攻击
      */
-    public void normalAttck(){
+    public void normalAttck() {
         MainCanvas.ni.send(Cmd.C_PLAYER_FIGHT_START);
         setState((byte) 2);
     }
@@ -1688,13 +1692,15 @@ public class Player extends OtherPlayer {
         }
         switch (skillType) {
             case 2:
-                if (Util.isEnemy(player, target)) {
-                    return false;
-                }
+            case 5: {
+//                if (Util.isEnemy(player, target)) { --如果是敌方单位，可以给自己加状态
+//                    return false;
+//                }
                 if (target.getState() == 5 || target.getState() == 4) {
                     return false;
                 }
                 break;
+            }
             case 3:
                 if (player == target) {
                     return false;
@@ -1709,14 +1715,6 @@ public class Player extends OtherPlayer {
                     return false;
                 }
                 if ((player.profession == 3 || player.profession == 4) && skillIndex == 13) {
-                    return false;
-                }
-                break;
-            case 5:
-                if (Util.isEnemy(player, target)) {
-                    return false;
-                }
-                if (target.getState() == 5 || target.getState() == 4) {
                     return false;
                 }
                 break;
@@ -1839,5 +1837,13 @@ public class Player extends OtherPlayer {
 
     public boolean isBeAttack() {
         return curHp - lastHp < 0;
+    }
+    
+    public void useSkill(GameObj targetGameObj, int skillIndex, byte direction) {
+        if(skillType == 2 || skillType == 5){
+            super.useSkill(this, skillIndex, direction);
+        }else{
+            super.useSkill(targetGameObj, skillIndex, direction);
+        }
     }
 }

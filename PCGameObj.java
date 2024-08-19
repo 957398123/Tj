@@ -578,8 +578,9 @@ public class PCGameObj {
                 if (ObjManager.currentTarget != null) {
                     // 获取技能数据
                     skillData = Player.getSkillData(player.profession, player.skillIndex);
+                    // 这里需要判断那些技能对玩家自身使用
                     int objID = ObjManager.currentTarget.objID;
-                    if (skillData[1] == 6) {
+                    if (skillData[1] == 6 || skillData[1] == 2 || skillData[1] == 5) {
                         objID = player.objID;
                     }
                     System.out.println("[send command]:command=C_PLAYER_FIGHT_START,class=PCGameObj,type=fight,fightobj=0x" + Integer.toHexString(objID) + ",skillIndex=" + player.skillIndex);
