@@ -1,4 +1,7 @@
 
+import javax.microedition.lcdui.Graphics;
+
+
 /**
  * 拓展能力类，用来增强天劫客户端
  *
@@ -278,8 +281,10 @@ public class ExpandAbility {
             // 获取当前选中目标
             GameObj target = ObjManager.currentTarget;
             boolean isEnemy = Util.isEnemy(target, player);
-            // 进了战斗，或者状态良好，继续战斗
-            if (isEnemy || (hpPer > 80 && mpPer > 80)) {
+            // 血量少于40%使用心疗术，这里不查是不知道是否学了这个技能
+            if (hpPer < 50 && player.canCastSkill(2)) {
+                player.caskSkill(player, 2);
+            } else if (player.isBeAttack() || isEnemy || (hpPer > 70 && mpPer > 70)) {   // 进了战斗，或者状态良好，继续战斗
                 // 如果当前未选中，或者不是可攻击对象
                 if (!isEnemy) {
                     // 选择最近的可攻击对象作为目标
@@ -312,11 +317,21 @@ public class ExpandAbility {
                         player.setAimColRow(target.col, target.row);
                     }
                 }
-            } else if (hpPer < 50 && player.canCastSkill(2)) {  // 使用心疗术
-                player.caskSkill(player, 2);
             }
         } else {  //按#键复活
             keyPressed(NUM_11);
         }
+    }
+    
+    /**
+     * 绘制挂机设置界面
+     * @param g 
+     */
+    public static void drawHangUpUI(Graphics g){
+        
+    }
+    
+    public static void keyInUiHangUp(){
+        
     }
 }

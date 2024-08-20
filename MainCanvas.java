@@ -95,9 +95,13 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     public static byte gameState_gameRunState = 0;
     public static byte oldGameState_gameRunState = 0;
     /**
-     * 5-世界地图
+     * 游戏现在是哪个右键菜单
+     * 0-挂机 5-地图
      */
     public static int gameState_rightMenuSubState = -1;
+    /**
+     * 超时时，还原上一个菜单
+     */
     public static int oldGameState_rightMenuSubState = -1;
     public static byte gameState_menuManState = 0;
     public static byte oldGameState_menuManState = 0;
@@ -1925,6 +1929,10 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         return gameState_OtherState;
     }
 
+    /**
+     * 选择右键菜单
+     * @param s 
+     */
     public void setRightMenuSubState(int s) {
         oldGameState_rightMenuSubState = gameState_rightMenuSubState;
         gameState_rightMenuSubState = s;
@@ -1980,11 +1988,19 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         return gameState_menuFriendState;
     }
 
+    /**
+     * 设置设置菜单栏状态
+     * @return 
+     */
     public void setUISetupState(byte s) {
         oldGameState_menuSetupState = gameState_menuSetupState;
         gameState_menuSetupState = s;
     }
 
+    /**
+     * 获取设置菜单栏状态
+     * @return 
+     */
     public byte getUISetupState() {
         return gameState_menuSetupState;
     }
@@ -2002,11 +2018,19 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         return gameState_menuHelpState;
     }
 
+    /**
+     * 设置地图菜单选项
+     * @param s 
+     */
     public void setUIMApState(byte s) {
         oldGameState_menuMapState = gameState_menuMapState;
         gameState_menuMapState = s;
     }
 
+    /**
+     * 获取地图菜单选项
+     * @param s 
+     */
     public byte getUIMapState() {
         return gameState_menuMapState;
     }
@@ -2824,7 +2848,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 showGame(g);
                 break;
             }
-            case 1: {  // 有菜单
+            case 1: {  // 右菜单
                 switch (getRightMenuSubState()) {
                     case 80: {
                         drawUIValueAddedCatalogList(g);
@@ -2850,8 +2874,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         baseForm.draw(g);
                         break;
                     }
-                    case 0: {
-                        PCIncrementService.getInstance().draw(g);
+                    case 0: {  // 绘制挂机设置界面
+                        ExpandAbility.drawHangUpUI(g);
                         break;
                     }
                     case 10: {
@@ -2936,7 +2960,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         }
                         break;
                     }
-                    case 5: {
+                    case 5: {  // 
                         switch (getUIMapState()) {
                             case 0:
                                 Map.drawWorldMap(g);
@@ -3264,8 +3288,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         keyInRightMenu();
                         break;
                     }
-                    case 0: {
-                        PCIncrementService.getInstance().userEvent();
+                    case 0: {  // 处理挂机设置界面按键
+                        ExpandAbility.keyInUiHangUp();
                         break;
                     }
                     case 1: {
@@ -3848,7 +3872,9 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 rightMenuId = menus[0].getCurrentPointer();
                 switch (menus[0].getCurrentPointer()) {
                     case 0: {  // 挂机选项
-                        baseForm.addAboutForm("hangup", "确实要挂机吗？", (byte) 2, 140, 0);
+                        //baseForm.addAboutForm("hangup", "确实要挂机吗？", (byte) 2, 140, 0);
+                        setRightMenuSubState(0);
+                        releaseUI();
                         break;
                     }
                     case 1: {
@@ -10735,6 +10761,10 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         baseForm.draw(g);
     }
 
+    /**\
+     * 绘制显示设置
+     * @param g 
+     */
     public void drawUIShowItem(Graphics g) {
         if (baseForm == null) {
             baseForm = new UIForm(0, 0, screenW, screenH, "");

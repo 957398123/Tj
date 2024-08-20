@@ -1086,7 +1086,7 @@ public class Player extends OtherPlayer {
 
     /**
      * 检测指定技能是否可以释放
-     *
+     * 需要判断玩家是否学习
      * @return
      */
     public boolean canCastSkill(int skillIndex) {

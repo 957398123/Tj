@@ -16,7 +16,7 @@ public class PCSkillTree {
     String msg;
     ByteArray execDataIn = new ByteArray(data);
     switch (commID) {
-      case 117440896:
+      case Cmd.S_SKILL_SEND_INFOR:
         kind = (Player.getInstance()).profession;
         kind = (byte)(kind - 1);
         MainCanvas.mc.tree = new UISkillTree(0, 0, 160, 160, (Player.getInstance()).level);
