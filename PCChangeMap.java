@@ -273,8 +273,6 @@ public class PCChangeMap {
                         //  右方向地图索引 -1为不可行走
                         Map.regionProps[i][5] = execDataIn.readShort();
                     }
-                    ExpandAbility.regionName = Map.regionName;
-                    ExpandAbility.regionProps = Map.regionProps;
                     int nLines = execDataIn.readShort();
                     if (Map.regionLines != null) {
                         Map.regionLines = null;
