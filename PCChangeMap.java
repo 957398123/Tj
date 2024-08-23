@@ -256,7 +256,7 @@ public class PCChangeMap {
                     for (int i = 0; i < Map.NUMBER_OF_PLACES; ++i) {
                         // 设置地图名称
                         Map.regionName[i] = execDataIn.readUTF();
-                        // 设置地图位置，移动地图时需要
+                        // 设置世界地图绘制位置
                         Map.regionPos[i][0] = execDataIn.readShort();
                         Map.regionPos[i][1] = execDataIn.readShort();
                         // 设置地图属性
@@ -273,6 +273,8 @@ public class PCChangeMap {
                         //  右方向地图索引 -1为不可行走
                         Map.regionProps[i][5] = execDataIn.readShort();
                     }
+                    ExpandAbility.regionName = Map.regionName;
+                    ExpandAbility.regionProps = Map.regionProps;
                     int nLines = execDataIn.readShort();
                     if (Map.regionLines != null) {
                         Map.regionLines = null;

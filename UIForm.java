@@ -294,6 +294,10 @@ public void draw(Graphics g) {
     } 
   }
   
+  /**
+   * 选中某个组件
+   * @param uic 
+   */
   public void setComponentFocus(UIComponent uic) {
     this.e = this.components.elements();
     while (this.e.hasMoreElements()) {

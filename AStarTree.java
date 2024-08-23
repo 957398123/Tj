@@ -312,7 +312,7 @@ class AStarTree {
     private void openAddClosed() {
         // 扩容关闭列表1空间
         closed = resizeArray(closed, closed.length, 1);
-        // 将当前遍历的格子（城北最低）加入关闭列表
+        // 将当前遍历的格子（成本最低）加入关闭列表
         closed[closed.length - 1] = open[1];
         // 从开放列表中删除当前格子，并且排序
         removePointResize();

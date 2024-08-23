@@ -95,8 +95,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     public static byte gameState_gameRunState = 0;
     public static byte oldGameState_gameRunState = 0;
     /**
-     * 游戏现在是哪个右键菜单
-     * 0-挂机 5-地图
+     * 游戏现在是哪个右键菜单 0-挂机 5-地图
      */
     public static int gameState_rightMenuSubState = -1;
     /**
@@ -1931,7 +1930,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
 
     /**
      * 选择右键菜单
-     * @param s 
+     *
+     * @param s
      */
     public void setRightMenuSubState(int s) {
         oldGameState_rightMenuSubState = gameState_rightMenuSubState;
@@ -1990,7 +1990,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
 
     /**
      * 设置设置菜单栏状态
-     * @return 
+     *
+     * @return
      */
     public void setUISetupState(byte s) {
         oldGameState_menuSetupState = gameState_menuSetupState;
@@ -1999,7 +2000,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
 
     /**
      * 获取设置菜单栏状态
-     * @return 
+     *
+     * @return
      */
     public byte getUISetupState() {
         return gameState_menuSetupState;
@@ -2020,7 +2022,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
 
     /**
      * 设置地图菜单选项
-     * @param s 
+     *
+     * @param s
      */
     public void setUIMApState(byte s) {
         oldGameState_menuMapState = gameState_menuMapState;
@@ -2029,7 +2032,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
 
     /**
      * 获取地图菜单选项
-     * @param s 
+     *
+     * @param s
      */
     public byte getUIMapState() {
         return gameState_menuMapState;
@@ -3301,7 +3305,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                         keyInUIManPackage();
                         break;
                     }
-                    case 3: {
+                    case 3: {  
                         keyInSociety();
                         break;
                     }
@@ -5446,7 +5450,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
     public void keyInSociety() {
         UIComponent cmd;
         switch (getUIFriendState()) {
-            case 0:
+            case 0: {
                 if (baseForm == null) {
                     return;
                 }
@@ -5481,7 +5485,8 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 }
                 if (actionInForm(cmd));
                 break;
-            case 2:
+            }
+            case 2: {
                 if (baseForm == null) {
                     return;
                 }
@@ -5673,6 +5678,7 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                     }
                 }
                 break;
+            }
             case 3:
                 if (baseForm == null) {
                     return;
@@ -10761,9 +10767,11 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
         baseForm.draw(g);
     }
 
-    /**\
+    /**
+     * \
      * 绘制显示设置
-     * @param g 
+     *
+     * @param g
      */
     public void drawUIShowItem(Graphics g) {
         if (baseForm == null) {
@@ -11628,8 +11636,9 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
 
     /**
      * 处理UI组件的按键逻辑
+     *
      * @param cmd
-     * @return 
+     * @return
      */
     public boolean actionInForm(UIComponent cmd) {
         if (cmd == null) {

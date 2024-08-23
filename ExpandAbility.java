@@ -1,14 +1,19 @@
 
+import java.util.Vector;
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.CommandListener;
+import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Graphics;
-
+import javax.microedition.lcdui.Displayable;
 
 /**
  * 拓展能力类，用来增强天劫客户端
  *
  * @author yihua
  */
-public class ExpandAbility {
+public class ExpandAbility implements CommandListener {
 
+    private static ExpandAbility instance;
     /**
      * 按键按下映射
      */
@@ -109,6 +114,48 @@ public class ExpandAbility {
      * 上一次玩家操作时间
      */
     private static long lastPlayTick = 0;
+    /**
+     * 设置界面
+     */
+    private UIForm baseForm;
+    /**
+     * 组件列表
+     */
+    private static Vector components;
+    /**
+     * 设置选项
+     */
+    private byte[] setup = new byte[]{0, 0, 0, 0, 0};
+    /**
+     * 世界地图名称
+     */
+    public static String[] regionName;
+    /**
+     * 世界地图数据
+     */
+    public static int[][] regionProps;
+    /**
+     * 设置界面选中
+     */
+    private static byte vIndex = 0;
+    // 原生组件 确定
+    private Command ok;
+    // 原生组件 返回
+    private Command back;
+    // 表单
+    private Form form;
+
+    private ExpandAbility() {
+        initUIForm();
+        initForm();
+    }
+
+    public static ExpandAbility getInstance() {
+        if (instance == null) {
+            instance = new ExpandAbility();
+        }
+        return instance;
+    }
 
     /**
      * 这是最前面的tick
@@ -322,16 +369,230 @@ public class ExpandAbility {
             keyPressed(NUM_11);
         }
     }
-    
+
     /**
      * 绘制挂机设置界面
-     * @param g 
+     *
+     * @param g
      */
-    public static void drawHangUpUI(Graphics g){
-        
+    public static void drawHangUpUI(Graphics g) {
+        ExpandAbility.getInstance().baseForm.draw(g);
     }
-    
-    public static void keyInUiHangUp(){
-        
+
+    public static void keyInUiHangUp() {
+        if (MainCanvas.isKeyPress(18)) {
+            MainCanvas.mc.setGameState((byte) 0);
+        } else if (MainCanvas.isKeyPress(11)) {
+            if (vIndex > 0) {
+                --vIndex;
+                ExpandAbility.getInstance().baseForm.setComponentFocus((UIComponent) components.elementAt(vIndex));
+            }
+        } else if (MainCanvas.isKeyPress(13)) {
+            if (vIndex < components.size() - 1) {
+                ++vIndex;
+                ExpandAbility.getInstance().baseForm.setComponentFocus((UIComponent) components.elementAt(vIndex));
+            }
+        } else if (MainCanvas.isKeyPress(10)) {
+            UIRadioButton ui = (UIRadioButton) components.elementAt(vIndex);
+            ui.setChooseItem(0);
+        } else if (MainCanvas.isKeyPress(12)) {
+            UIRadioButton ui = (UIRadioButton) components.elementAt(vIndex);
+            ui.setChooseItem(1);
+        }else if(MainCanvas.isKeyPress(14)){  //测试查找地图
+            String s = "孤月岛二";
+            String e = "城阳谷林二";
+            aStar2World(s, e);
+        }
+    }
+
+    /**
+     * 初始化UIForm
+     */
+    private void initUIForm() {
+        baseForm = new UIForm(0, 0, MainCanvas.screenW, MainCanvas.screenH, "");
+        baseForm.setStyle((byte) 0);
+        UIRim rimFrame = new UIRim(0, 0, MainCanvas.screenW - 1, MainCanvas.screenH - 1, (byte) 4);
+        UIRim rimTitle = new UIRim(0, 10, 160, 17, (byte) 7);
+        UILabel lblTitle = new UILabel(0, rimTitle.positionY + 3, 0, 0, "挂机设置", 15718815, (byte) 1, (byte) 0);
+        UIRim rimDown = new UIRim(0, 27, 160, 160, (byte) 0);
+        UIRim rimDownInner = new UIRim(0, 32, 150, 150, (byte) 0);
+        UILabel lblOk = new UILabel(0, 0, 0, 0, "确定", 15718815, (byte) 1, (byte) 0);
+        UILabel lblCancel = new UILabel(0, 0, 0, 0, "返回", 15718815, (byte) 1, (byte) 0);
+        baseForm.addComponent(rimFrame);
+        baseForm.addComponentInCenter(rimTitle, (byte) 2);
+        baseForm.addComponentInCenter(lblTitle, (byte) 2);
+        baseForm.addComponentInCenter(rimDown, (byte) 2);
+        baseForm.addComponentInCenter(rimDownInner, (byte) 2);
+        baseForm.addComponentInCenter(lblOk, (byte) 5);
+        baseForm.addComponentInCenter(lblCancel, (byte) 6);
+        // 选项 巡逻挂机
+        UIRadioButton rb1 = new UIRadioButton(35, 38 + 0 * 14, 0, 0, "巡逻挂机", (byte) 0);
+        rb1.addItems("开");
+        rb1.addItems("关");
+        rb1.setChooseItem(setup[0]);
+        // 选项 指定野怪
+        UIRadioButton rb2 = new UIRadioButton(35, 38 + 1 * 14, 0, 0, "指定怪物", (byte) 0);
+        rb2.addItems("开");
+        rb2.addItems("关");
+        rb2.setChooseItem(setup[1]);
+        // 选项 自动吃药
+        UIRadioButton rb3 = new UIRadioButton(35, 38 + 2 * 14, 0, 0, "自动吃药", (byte) 0);
+        rb3.addItems("开");
+        rb3.addItems("关");
+        rb3.setChooseItem(setup[2]);
+        // 选项 自动修理
+        UIRadioButton rb4 = new UIRadioButton(35, 38 + 3 * 14, 0, 0, "自动修理", (byte) 0);
+        rb4.addItems("开");
+        rb4.addItems("关");
+        rb4.setChooseItem(setup[3]);
+        // 选项 自动清理
+        UIRadioButton rb5 = new UIRadioButton(35, 38 + 4 * 14, 0, 0, "自动清理", (byte) 0);
+        rb5.addItems("开");
+        rb5.addItems("关");
+        rb5.setChooseItem(setup[4]);
+        components = new Vector();
+        components.addElement(rb1);
+        components.addElement(rb2);
+        components.addElement(rb3);
+        components.addElement(rb4);
+        components.addElement(rb5);
+        baseForm.addComponent(rb1);
+        baseForm.addComponent(rb2);
+        baseForm.addComponent(rb3);
+        baseForm.addComponent(rb4);
+        baseForm.addComponent(rb5);
+        // 指定打怪列表
+//        UILabel label = new UILabel(34, 80, 60, 17, "怪物列表：", 0xEFD99F, (byte) 0, (byte) 0);
+//        UITextArea area = new UITextArea(34, 90, 100, 40, "高级奔波霸;无敌啊");
+//        baseForm.addComponent(label);
+//        baseForm.addComponent(area);
+        baseForm.setFocus(true);
+        baseForm.setMessage(Cons.ROLL_MASSAGE[11], false);
+    }
+
+    private void initForm() {
+        form = new Form("nameForm");
+        form.setTitle("设置怪物列表");
+        ok = new Command("确定", 4, 2);
+        back = new Command("返回", 2, 2);
+        form.addCommand(ok);
+        form.addCommand(back);
+        form.setCommandListener(this);
+    }
+
+    /**
+     * 原生按钮事件
+     *
+     * @param c
+     * @param d
+     */
+    public void commandAction(Command c, Displayable d) {
+    }
+
+    /**
+     * 获取世界地图寻径位置
+     *
+     * @param sMap 起始地图
+     * @param eMap 结束地图
+     * @return
+     */
+    public static int[] aStar2World(String sMap, String eMap) {
+        int[] path = null;
+        if (regionName != null && regionProps != null) {
+            int sIndex = -1;
+            int eIndex = -1;
+            int length = regionName.length;
+            // 首先查找地图所在索引
+            for (int i = 0; i < regionName.length; ++i) {
+                if (sIndex != -1 && eIndex != -1) {
+                    break;
+                } else if (sIndex == -1 && sMap.equals(regionName[i])) {
+                    sIndex = i;
+                } else if (eIndex == -1 && eMap.equals(regionName[i])) {
+                    eIndex = i;
+                }
+            }
+            // 当起始地图和目标地图都存在时，才进行查找
+            if (sIndex != -1 && eIndex != -1) {
+                int wIndex = 0;
+                // 这里是从大到小排序 {地图索引, 父地图索引, G值, H值}  F = G + H，G是起点移动，H是当前到终点估算
+                int[][] oList = new int[length][];
+                // 使用关闭列表索引作为父index，因为关闭列表不需要排序
+                int[][] cList = new int[length][];
+                // 初始化开放列表，起点父格子为-1
+                oList[0] = new int[]{sIndex, -1, 0, Math.abs(eIndex - sIndex)};
+                boolean isEnd = false;
+                while (wIndex > -1 && !isEnd) {
+                    // 取出最小成本，
+                    int[] min = oList[wIndex];
+                    // 减少计数
+                    --wIndex;
+                    // 将其加入clsit，这里直接使用地图索引位置
+                    cList[min[0]] = min;
+                    // 检查四个方向
+                    for (int i = 0; i < 4; ++i) {
+                        int d = regionProps[min[0]][2+i];
+                        // 如果可以行走，并且没有被加入关闭列表
+                        if (d == eIndex) {  // 如果找到了
+                            ++wIndex;
+                            oList[wIndex] = new int[]{d, min[0], 0, 0};
+                            isEnd = true;
+                            break;
+                        } else if (d != -1 && cList[d] == null) {
+                            // 检测是否在oList
+                            int oIndex = -1;
+                            for (int j = 0; j <= wIndex; ++j) {
+                                // 如果开放列表找到了了
+                                if (oList[j][0] == d) {
+                                    oIndex = j;
+                                    break;
+                                }
+                            }
+                            int g = min[2] + 1;
+                            int h = Math.abs(eIndex - d);
+                            if (oIndex == -1) {  // 未找到，加入开放列表
+                                // 先自增oList
+                                ++wIndex;
+                                oList[wIndex] = new int[]{d, min[0], g, h};
+                            } else {   // 找到了，更新F
+                                int f = oList[oIndex][2] + oList[oIndex][3];
+                                int nf = g + h;
+                                if (nf < f) {  // 如果更好，更新
+                                    oList[oIndex][1] = d;
+                                    oList[oIndex][2] = g;
+                                    oList[oIndex][3] = h;
+                                }
+                            }
+                        }
+                    }
+                    // 重新排序开放列表
+                    for (int i = 1; i <= wIndex; ++i) {
+                        int[] km = oList[i];
+                        int k = km[2] + km[3];
+                        int j = i - 1;
+                        while (j >= 0 && (oList[j][2] + oList[j][3]) < k) {
+                            oList[j + 1] = oList[j];
+                            j--;
+                        }
+                        oList[j + 1] = km;
+                    }
+                }
+                // 如果找到了
+                if(wIndex >= 0){
+                    // 开始回溯
+                    int fid = oList[wIndex][1];
+                    String mName = regionName[oList[wIndex][0]];
+                    Vector v = new Vector();
+                    v.addElement(mName);
+                    while(fid != -1){
+                        mName = regionName[fid];
+                        v.addElement(mName);
+                        fid = cList[fid][1];
+                    }
+                    System.out.println("结束！");
+                }
+            }
+        }
+        return path;
     }
 }

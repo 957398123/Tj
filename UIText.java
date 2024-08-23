@@ -53,7 +53,7 @@ public class UIText extends UIComponent {
   
   public UIText(int x, int y, int w, int h, int maxCharNum, byte style, String text) {
     super(x, y, w, h);
-    this.cx = 0;
+    cx = 0;
     if (style == 3)
       maxCharNum = 10; 
     this.sb = text;
