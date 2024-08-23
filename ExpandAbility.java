@@ -11,9 +11,125 @@ import javax.microedition.lcdui.Displayable;
  *
  * @author yihua
  */
-public class ExpandAbility implements CommandListener {
+public class ExpandAbility {
 
-    private static ExpandAbility instance;
+    private static ExtendClass ec = ExtendClass.getInstance();
+
+    ;
+    /**
+     * 这是最前面的tick
+     */
+    public static void startTick() {
+        // 更新last tick
+        ec.startTick();
+    }
+
+    /**
+     * 在地图tick之前
+     */
+    public static void beforemapRunSubTick() {
+        ec.beforemapRunSubTick();
+    }
+
+    /**
+     * 在地图tick之后
+     */
+    public static void aftermapRunSubTick() {
+        ec.aftermapRunSubTick();
+    }
+
+    /**
+     * 在PCArena的tick以后 这是最后面的tick
+     */
+    public static void afterPCArenaTick() {
+        ec.afterPCArenaTick();;
+    }
+
+    /**
+     * 玩家tick前
+     *
+     * @param player
+     */
+    public static void beforePlayerTick(Player player) {
+        ec.beforePlayerTick(player);
+    }
+
+    /**
+     * 玩家tick后
+     *
+     * @param player
+     */
+    public static void afterPlayerTick(Player player) {
+        ec.afterPlayerTick(player);
+    }
+
+    /**
+     * 在ObjManager tick前
+     *
+     * @param manager
+     */
+    public static void beforeObjManagerTick(ObjManager mg) {
+        ec.beforeObjManagerTick(mg);
+    }
+
+    /**
+     * 在ObjManager tick后
+     *
+     * @param manager
+     */
+    public static void afterObjManagerTick(ObjManager mg) {
+        ec.afterObjManagerTick(mg);
+    }
+
+    /**
+     * 在游戏对象tick以前
+     *
+     * @param obj
+     */
+    public static void beforeGameObjectTick(GameObj obj) {
+        ec.beforeGameObjectTick(obj);
+    }
+
+    /**
+     * 在游戏对象tick以后
+     *
+     * @param obj
+     */
+    public static void afterGameObjectTick(GameObj obj) {
+        ec.afterGameObjectTick(obj);
+    }
+
+    /**
+     * 这是最后面的tick
+     */
+    public static void endTick() {
+        ec.endTick();
+    }
+
+    /**
+     * 绘制挂机设置界面
+     *
+     * @param g
+     */
+    public static void drawHangUpUI(Graphics g) {
+        ec.drawHangUpUI(g);
+    }
+
+    /**
+     * 挂机按键处理
+     */
+    public static void keyInUiHangUp() {
+        ec.keyInUiHangUp();
+    }
+}
+
+class ExtendClass implements CommandListener {
+
+    private ExtendClass() {
+        initUIForm();
+        initForm();
+    }
+    private static ExtendClass ec;
     /**
      * 按键按下映射
      */
@@ -311,41 +427,36 @@ public class ExpandAbility implements CommandListener {
         {2, -1, 147, -1, -1} // 万魔古窟
     };
 
-    private ExpandAbility() {
-        initUIForm();
-        initForm();
-    }
-
-    public static ExpandAbility getInstance() {
-        if (instance == null) {
-            instance = new ExpandAbility();
+    public static ExtendClass getInstance() {
+        if (ec == null) {
+            ec = new ExtendClass();
         }
-        return instance;
+        return ec;
     }
 
     /**
      * 这是最前面的tick
      */
-    public static void startTick() {
+    public void startTick() {
         // 更新last tick
     }
 
     /**
      * 在地图tick之前
      */
-    public static void beforemapRunSubTick() {
+    public void beforemapRunSubTick() {
     }
 
     /**
      * 在地图tick之后
      */
-    public static void aftermapRunSubTick() {
+    public void aftermapRunSubTick() {
     }
 
     /**
      * 在PCArena的tick以后 这是最后面的tick
      */
-    public static void afterPCArenaTick() {
+    public void afterPCArenaTick() {
     }
 
     /**
@@ -353,7 +464,7 @@ public class ExpandAbility implements CommandListener {
      *
      * @param player
      */
-    public static void beforePlayerTick(Player player) {
+    public void beforePlayerTick(Player player) {
         // 获取当前已运行时间
         long curTime = getRunTime();
         if (lastPlayTick == 0) {
@@ -377,7 +488,7 @@ public class ExpandAbility implements CommandListener {
      *
      * @param player
      */
-    public static void afterPlayerTick(Player player) {
+    public void afterPlayerTick(Player player) {
     }
 
     /**
@@ -385,7 +496,7 @@ public class ExpandAbility implements CommandListener {
      *
      * @param manager
      */
-    public static void beforeObjManagerTick(ObjManager manager) {
+    public void beforeObjManagerTick(ObjManager manager) {
     }
 
     /**
@@ -393,7 +504,7 @@ public class ExpandAbility implements CommandListener {
      *
      * @param manager
      */
-    public static void afterObjManagerTick(ObjManager manager) {
+    public void afterObjManagerTick(ObjManager manager) {
     }
 
     /**
@@ -401,7 +512,7 @@ public class ExpandAbility implements CommandListener {
      *
      * @param obj
      */
-    public static void beforeGameObjectTick(GameObj obj) {
+    public void beforeGameObjectTick(GameObj obj) {
     }
 
     /**
@@ -409,13 +520,13 @@ public class ExpandAbility implements CommandListener {
      *
      * @param obj
      */
-    public static void afterGameObjectTick(GameObj obj) {
+    public void afterGameObjectTick(GameObj obj) {
     }
 
     /**
      * 这是最后面的tick
      */
-    public static void endTick() {
+    public void endTick() {
         if (isPressedKey && !isHoldKey) {
             keyReleased();
         }
@@ -426,7 +537,7 @@ public class ExpandAbility implements CommandListener {
      *
      * @param keyCode
      */
-    public static void keyPressed(int keyCode) {
+    public void keyPressed(int keyCode) {
         if (keyCode < keyPressedMap.length) {
             int keyFlag = keyPressedMap[keyCode];
             isPressedKey = true;
@@ -441,7 +552,7 @@ public class ExpandAbility implements CommandListener {
      *
      * @param keyCode
      */
-    public static void keyHoldPressed(int keyCode) {
+    public void keyHoldPressed(int keyCode) {
         if (keyCode < keyPressedMap.length) {
             int keyFlag = keyPressedMap[keyCode];
             isPressedKey = true;
@@ -456,7 +567,7 @@ public class ExpandAbility implements CommandListener {
      *
      * @param keyCode
      */
-    public static void keyReleased() {
+    public void keyReleased() {
         isPressedKey = false;
         MainCanvas.mc.restKeyFlag();
     }
@@ -464,7 +575,7 @@ public class ExpandAbility implements CommandListener {
     /**
      * 清除按键
      */
-    public static void resetKey() {
+    public void resetKey() {
         MainCanvas.resetKey();
     }
 
@@ -473,7 +584,7 @@ public class ExpandAbility implements CommandListener {
      *
      * @return
      */
-    public static long getRunTime() {
+    public long getRunTime() {
         long currTime = System.currentTimeMillis();
         runTime += (currTime - lastTickTime);
         lastTickTime = currTime;
@@ -486,7 +597,7 @@ public class ExpandAbility implements CommandListener {
      * @param player
      * @param target
      */
-    public static void battleApothecary(Player player) {
+    public void battleApothecary(Player player) {
         if (player.state != 5) {  // 玩家没有死亡
             // 检查是否进战斗
             int hpPer = player.getPercentageHp();
@@ -541,22 +652,22 @@ public class ExpandAbility implements CommandListener {
      *
      * @param g
      */
-    public static void drawHangUpUI(Graphics g) {
-        ExpandAbility.getInstance().baseForm.draw(g);
+    public void drawHangUpUI(Graphics g) {
+        baseForm.draw(g);
     }
 
-    public static void keyInUiHangUp() {
+    public void keyInUiHangUp() {
         if (MainCanvas.isKeyPress(18)) {
             MainCanvas.mc.setGameState((byte) 0);
         } else if (MainCanvas.isKeyPress(11)) {
             if (vIndex > 0) {
                 --vIndex;
-                ExpandAbility.getInstance().baseForm.setComponentFocus((UIComponent) components.elementAt(vIndex));
+                baseForm.setComponentFocus((UIComponent) components.elementAt(vIndex));
             }
         } else if (MainCanvas.isKeyPress(13)) {
             if (vIndex < components.size() - 1) {
                 ++vIndex;
-                ExpandAbility.getInstance().baseForm.setComponentFocus((UIComponent) components.elementAt(vIndex));
+                baseForm.setComponentFocus((UIComponent) components.elementAt(vIndex));
             }
         } else if (MainCanvas.isKeyPress(10)) {
             UIRadioButton ui = (UIRadioButton) components.elementAt(vIndex);
@@ -569,6 +680,15 @@ public class ExpandAbility implements CommandListener {
             String e = "噩梦谷二";
             String[] path = aStar2World(s, e);
         }
+    }
+
+    /**
+     * 原生按钮事件
+     *
+     * @param c
+     * @param d
+     */
+    public void commandAction(Command c, Displayable d) {
     }
 
     /**
@@ -647,22 +767,13 @@ public class ExpandAbility implements CommandListener {
     }
 
     /**
-     * 原生按钮事件
-     *
-     * @param c
-     * @param d
-     */
-    public void commandAction(Command c, Displayable d) {
-    }
-
-    /**
      * 获取世界地图寻径位置
      *
      * @param sMap 起始地图
      * @param eMap 结束地图
      * @return
      */
-    public static String[] aStar2World(String sMap, String eMap) {
+    public String[] aStar2World(String sMap, String eMap) {
         String[] path = null;
         int sIndex = -1;
         int eIndex = -1;
@@ -685,7 +796,7 @@ public class ExpandAbility implements CommandListener {
             // 使用关闭列表索引作为父index，因为关闭列表不需要排序
             short[][] cList = new short[length][];
             // 初始化开放列表，起点父格子为-1
-            oList[0] = new short[]{(short)sIndex, -1, 0, (short)Math.abs(eIndex - sIndex)};
+            oList[0] = new short[]{(short) sIndex, -1, 0, (short) Math.abs(eIndex - sIndex)};
             boolean isEnd = false;
             while (wIndex > -1 && !isEnd) {
                 // 取出最小成本，
@@ -713,8 +824,8 @@ public class ExpandAbility implements CommandListener {
                                 break;
                             }
                         }
-                        short g = (short)(min[2] + 1);
-                        short h = (short)Math.abs(eIndex - d);
+                        short g = (short) (min[2] + 1);
+                        short h = (short) Math.abs(eIndex - d);
                         if (oIndex == -1) {  // 未找到，加入开放列表
                             // 先自增oList
                             ++wIndex;
@@ -733,8 +844,8 @@ public class ExpandAbility implements CommandListener {
                 // 重新排序开放列表
                 for (short i = 1; i <= wIndex; ++i) {
                     short[] km = oList[i];
-                    short k = (short)(km[2] + km[3]);
-                    short j = (short)(i - 1);
+                    short k = (short) (km[2] + km[3]);
+                    short j = (short) (i - 1);
                     while (j >= 0 && (oList[j][2] + oList[j][3]) < k) {
                         oList[j + 1] = oList[j];
                         j--;
