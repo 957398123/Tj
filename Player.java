@@ -18,7 +18,7 @@ public class Player extends OtherPlayer {
     private int[][] projectionAcme = new int[8][2];
     public static final int FOLLOW_NO_AIM = -1;
     /**
-     * 是否寻径中
+     * 寻径目标ID
      */
     public int followAimID = -1;
     /**
@@ -1085,8 +1085,8 @@ public class Player extends OtherPlayer {
     }
 
     /**
-     * 检测指定技能是否可以释放
-     * 需要判断玩家是否学习
+     * 检测指定技能是否可以释放 需要判断玩家是否学习
+     *
      * @return
      */
     public boolean canCastSkill(int skillIndex) {
@@ -1739,12 +1739,29 @@ public class Player extends OtherPlayer {
     }
 
     /**
-     * 返回当前玩家是否寻径中
+     * 返回当前玩家是否有寻径目标
      *
      * @return
      */
     public boolean isFollow() {
-        return !(followAimID == -1);
+        return followAimID != -1;
+    }
+
+    /**
+     * 判断角色是否寻径中
+     *
+     * @return
+     */
+    public boolean isFindPath() {
+        return path != null && path.length > 0;
+    }
+
+    /**
+     * 取消玩家寻径
+     */
+    public void resetFindPath() {
+        path = null;
+        followAimID = -1;
     }
 
     /**
@@ -1770,20 +1787,26 @@ public class Player extends OtherPlayer {
     }
 
     public void setCastTick(long castTick) {
-        castTick = castTick;
+        this.castTick = castTick;
     }
 
     public int getCastLength() {
         return castLength;
     }
 
+    /**
+     * 获取寻径路径
+     *
+     * @param aimCol
+     * @param aimRow
+     */
     public void setAimColRow(int aimCol, int aimRow) {
         if (aimCol != col || aimRow != row) {
             path = AStarTree.getInstance().findPath(col, row, aimCol, aimRow);
         }
     }
 
-    private final boolean getDirect() {
+    private boolean getDirect() {
         while (path != null && path.length > 0 && findpath) {
             setState((byte) 1);
             int dCol = path[0][0] - col;

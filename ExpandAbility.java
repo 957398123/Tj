@@ -42,7 +42,7 @@ public class ExpandAbility {
      * 在PCArena的tick以后 这是最后面的tick
      */
     public static void afterPCArenaTick() {
-        ec.afterPCArenaTick();;
+        ec.afterPCArenaTick();
     }
 
     /**
@@ -123,6 +123,11 @@ public class ExpandAbility {
     }
 }
 
+/**
+ * 具体实现类
+ *
+ * @author yihua
+ */
 class ExtendClass implements CommandListener {
 
     private ExtendClass() {
@@ -213,23 +218,23 @@ class ExtendClass implements CommandListener {
     /**
      * 上一次tick时间
      */
-    private static long lastTickTime = System.currentTimeMillis();
+    private long lastTickTime = System.currentTimeMillis();
     /**
      * 插件已运行时间
      */
-    private static long runTime = 0;
+    private long runTime = 0;
     /**
      * 是否一直按住按键
      */
-    private static boolean isHoldKey = false;
+    private boolean isHoldKey = false;
     /**
      * 是否已经按键
      */
-    private static boolean isPressedKey = false;
+    private boolean isPressedKey = false;
     /**
      * 上一次玩家操作时间
      */
-    private static long lastPlayTick = 0;
+    private long lastPlayTick = 0;
     /**
      * 设置界面
      */
@@ -237,15 +242,27 @@ class ExtendClass implements CommandListener {
     /**
      * 组件列表
      */
-    private static Vector components;
+    private Vector components;
     /**
-     * 设置选项
+     * 设置选项 0-开 1-关
      */
-    private byte[] setup = new byte[]{0, 0, 0, 0, 0};
+    private byte[] setup = new byte[]{1, 1, 1, 1, 1};
+    /**
+     * 角色状态机 0-恢复 1-寻路 2-战斗
+     */
+    private byte status = 0;
+    /**
+     * 巡逻挂机位置 列
+     */
+    private int pCol = -1;
+    /**
+     * 巡逻挂机位置 行
+     */
+    private int pRow = -1;
     /**
      * 设置界面选中
      */
-    private static byte vIndex = 0;
+    private byte vIndex = 0;
     // 原生组件 确定
     private Command ok;
     // 原生组件 返回
@@ -255,7 +272,7 @@ class ExtendClass implements CommandListener {
     /**
      * 地图名称
      */
-    private static String[] mapNames = {
+    private String[] mapNames = {
         "昌意城", "天籁岛三", "天籁岛二", "迷幻梦境", "天籁岛一", "云中仙城", "孤月岛一", "孤月岛二", "百鬼井二", "百鬼井一", // 9
         "姬水部落", "城阳谷林一", "城阳谷林二", "百鬼井三", "鬼魂牢", "常羊山一", "常羊山二", "迷幻云阶一", "常羊山三", "玉竹林一", // 19
         "玉竹林二", "迷幻云阶二", "昆吾草原", "雷泽一", "雷泽二", "姚墟残骸一", "姚墟残骸二", "雷泽三", "姚墟城堡一", "姚墟城堡二", // 29
@@ -275,7 +292,7 @@ class ExtendClass implements CommandListener {
     /**
      * 地图出口
      */
-    private static short[][] mapPaths = { // {地图类型, 上, 下, 左, 右}
+    private short[][] mapPaths = { // {地图类型, 上, 下, 左, 右}
         {4, 13, 15, 1, -1}, // 昌意城
         {4, -1, 2, 4, 0}, // 天籁岛三
         {4, 1, 3, 4, -1}, // 天籁岛二
@@ -599,33 +616,53 @@ class ExtendClass implements CommandListener {
      */
     public void battleApothecary(Player player) {
         if (player.state != 5) {  // 玩家没有死亡
-            // 检查是否进战斗
-            int hpPer = player.getPercentageHp();
-            int mpPer = player.getPercentageMp();
             // 获取当前选中目标
             GameObj target = ObjManager.currentTarget;
-            boolean isEnemy = Util.isEnemy(target, player);
-            // 血量少于40%使用心疗术，这里不查是不知道是否学了这个技能
-            if (hpPer < 50 && player.canCastSkill(2)) {
-                player.caskSkill(player, 2);
-            } else if (player.isBeAttack() || isEnemy || (hpPer > 70 && mpPer > 70)) {   // 进了战斗，或者状态良好，继续战斗
-                // 如果当前未选中，或者不是可攻击对象
-                if (!isEnemy) {
+            // 检查是否进战斗
+            int hpPer = player.getPercentageHp();
+            if (status == 0) {   // 恢复中
+                int mpPer = player.getPercentageMp();
+                // 如果状态满了，或者被攻击
+                if ((hpPer > 70 && mpPer > 70 || player.isBeAttack())) {
+                    // 寻找下一个可攻击目标
                     // 选择最近的可攻击对象作为目标
                     target = player.getNearFightObj();
-                }
-                if (target != null) {
-                    if (ObjManager.canBeSetTarget(target, 80)) {  // 判断当前对象是否可以被选择
+                    if (target != null) {
                         // 判断当前是否选中地方单位
                         ObjManager manager = ObjManager.getInstance();
                         // 设置为当前选择对象
                         manager.setCurrentTarget(target);
-                        // 如果是寻径中，取消寻径
-                        if (player.isFollow()) {
-                            player.resetAimID();
-                        }
+                        // 设置寻径
+                        player.setAimColRow(target.col, target.row);
+                        status = 1;
+                    }
+                } else if (setup[0] == 0 && !player.isFindPath()) {  // 检测是否定点打怪
+                    if (pCol != player.col && pRow != player.row) {
+                        // 设置回原点
+                        player.setAimColRow(pCol, pRow);
+                    } else {
+                        // 结束寻径
+                        player.resetFindPath();
+                    }
+                }
+            } else if (status == 1) {  // 寻径中
+                // 如果是寻径，到目标范围切换战斗状态
+                if (GameObj.inDistance(player.x, player.y, target.x, target.y, 70)) {
+                    player.resetFindPath();
+                    // 进入战斗
+                    status = 2;
+                } else {
+                    // 这里需要实时更新目标路径
+                    player.setAimColRow(target.col, target.row);
+                }
+            } else if (status == 2) {  // 进入战斗
+                if (target != null && target != player) {
+                    // 这里怪物在受到攻击后，寻径找玩家的时候，可能会大于这个值，所以这里需要进行判断
+                    if (GameObj.inDistance(player.x, player.y, target.x, target.y, 80)) {  // 如果在施法范围
                         // 判断是否可以释放技能，这里注意吟唱技能时没有内置CD的
-                        if (player.canCastSkill(1)) {  // 释放飓风之牙
+                        if (hpPer < 40 && player.canCastSkill(2)) {
+                            player.caskSkill(player, 2);
+                        } else if (player.canCastSkill(1)) {  // 释放飓风之牙
                             player.caskSkill(target, 1);
                         } else { // 判断是否可以普通攻击
                             // 判断当前是否能攻击到
@@ -637,12 +674,16 @@ class ExtendClass implements CommandListener {
                                 }
                             }
                         }
-                    } else {  // 寻径，这里必须实时更新
-                        player.setAimColRow(target.col, target.row);
+                    } else {  // 寻径
+                        status = 1;
                     }
+                } else {   // 怪物已死亡
+                    status = 0;
                 }
             }
         } else {  //按#键复活
+            // 设置为回复状态
+            status = 0;
             keyPressed(NUM_11);
         }
     }
@@ -657,28 +698,50 @@ class ExtendClass implements CommandListener {
     }
 
     public void keyInUiHangUp() {
-        if (MainCanvas.isKeyPress(18)) {
-            MainCanvas.mc.setGameState((byte) 0);
-        } else if (MainCanvas.isKeyPress(11)) {
-            if (vIndex > 0) {
-                --vIndex;
-                baseForm.setComponentFocus((UIComponent) components.elementAt(vIndex));
+        String fouceFormName = baseForm.getCurrentFocusForm().getName();
+        if (baseForm.getCurrentFocusForm() == baseForm) {
+            if (MainCanvas.isKeyPress(18)) {  // 返回
+                MainCanvas.mc.setGameState((byte) 0);
+            } else if (MainCanvas.isKeyPress(11)) {  // 上
+                if (vIndex > 0) {
+                    --vIndex;
+                    baseForm.setComponentFocus((UIComponent) components.elementAt(vIndex));
+                }
+            } else if (MainCanvas.isKeyPress(13)) { // 下
+                if (vIndex < components.size() - 1) {
+                    ++vIndex;
+                    baseForm.setComponentFocus((UIComponent) components.elementAt(vIndex));
+                }
+            } else if (MainCanvas.isKeyPress(10)) { // 左
+                UIRadioButton ui = (UIRadioButton) components.elementAt(vIndex);
+                setup[vIndex] = 0;
+                ui.setChooseItem(0);
+            } else if (MainCanvas.isKeyPress(12)) { // 右
+                UIRadioButton ui = (UIRadioButton) components.elementAt(vIndex);
+                setup[vIndex] = 1;
+                ui.setChooseItem(1);
+            } else if (MainCanvas.isKeyPress(14)) {  // ok
+            } else if (MainCanvas.isKeyPress(17)) {  // 左软键
+                baseForm.addAboutForm("hangup", "确实要挂机吗？", (byte) 2, 140, 0);
             }
-        } else if (MainCanvas.isKeyPress(13)) {
-            if (vIndex < components.size() - 1) {
-                ++vIndex;
-                baseForm.setComponentFocus((UIComponent) components.elementAt(vIndex));
+        } else if ("hangup".equals(fouceFormName)) {  // 处理挂机选项
+            if (MainCanvas.isKeyPress(14) || MainCanvas.isKeyPress(17) || MainCanvas.isKeyPress(18)) {
+                Player player = Player.getInstance();
+                baseForm.setAboutForm(null);
+                if (MainCanvas.isKeyPress(14) || MainCanvas.isKeyPress(17)) {
+                    // 如果设置了巡逻挂机
+                    if (setup[0] == 0) {
+                        pCol = player.col;
+                        pRow = player.row;
+                    }
+                    player.isHangup = true;
+                    // 设置游戏中
+                    MainCanvas.mc.setGameState((byte) 0);
+                    MainCanvas.mc.releaseUI();
+                } else {
+                    player.isHangup = false;
+                }
             }
-        } else if (MainCanvas.isKeyPress(10)) {
-            UIRadioButton ui = (UIRadioButton) components.elementAt(vIndex);
-            ui.setChooseItem(0);
-        } else if (MainCanvas.isKeyPress(12)) {
-            UIRadioButton ui = (UIRadioButton) components.elementAt(vIndex);
-            ui.setChooseItem(1);
-        } else if (MainCanvas.isKeyPress(14)) {  //测试查找地图
-            String s = "孤月岛二";
-            String e = "噩梦谷二";
-            String[] path = aStar2World(s, e);
         }
     }
 
@@ -702,7 +765,7 @@ class ExtendClass implements CommandListener {
         UILabel lblTitle = new UILabel(0, rimTitle.positionY + 3, 0, 0, "挂机设置", 15718815, (byte) 1, (byte) 0);
         UIRim rimDown = new UIRim(0, 27, 160, 160, (byte) 0);
         UIRim rimDownInner = new UIRim(0, 32, 150, 150, (byte) 0);
-        UILabel lblOk = new UILabel(0, 0, 0, 0, "确定", 15718815, (byte) 1, (byte) 0);
+        UILabel lblOk = new UILabel(0, 0, 0, 0, "挂机", 15718815, (byte) 1, (byte) 0);
         UILabel lblCancel = new UILabel(0, 0, 0, 0, "返回", 15718815, (byte) 1, (byte) 0);
         baseForm.addComponent(rimFrame);
         baseForm.addComponentInCenter(rimTitle, (byte) 2);
@@ -869,7 +932,6 @@ class ExtendClass implements CommandListener {
                 for (short i = 0; i < v.size(); ++i) {
                     path[i] = (String) v.elementAt(i);
                 }
-                v = null;
             }
         }
         return path;

@@ -26,8 +26,9 @@ public class ObjManager {
 
     public void tick() {
         ExpandAbility.beforeObjManagerTick(this);
+        Player player = Player.getInstance();
         if (currentTarget == null) {
-            currentTarget = Player.getInstance();
+            currentTarget = player;
         }
         for (int i = 0; i < vectorObj.size(); i++) {
             GameObj obj = (GameObj) vectorObj.elementAt(i);
@@ -41,8 +42,9 @@ public class ObjManager {
             }
         }
         // 如果选中目标超出范围
-        if (currentTarget != null && !canBeSetTarget(currentTarget, 90)) {
-            setCurrentTarget(Player.getInstance());
+        if (currentTarget != null && !canBeSetTarget(currentTarget, 90) && !player.isHangup) {
+            // 如果玩家在挂机中，并且选中的是敌人目标，不更改选中地方目标
+            setCurrentTarget(player);
         }
         ExpandAbility.afterObjManagerTick(this);
     }
@@ -109,9 +111,10 @@ public class ObjManager {
 
     /**
      * 判断当前选择目标是否超出范围
+     *
      * @param target
      * @param size
-     * @return 
+     * @return
      */
     public static boolean canBeSetTarget(GameObj target, int size) {
         Player player = Player.getInstance();
@@ -125,9 +128,9 @@ public class ObjManager {
     public static GameObj getObj(int objID) {
         return getInstance().getObjFromList(objID, 0);
     }
-    
-    public static OtherPlayer getOtherPlayer(int objID){
-        return (OtherPlayer)getInstance().getObjFromList(objID, 0);
+
+    public static OtherPlayer getOtherPlayer(int objID) {
+        return (OtherPlayer) getInstance().getObjFromList(objID, 0);
     }
 
     private GameObj getObjFromList(int objID, int type) {
@@ -154,7 +157,8 @@ public class ObjManager {
 
     /**
      * 设置当前选择对象
-     * @param obj 
+     *
+     * @param obj
      */
     public void setCurrentTarget(GameObj obj) {
         if (obj == null) {

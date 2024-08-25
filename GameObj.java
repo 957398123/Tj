@@ -1061,13 +1061,11 @@ public class GameObj {
 
     private byte autoFindDirect() {
         int i = 1;
-
         for(int kk = COL_ROWS.length; i < kk; ++i) {
             if (Map.getInstance().isFloor(col + COL_ROWS[i][0], row + COL_ROWS[i][1])) {
                 return (byte)i;
             }
         }
-
         return -1;
     }
 
@@ -2130,7 +2128,7 @@ public class GameObj {
         int dis = (playerX - targetX) * (playerX - targetX);
         dis += (playerY - targetY) * (playerY - targetY);
         int dis2 = distance * distance;
-        if (dis < dis2) {
+        if (dis <= dis2) {
             return true;
         }
         return false;

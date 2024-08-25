@@ -154,7 +154,7 @@ public class PCGameObj {
                 ObjManager.addObj(neighbor);
                 break;
             }
-            case 0x2000180: {
+            case Cmd.S_MAINCANVAS_OTHERPLAYER_MOVE: {
                 movingNeighborID = byteArray.readInt();
                 // 获取当前移动对象
                 GameObj movingObj = ObjManager.getObj(movingNeighborID);

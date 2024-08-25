@@ -4193,18 +4193,6 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 baseForm.setAboutForm(null);
             } else if (actionInForm(cmd)) {
             }
-        } else if ("hangup".equals(fouceFormName)) {  // 处理挂机选项
-            if (isKeyPress(14) || isKeyPress(17) || isKeyPress(18)) {
-                if (isKeyPress(14) || isKeyPress(17)) {
-                    Player.getInstance().isHangup = true;
-                } else {
-                    Player.getInstance().isHangup = false;
-                }
-                baseForm.setAboutForm(null);
-                // 设置游戏中
-                setGameState((byte) 0);
-                releaseUI();
-            }
         }
     }
 
@@ -6941,13 +6929,14 @@ public class MainCanvas extends FullCanvas implements Runnable, CommandListener,
                 }
                 if (!actionInForm(cmd) && (isKeyPress(17) || isKeyPress(14))) {
                     ObjManager.currentTarget = null;
+                    Player player = Player.getInstance();
                     String pos = npcPOSTables.getCurentItem().substring(npcPOSTables.getCurentItem().indexOf(":") + 1);
                     int npcx = Integer.parseInt(pos.substring(0, pos.indexOf(",")));
                     int npcy = Integer.parseInt(pos.substring(pos.indexOf(",") + 1));
                     setGameState((byte) 0);
                     releaseUI();
-                    Player.getInstance().setAimColRow(npcx, npcy);
-                    Player.getInstance().setState((byte) 1);
+                    player.setAimColRow(npcx, npcy);
+                    player.setState((byte) 1);
                 }
                 break;
             }
