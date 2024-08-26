@@ -137,7 +137,13 @@ public class GameObj {
     private byte firstRowOrColumn = 0;
     public int row;
     public int col;
+    /**
+     * 寻径目标
+     */
     public int aimRow;
+    /**
+     * 寻径目标
+     */
     public int aimColumn;
     public int oldRow;
     public int oldCol;
@@ -831,6 +837,11 @@ public class GameObj {
 
     }
 
+    /**
+     * 设置角色寻径目标
+     * @param argAimRow
+     * @param argAimColumn 
+     */
     public void setAimRowAndColumn(int argAimRow, int argAimColumn) {
         aimRow = argAimRow;
         aimColumn = argAimColumn;

@@ -618,32 +618,31 @@ class ExtendClass implements CommandListener {
         if (player.state != 5) {  // 玩家没有死亡
             // 获取当前选中目标
             GameObj target = ObjManager.currentTarget;
+            ObjManager manager = ObjManager.getInstance();
             // 检查是否进战斗
             int hpPer = player.getPercentageHp();
             if (status == 0) {   // 恢复中
                 int mpPer = player.getPercentageMp();
                 // 如果状态满了，或者被攻击
-                if ((hpPer > 70 && mpPer > 70 || player.isBeAttack())) {
+                if ((hpPer > 70 && mpPer > 70 || player.isBeAttack)) {
                     // 寻找下一个可攻击目标
                     // 选择最近的可攻击对象作为目标
                     target = player.getNearFightObj();
                     if (target != null) {
-                        // 判断当前是否选中地方单位
-                        ObjManager manager = ObjManager.getInstance();
                         // 设置为当前选择对象
                         manager.setCurrentTarget(target);
                         // 设置寻径
                         player.setAimColRow(target.col, target.row);
                         status = 1;
                     }
-                } else if (setup[0] == 0 && !player.isFindPath()) {  // 检测是否定点打怪
-                    if (pCol != player.col && pRow != player.row) {
+                } else if (setup[0] == 0 && !player.isColRow(pCol, pRow)) {  // 检测是否定点打怪
+                    if(!player.isAimColRow(pCol, pRow)){
                         // 设置回原点
                         player.setAimColRow(pCol, pRow);
-                    } else {
-                        // 结束寻径
-                        player.resetFindPath();
                     }
+                } else if (hpPer < 100 && player.canCastSkill(2)) {
+                    manager.setCurrentTarget(player);
+                    player.caskSkill(player, 2);
                 }
             } else if (status == 1) {  // 寻径中
                 // 如果是寻径，到目标范围切换战斗状态
@@ -661,7 +660,8 @@ class ExtendClass implements CommandListener {
                     if (GameObj.inDistance(player.x, player.y, target.x, target.y, 80)) {  // 如果在施法范围
                         // 判断是否可以释放技能，这里注意吟唱技能时没有内置CD的
                         if (hpPer < 40 && player.canCastSkill(2)) {
-                            player.caskSkill(player, 2);
+                            // 这里必须设置为当前选中对象
+                            player.caskSkill(target, 2);
                         } else if (player.canCastSkill(1)) {  // 释放飓风之牙
                             player.caskSkill(target, 1);
                         } else { // 判断是否可以普通攻击

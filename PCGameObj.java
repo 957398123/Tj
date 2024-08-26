@@ -266,29 +266,21 @@ public class PCGameObj {
             case 0x2000680: {
                 objID = byteArray.readInt();
                 obj = ObjManager.getObj(objID);
-                if (obj == null) {
-                    byteArray.readInt();
-                    byteArray.readInt();
-                    byteArray.readInt();
-                    byteArray.readInt();
-                    byteArray.readShort();
-                    byteArray.readInt();
-                    byteArray.readByte();
-                    break;
-                }
-                obj.maxHp = byteArray.readInt();
-                obj.curHp = byteArray.readInt();
-                obj.maxMp = byteArray.readInt();
-                obj.curMp = byteArray.readInt();
-                atkHpForDisplay = byteArray.readShort();
-                buffer = byteArray.readInt();
-                tempWeapon = byteArray.readByte();
-                obj.isBaoJi = (byteArray.readByte() > 0);
-                obj.tickHpChange(atkHpForDisplay);
-                obj.setBuffer(buffer);
-                obj.bufferStateFlag = buffer;
-                if (obj.currentImgID == -1) {
-                    obj.setCurWeapon(tempWeapon);
+                if (obj != null) {
+                    obj.maxHp = byteArray.readInt();
+                    obj.curHp = byteArray.readInt();
+                    obj.maxMp = byteArray.readInt();
+                    obj.curMp = byteArray.readInt();
+                    atkHpForDisplay = byteArray.readShort();
+                    buffer = byteArray.readInt();
+                    tempWeapon = byteArray.readByte();
+                    obj.isBaoJi = (byteArray.readByte() > 0);
+                    obj.tickHpChange(atkHpForDisplay);
+                    obj.setBuffer(buffer);
+                    obj.bufferStateFlag = buffer;
+                    if (obj.currentImgID == -1) {
+                        obj.setCurWeapon(tempWeapon);
+                    }
                 }
                 break;
             }
@@ -583,7 +575,6 @@ public class PCGameObj {
                     if (skillData[1] == 6 || skillData[1] == 2 || skillData[1] == 5) {
                         objID = player.objID;
                     }
-                    System.out.println("[send command]:command=C_PLAYER_FIGHT_START,class=PCGameObj,type=fight,fightobj=0x" + Integer.toHexString(objID) + ",skillIndex=" + player.skillIndex);
                     byteArray.writeInt(objID);
                     byteArray.writeInt(player.x);
                     byteArray.writeInt(player.y);

@@ -22,6 +22,10 @@ public class Player extends OtherPlayer {
      */
     public int followAimID = -1;
     /**
+     * 玩家当前是否被攻击
+     */
+    public boolean isBeAttack = false;
+    /**
      * 是否挂机中
      */
     public boolean isHangup = false;
@@ -252,7 +256,7 @@ public class Player extends OtherPlayer {
             }
             case 7: {  // 释放技能状态
                 keyInSkillPre();
-                if (castLength == 0) {
+                if (castLength == 0) {  // 处理瞬发技能
                     if (!checkSkillObj(this, ObjManager.currentTarget, skillIndex, true)) {
                         castTick = 0L;
                         setState((byte) 0);
@@ -266,9 +270,7 @@ public class Player extends OtherPlayer {
                     curMp -= getSkillMP(skillIndex);
                     MainCanvas.ni.send(Cmd.C_PLAYER_FIGHT_START);
                     break;
-                }
-                // 如果施法时间到了
-                if (System.currentTimeMillis() - castTick >= castLength) {
+                } else if (System.currentTimeMillis() - castTick >= castLength) {  // 吟唱技能
                     if (!checkSkillObj(this, ObjManager.currentTarget, skillIndex, true)) {
                         castTick = 0L;
                         setState((byte) 0);
@@ -1091,7 +1093,7 @@ public class Player extends OtherPlayer {
      */
     public boolean canCastSkill(int skillIndex) {
         // 默认CD时间
-        int dTime = 300;
+        int dTime = 0;
         boolean result = false;
         // 首先获取技能数据
         short[] skillData = getSkillData(profession, skillIndex);
@@ -1104,9 +1106,8 @@ public class Player extends OtherPlayer {
                 short sCastCD = skillData[5];
                 long curTime = System.currentTimeMillis();
                 if (sCastLength != 0) {  // 吟唱类技能
-                    if ((curTime - castTick) > (castLength + dTime)) {
-                        result = true;
-                    }
+                    // 这里不需要检测，因为不在施法状态才能释放技能
+                    result = true;
                 } else if (sCastCD != 0) {
                     if ((curTime - skillCD[skillIndex]) > sCastCD * 1000 + dTime) {
                         result = true;
@@ -1676,7 +1677,6 @@ public class Player extends OtherPlayer {
      */
     private boolean checkSkillObj(GameObj player, GameObj target, int skillIndex, boolean ifcheckoldtarget) {
         short[] skillData = getSkillData(player.profession, skillIndex);
-        short skillType = skillData[1];
         if (ifcheckoldtarget && oldSkillTargetId != ObjManager.currentTarget.objID) {
             return false;
         }
@@ -1796,14 +1796,30 @@ public class Player extends OtherPlayer {
 
     /**
      * 获取寻径路径
-     *
+     * 玩家必须调用这个设置
      * @param aimCol
      * @param aimRow
      */
     public void setAimColRow(int aimCol, int aimRow) {
+        this.aimColumn = aimCol;
+        this.aimRow = aimRow;
         if (aimCol != col || aimRow != row) {
             path = AStarTree.getInstance().findPath(col, row, aimCol, aimRow);
         }
+    }
+    
+    public boolean isColRow(int aimCol, int aimRow){
+        return col == aimCol && row == aimRow;
+    }
+    
+    /**
+     * 获取当前是否寻径目标
+     * @param aimCol
+     * @param aimRow
+     * @return 
+     */
+    public boolean isAimColRow(int aimCol, int aimRow){
+        return this.aimColumn == aimCol && this.aimRow == aimRow;
     }
 
     private boolean getDirect() {
@@ -1838,7 +1854,11 @@ public class Player extends OtherPlayer {
             }
             return true;
         }
+        // 寻径结束
         setState((byte) 0);
+        followAimID = -1;
+        aimColumn = -1;
+        aimRow = -1;
         return false;
     }
 
@@ -1854,15 +1874,21 @@ public class Player extends OtherPlayer {
         return direction;
     }
 
-    public boolean isBeAttack() {
-        return curHp - lastHp < 0;
-    }
-
     public void useSkill(GameObj targetGameObj, int skillIndex, byte direction) {
         if (skillType == 2 || skillType == 5) {
             super.useSkill(this, skillIndex, direction);
         } else {
             super.useSkill(targetGameObj, skillIndex, direction);
         }
+    }
+
+    /**
+     * 重写血量更改
+     *
+     * @param hpChg
+     */
+    public void tickHpChange(int hpChg) {
+        isBeAttack = curHp - lastHp < 0 ? true : false;
+        super.tickHpChange(hpChg);
     }
 }
