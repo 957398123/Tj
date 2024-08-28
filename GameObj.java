@@ -1,8 +1,10 @@
+
 import java.util.Stack;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 public class GameObj {
+
     public byte isReincarnation = 0;
     public static final int RNameColor = 1745905;
     private static final byte[][] SELARC_WH = new byte[][]{{29, 16}, {32, 18}, {41, 21}};
@@ -65,15 +67,11 @@ public class GameObj {
      */
     public byte type;
     /**
-     * 职业类型
-     * 0 1 2 3 group1 3-医师
-     * 4 5 6 7 group2
+     * 职业类型 0 1 2 3 group1 3-医师 4 5 6 7 group2
      */
     public byte imgID;
     /**
-     * 阵营标识
-     * 1-天人界
-     * 2-修罗界
+     * 阵营标识 1-天人界 2-修罗界
      */
     public byte group;
     public short accuracy;
@@ -99,6 +97,9 @@ public class GameObj {
      */
     public int[][] hpChange = new int[3][3];
     public static final short HP_CHANGE_COUNT = 6;
+    /**
+     * 这个代表是否会主动进攻
+     */
     public byte action = 0;
     public byte eliteType = 0;
     public byte curWeapon;
@@ -295,7 +296,7 @@ public class GameObj {
         int tempImgID = imgID - 40;
         int tempIndex = 0;
 
-        for(int i = 0; i < PCChangeMap.arrEnemy.length; ++i) {
+        for (int i = 0; i < PCChangeMap.arrEnemy.length; ++i) {
             if (PCChangeMap.arrEnemy[i] == tempImgID) {
                 tempIndex = i;
             }
@@ -309,7 +310,7 @@ public class GameObj {
 
     public void setEventState(byte _state) {
     }
-    
+
     public void setState(byte s) {
         if (state != s) {
             int i;
@@ -364,7 +365,7 @@ public class GameObj {
                     i = 0;
                     kk = hpChange.length;
 
-                    while(true) {
+                    while (true) {
                         if (i >= kk) {
                             break label47;
                         }
@@ -384,7 +385,7 @@ public class GameObj {
                     i = 0;
                     kk = hpChange.length;
 
-                    while(true) {
+                    while (true) {
                         if (i >= kk) {
                             break label47;
                         }
@@ -458,13 +459,14 @@ public class GameObj {
         row = r;
         col = c;
     }
-    
+
     /**
      * 设置游戏对象在地图中位置
+     *
      * @param c
      * @param r
      */
-    public void setObjPosition(int c, int r){
+    public void setObjPosition(int c, int r) {
         x = Map.getCurrentCellCenterX(c, r);
         y = Map.getCurrentCellCenterY(c, r);
         setRowCol(r, c);
@@ -484,21 +486,21 @@ public class GameObj {
                 if (hpChange[0][0] == -1) {
                     hpChange[0][0] = 0;
                     hpChange[0][1] = 0;
-                    hpChange[0][2] = ((Integer)hpStates.pop()).intValue();
+                    hpChange[0][2] = ((Integer) hpStates.pop()).intValue();
                 } else if (hpChange[1][0] == -1) {
                     hpChange[1][0] = 0;
                     hpChange[1][1] = 0;
-                    hpChange[1][2] = ((Integer)hpStates.pop()).intValue();
+                    hpChange[1][2] = ((Integer) hpStates.pop()).intValue();
                 } else if (hpChange[2][0] == -1) {
                     hpChange[2][0] = 0;
                     hpChange[2][1] = 0;
-                    hpChange[2][2] = ((Integer)hpStates.pop()).intValue();
+                    hpChange[2][2] = ((Integer) hpStates.pop()).intValue();
                 }
             }
 
             int i = 0;
 
-            for(int kk = hpChange.length; i < kk; ++i) {
+            for (int kk = hpChange.length; i < kk; ++i) {
                 if (hpChange[i][0] == 0) {
                     int tmp = hpChange[i][2];
                     int var10002;
@@ -550,7 +552,7 @@ public class GameObj {
             hpStates.removeAllElements();
             int i = 0;
 
-            for(int kk = hpChange.length; i < kk; ++i) {
+            for (int kk = hpChange.length; i < kk; ++i) {
                 hpChange[i][0] = -1;
                 hpChange[i][1] = 0;
                 hpChange[i][2] = 0;
@@ -580,7 +582,8 @@ public class GameObj {
 
     /**
      * 设置当前攻击对象
-     * @param obj 
+     *
+     * @param obj
      */
     public void setPkObj(GameObj obj) {
         pkObj = obj;
@@ -589,7 +592,7 @@ public class GameObj {
     public void setBuffer(int buffer) {
         int i = 0;
 
-        for(int kk = bufferState.length; i < kk; ++i) {
+        for (int kk = bufferState.length; i < kk; ++i) {
             if ((buffer & Cons.BUFFER_TYPE[i]) != 0) {
                 bufferState[i] = true;
             } else {
@@ -622,14 +625,15 @@ public class GameObj {
 
     /**
      * 设置对目标使用技能动画
+     *
      * @param targetGameObj
      * @param skillIndex
-     * @param direction 
+     * @param direction
      */
     public void useSkill(GameObj targetGameObj, int skillIndex, byte direction) {
         if (targetGameObj != null) {
             if (skillIndex == 0) {
-                setState((byte)2);
+                setState((byte) 2);
                 if (type != 4) {
                     setDirection(direction);
                 }
@@ -646,25 +650,25 @@ public class GameObj {
                     case 1:
                         switch (skillIndex) {
                             case 1:
-                                setState((byte)31);
+                                setState((byte) 31);
                                 return;
                             case 2:
                                 SpecialManager.getInstance().addSpecial(this, 28);
                                 return;
                             case 3:
-                                setState((byte)39);
+                                setState((byte) 39);
                                 SpecialManager.getInstance().addSpecial(targetGameObj, 0);
                                 return;
                             case 4:
-                                setState((byte)40);
+                                setState((byte) 40);
                                 SpecialManager.getInstance().addSpecial(this, 1);
                                 return;
                             case 5:
-                                setState((byte)40);
+                                setState((byte) 40);
                                 SpecialManager.getInstance().addSpecial(this, 2);
                                 return;
                             case 6:
-                                setState((byte)34);
+                                setState((byte) 34);
                                 SpecialManager.getInstance().addSpecial(targetGameObj, 3);
                                 return;
                             case 7:
@@ -674,24 +678,24 @@ public class GameObj {
                             default:
                                 return;
                             case 8:
-                                setState((byte)40);
+                                setState((byte) 40);
                                 SpecialManager.getInstance().addSpecial(this, 4);
                                 return;
                             case 10:
-                                setState((byte)40);
+                                setState((byte) 40);
                                 SpecialManager.getInstance().addSpecial(this, 10);
                                 return;
                             case 12:
                                 SpecialManager.getInstance().addSpecial(targetGameObj, 18);
                                 return;
                             case 14:
-                                setState((byte)34);
+                                setState((byte) 34);
                                 SpecialManager.getInstance().addSpecial(x, y, 14);
                                 return;
                         }
                     case 2:
                         if (type == 1) {
-                            setState((byte)8);
+                            setState((byte) 8);
                         }
 
                         switch (skillIndex) {
@@ -736,7 +740,7 @@ public class GameObj {
                         }
                     case 3:
                         if (type == 1) {
-                            setState((byte)8);
+                            setState((byte) 8);
                         }
 
                         switch (skillIndex) {
@@ -792,43 +796,43 @@ public class GameObj {
                             default:
                                 break;
                             case 2:
-                                setState((byte)43);
+                                setState((byte) 43);
                                 SpecialManager.getInstance().addSpecial(targetGameObj, 31);
                                 break;
                             case 4:
-                                setState((byte)41);
+                                setState((byte) 41);
                                 SpecialManager.getInstance().addSpecial(targetGameObj, 32);
                                 break;
                             case 5:
-                                setState((byte)41);
+                                setState((byte) 41);
                                 SpecialManager.getInstance().addSpecial(this, 33);
                                 break;
                             case 6:
-                                setState((byte)42);
+                                setState((byte) 42);
                                 SpecialManager.getInstance().addSpecial(x, y, 34);
                                 break;
                             case 8:
-                                setState((byte)41);
+                                setState((byte) 41);
                                 SpecialManager.getInstance().addSpecial(targetGameObj, 35);
                                 break;
                             case 10:
-                                setState((byte)41);
+                                setState((byte) 41);
                                 SpecialManager.getInstance().addSpecial(targetGameObj, 36);
                                 break;
                             case 11:
-                                setState((byte)41);
+                                setState((byte) 41);
                                 SpecialManager.getInstance().addSpecial(targetGameObj, 37);
                                 break;
                             case 12:
-                                setState((byte)41);
+                                setState((byte) 41);
                                 SpecialManager.getInstance().addSpecial(targetGameObj, 38);
                                 break;
                             case 13:
-                                setState((byte)41);
+                                setState((byte) 41);
                                 SpecialManager.getInstance().addSpecial(this, 26);
                                 break;
                             case 14:
-                                setState((byte)41);
+                                setState((byte) 41);
                                 SpecialManager.getInstance().addSpecial(this, 26);
                         }
                 }
@@ -839,8 +843,9 @@ public class GameObj {
 
     /**
      * 设置角色寻径目标
+     *
      * @param argAimRow
-     * @param argAimColumn 
+     * @param argAimColumn
      */
     public void setAimRowAndColumn(int argAimRow, int argAimColumn) {
         aimRow = argAimRow;
@@ -850,11 +855,11 @@ public class GameObj {
 
     public void findPath() {
         if (aimRow == row && aimColumn == col) {
-            setState((byte)0);
+            setState((byte) 0);
         } else if (countFindPathJump == 60) {
             x = Map.getCurrentCellCenterX(aimColumn, aimRow);
             y = Map.getCurrentCellCenterY(aimColumn, aimRow);
-            setState((byte)0);
+            setState((byte) 0);
             countFindPathJump = 0;
         } else {
             subFindPath();
@@ -867,7 +872,7 @@ public class GameObj {
     }
 
     public void tickMove() {
-        setState((byte)1);
+        setState((byte) 1);
         switch (direction) {
             case 1:
                 y -= STEP[curStep][1];
@@ -904,40 +909,40 @@ public class GameObj {
         if (aimRow == row) {
             if (aimColumn > col) {
                 if (Map.getInstance().isFloor(col + 1, row)) {
-                    setDirection((byte)8);
+                    setDirection((byte) 8);
                     return true;
                 }
 
-                if (getRandomDirection((byte)7, (byte)1, (byte)6, (byte)1)) {
+                if (getRandomDirection((byte) 7, (byte) 1, (byte) 6, (byte) 1)) {
                     return true;
                 }
             } else if (aimColumn < col) {
                 if (Map.getInstance().isFloor(col - 1, row)) {
-                    setDirection((byte)5);
+                    setDirection((byte) 5);
                     return true;
                 }
 
-                if (getRandomDirection((byte)7, (byte)1, (byte)6, (byte)1)) {
+                if (getRandomDirection((byte) 7, (byte) 1, (byte) 6, (byte) 1)) {
                     return true;
                 }
             }
         } else if (aimColumn == col) {
             if (aimRow > row) {
                 if (Map.getInstance().isFloor(col, row + 1)) {
-                    setDirection((byte)7);
+                    setDirection((byte) 7);
                     return true;
                 }
 
-                if (getRandomDirection((byte)5, (byte)0, (byte)8, (byte)0)) {
+                if (getRandomDirection((byte) 5, (byte) 0, (byte) 8, (byte) 0)) {
                     return true;
                 }
             } else if (aimRow < row) {
                 if (Map.getInstance().isFloor(col, row - 1)) {
-                    setDirection((byte)6);
+                    setDirection((byte) 6);
                     return true;
                 }
 
-                if (getRandomDirection((byte)5, (byte)0, (byte)8, (byte)0)) {
+                if (getRandomDirection((byte) 5, (byte) 0, (byte) 8, (byte) 0)) {
                     return true;
                 }
             }
@@ -973,13 +978,13 @@ public class GameObj {
     }
 
     private boolean isHV() {
-        for(int i = 0; i < 20; ++i) {
+        for (int i = 0; i < 20; ++i) {
             if (aimRow - i == row && aimColumn - i == col) {
-                if (findDirect((byte)2)) {
+                if (findDirect((byte) 2)) {
                     if (!isDiagonally(row, col, 2)) {
                         return true;
                     }
-                } else if (getRandomDirection((byte)7, (byte)0, (byte)8, (byte)1)) {
+                } else if (getRandomDirection((byte) 7, (byte) 0, (byte) 8, (byte) 1)) {
                     return true;
                 }
 
@@ -987,27 +992,27 @@ public class GameObj {
             }
 
             if (aimRow + i == row && aimColumn + i == col) {
-                if (findDirect((byte)1)) {
+                if (findDirect((byte) 1)) {
                     if (!isDiagonally(row, col, 1)) {
                         return true;
                     }
-                } else if (getRandomDirection((byte)5, (byte)1, (byte)6, (byte)0)) {
+                } else if (getRandomDirection((byte) 5, (byte) 1, (byte) 6, (byte) 0)) {
                     return true;
                 }
             } else if (aimRow - i == row && aimColumn + i == col) {
-                if (findDirect((byte)3)) {
+                if (findDirect((byte) 3)) {
                     if (!isDiagonally(row, col, 3)) {
                         return true;
                     }
-                } else if (getRandomDirection((byte)5, (byte)1, (byte)7, (byte)0)) {
+                } else if (getRandomDirection((byte) 5, (byte) 1, (byte) 7, (byte) 0)) {
                     return true;
                 }
             } else if (aimRow + i == row && aimColumn - i == col) {
-                if (findDirect((byte)4)) {
+                if (findDirect((byte) 4)) {
                     if (!isDiagonally(row, col, 4)) {
                         return true;
                     }
-                } else if (getRandomDirection((byte)8, (byte)1, (byte)6, (byte)0)) {
+                } else if (getRandomDirection((byte) 8, (byte) 1, (byte) 6, (byte) 0)) {
                     return true;
                 }
             }
@@ -1020,18 +1025,18 @@ public class GameObj {
         if (!isHV() && !isSlope()) {
             if (firstRowOrColumn == 1) {
                 if (aimColumn > col) {
-                    if (!findDirect((byte)8) && !getRandomDirection((byte)6, (byte)1, (byte)6, (byte)1)) {
+                    if (!findDirect((byte) 8) && !getRandomDirection((byte) 6, (byte) 1, (byte) 6, (byte) 1)) {
                         setDirection(autoFindDirect());
                     }
-                } else if (aimColumn < col && !findDirect((byte)5) && !getRandomDirection((byte)7, (byte)1, (byte)6, (byte)1)) {
+                } else if (aimColumn < col && !findDirect((byte) 5) && !getRandomDirection((byte) 7, (byte) 1, (byte) 6, (byte) 1)) {
                     setDirection(autoFindDirect());
                 }
             } else if (firstRowOrColumn == 0) {
                 if (aimRow > row) {
-                    if (!findDirect((byte)7) && !getRandomDirection((byte)5, (byte)0, (byte)8, (byte)0)) {
+                    if (!findDirect((byte) 7) && !getRandomDirection((byte) 5, (byte) 0, (byte) 8, (byte) 0)) {
                         setDirection(autoFindDirect());
                     }
-                } else if (aimRow < row && !findDirect((byte)6) && !getRandomDirection((byte)5, (byte)0, (byte)8, (byte)0)) {
+                } else if (aimRow < row && !findDirect((byte) 6) && !getRandomDirection((byte) 5, (byte) 0, (byte) 8, (byte) 0)) {
                     setDirection(autoFindDirect());
                 }
             }
@@ -1072,9 +1077,9 @@ public class GameObj {
 
     private byte autoFindDirect() {
         int i = 1;
-        for(int kk = COL_ROWS.length; i < kk; ++i) {
+        for (int kk = COL_ROWS.length; i < kk; ++i) {
             if (Map.getInstance().isFloor(col + COL_ROWS[i][0], row + COL_ROWS[i][1])) {
-                return (byte)i;
+                return (byte) i;
             }
         }
         return -1;
@@ -1116,7 +1121,7 @@ public class GameObj {
                     case 43:
                     case 44:
                     case 45:
-                        setState((byte)0);
+                        setState((byte) 0);
                         curFrameIndex = 0;
                     case 3:
                     case 9:
@@ -1145,13 +1150,13 @@ public class GameObj {
                         break;
                     case 4:
                         curFrameIndex = 0;
-                        setState((byte)5);
+                        setState((byte) 5);
                         break;
                     case 5:
                         curFrameIndex = 0;
                         break;
                     case 6:
-                        setState((byte)0);
+                        setState((byte) 0);
                         curFrameIndex = 0;
                         break;
                     case 7:
@@ -1159,7 +1164,7 @@ public class GameObj {
                         break;
                     case 8:
                         curFrameIndex = 0;
-                        setState((byte)0);
+                        setState((byte) 0);
                 }
             }
 
@@ -1168,7 +1173,8 @@ public class GameObj {
 
     /**
      * 绘制选中对象（脚底下的选中条）
-     * @param g 
+     *
+     * @param g
      */
     public void drawSelect(Graphics g) {
         ++selectTick;
@@ -1286,13 +1292,13 @@ public class GameObj {
 
     GameObj() {
         int i;
-        for(i = 0; i < bufferState.length; ++i) {
+        for (i = 0; i < bufferState.length; ++i) {
             bufferState[i] = false;
         }
 
         hpStates = new Stack();
 
-        for(i = 0; i < hpChange.length; ++i) {
+        for (i = 0; i < hpChange.length; ++i) {
             hpChange[i][0] = -1;
             hpChange[i][1] = 0;
             hpChange[i][2] = 0;
@@ -1396,7 +1402,7 @@ public class GameObj {
             case 4:
                 if (imgID < 8) {
                     if (curHp <= 0) {
-                        setState((byte)5);
+                        setState((byte) 5);
                     }
 
                     setMotionIndex();
@@ -1408,15 +1414,20 @@ public class GameObj {
 
     }
 
+    /**
+     * 绘制玩家名称
+     *
+     * @param g
+     */
     public void drawTitle(Graphics g) {
+        Player player = Player.getInstance();
         if (name == null) {
             name = "";
         }
-
         int eventOffY = 0;
         int curColor = 0;
         int bakColor = 0;
-        if (!Cons.showName && (Cons.showName || this != ObjManager.currentTarget)) {
+        if (!Cons.showName && (Cons.showName || this != ObjManager.currentTarget)) {  // 不显示名字
             if (type == 3 && eventState != 0) {
                 if (eventState == 3) {
                     if (MainCanvas.countTick % 6 < 3) {
@@ -1433,58 +1444,56 @@ public class GameObj {
             }
         } else {
             int offX = 0;
-            if (type != 4 && (type != 2 || this == ObjManager.currentTarget)) {
-                if (type == 3 && eventState != 0) {
-                    offX = 9;
-                }
-
-                if (type == 2) {
-                    if (action == 0) {
-                        curColor = 16776960;
-                    } else {
-                        curColor = 16711680;
-                    }
-                } else if (type == 3) {
-                    curColor = 65535;
-                    if (offX != 0) {
-                        if (eventState == 3) {
-                            if (MainCanvas.countTick % 6 < 3) {
-                                ++eventOffY;
-                            }
-                        } else if (eventState == 4) {
-                            ++eventOffY;
-                            if (MainCanvas.countTick % 6 < 3) {
-                                ++eventOffY;
-                            }
-                        }
-
-                        MainCanvas.mImgUI[35].draw(g, x - Map.currentWindowX - (MainCanvas.font[1].stringWidth(name) >> 1), y - Map.currentWindowY - 46, eventState - 1 + eventOffY, false);
-                    }
-                } else if (type == 1) {
-                    if (Player.getInstance().group == group) {
-                        if (isEnemy) {
-                            curColor = 16711680;
-                            if (isReincarnation == 1) {
-                                curColor = 16711878;
-                            }
-                        } else {
-                            curColor = 65280;
-                            if (ObjManager.currentTarget.objID == objID && Cons.showName) {
-                                curColor = 5954819;
-                            }
-
-                            if (isReincarnation == 1) {
-                                curColor = 1745905;
-                            }
-                        }
-                    } else {
+            if (type == 3 && eventState != 0) {
+                offX = 9;
+            }
+            if (type == 1) {       // 处理其他绘制颜色
+                if (player.group == group) {  //如果是同一阵营
+                    if (isEnemy) {
                         curColor = 16711680;
                         if (isReincarnation == 1) {
                             curColor = 16711878;
                         }
+                    } else {
+                        curColor = 65280;
+                        if (ObjManager.currentTarget.objID == objID && Cons.showName) {
+                            curColor = 5954819;
+                        }
+                        if (isReincarnation == 1) {
+                            curColor = 1745905;
+                        }
+                    }
+                } else {
+                    curColor = 16711680;
+                    if (isReincarnation == 1) {
+                        curColor = 16711878;
                     }
                 }
-
+            } else if (type == 2) {    // 处理怪物绘制颜色
+                if (action == 0) {
+                    curColor = 16776960;
+                } else {
+                    curColor = 16711680;
+                }
+            } else if (type == 3) {    // 处理NPC绘制颜色
+                curColor = 65535;
+                if (offX != 0) {
+                    if (eventState == 3) {
+                        if (MainCanvas.countTick % 6 < 3) {
+                            ++eventOffY;
+                        }
+                    } else if (eventState == 4) {
+                        ++eventOffY;
+                        if (MainCanvas.countTick % 6 < 3) {
+                            ++eventOffY;
+                        }
+                    }
+                    MainCanvas.mImgUI[35].draw(g, x - Map.currentWindowX - (MainCanvas.font[1].stringWidth(name) >> 1), y - Map.currentWindowY - 46, eventState - 1 + eventOffY, false);
+                }
+            } else if (type == 5) {
+            }
+            // 不显示玩家自身名称
+            if (type != 4) {
                 if (Cons.showOtherPlayer) {
                     if (offX == 0) {
                         g.setColor(bakColor);
@@ -1492,7 +1501,6 @@ public class GameObj {
                         if (title != null && !title.equals("")) {
                             g.drawString(title, x - Map.currentWindowX + 1, y - Map.currentWindowY - 44 + 1 - UIComponent.charH, 17);
                         }
-
                         g.setColor(curColor);
                         g.drawString(name, x - Map.currentWindowX, y - Map.currentWindowY - 44, 17);
                         if (title != null && !title.equals("")) {
@@ -1504,7 +1512,6 @@ public class GameObj {
                         if (title != null && !title.equals("")) {
                             g.drawString(title, x - Map.currentWindowX - (MainCanvas.font[1].stringWidth(name) >> 1) + offX + 1, y - Map.currentWindowY - 44 + 1 - UIComponent.charH, 20);
                         }
-
                         g.setColor(curColor);
                         g.drawString(name, x - Map.currentWindowX - (MainCanvas.font[1].stringWidth(name) >> 1) + offX, y - Map.currentWindowY - 44, 20);
                         if (title != null && !title.equals("")) {
@@ -1518,7 +1525,6 @@ public class GameObj {
                         if (title != null && !title.equals("")) {
                             g.drawString(title, x - Map.currentWindowX + 1, y - Map.currentWindowY - 44 + 1 - UIComponent.charH, 17);
                         }
-
                         g.setColor(curColor);
                         g.drawString(name, x - Map.currentWindowX, y - Map.currentWindowY - 44, 17);
                         if (title != null && !title.equals("")) {
@@ -1530,7 +1536,6 @@ public class GameObj {
                         if (title != null && !title.equals("")) {
                             g.drawString(title, x - Map.currentWindowX - (MainCanvas.font[1].stringWidth(name) >> 1) + offX + 1, y - Map.currentWindowY - 44 + 1 - UIComponent.charH, 20);
                         }
-
                         g.setColor(curColor);
                         g.drawString(name, x - Map.currentWindowX - (MainCanvas.font[1].stringWidth(name) >> 1) + offX, y - Map.currentWindowY - 44, 20);
                         if (title != null && !title.equals("")) {
@@ -1545,13 +1550,14 @@ public class GameObj {
 
     /**
      * 绘制所有的血量更改
-     * @param g 
+     *
+     * @param g
      */
     public void drawHpChange(Graphics g) {
         if (Cons.showNum) {
             int i = 0;
             Player player = Player.getInstance();
-            for(int kk = hpChange.length; i < kk; ++i) {
+            for (int kk = hpChange.length; i < kk; ++i) {
                 if (hpChange[i][0] == 0) {
                     int[] tmpNum = null;
                     int tmp = hpChange[i][2];
@@ -1572,12 +1578,12 @@ public class GameObj {
                         do {
                             ++length;
                             tt /= 10;
-                        } while(tt != 0);
+                        } while (tt != 0);
 
                         tmpNum = new int[length];
                         tmpNum[0] = 0;
 
-                        for(int j = length - 1; j > 0; --j) {
+                        for (int j = length - 1; j > 0; --j) {
                             tmpNum[j] = tmp % 10 + 1;
                             tmp /= 10;
                         }
@@ -1602,7 +1608,7 @@ public class GameObj {
                         if (tmpImg != null) {
                             int j = 0;
 
-                            for(int kk1 = tmpNum.length; j < kk1; ++j) {
+                            for (int kk1 = tmpNum.length; j < kk1; ++j) {
                                 tmpImg.draw(g, x - tmpImg.frame_w * (tmpNum.length >> 1) - Map.currentWindowX + tmpImg.frame_w * j, y - Map.currentWindowY - (hpChange[i][1] << 1) - 15, tmpNum[j], false);
                             }
                         }
@@ -1638,7 +1644,7 @@ public class GameObj {
         mosterPicData = new short[mosterArr.length][];
         mosterMotionDataAll = new short[mosterArr.length][][];
 
-        for(int i = 0; i < mosterArr.length; ++i) {
+        for (int i = 0; i < mosterArr.length; ++i) {
             int j = mosterArr[i];
             if (mosterArr[i] <= 4 && mosterArr[i] >= 0) {
                 j = 0;
@@ -1700,7 +1706,7 @@ public class GameObj {
     }
 
     public void setCurWeapon(int argWeapon) {
-        curWeapon = (byte)argWeapon;
+        curWeapon = (byte) argWeapon;
     }
 
     public static void releaseMonsterRes() {
@@ -2104,7 +2110,7 @@ public class GameObj {
             }
         }
 
-        curMotionAndSpecificIndex = (byte)animIdx[idx1][idx2];
+        curMotionAndSpecificIndex = (byte) animIdx[idx1][idx2];
     }
 
     public String getTitleDesc() {
@@ -2125,15 +2131,16 @@ public class GameObj {
             title = "";
         }
     }
-    
+
     /**
      * 判断游戏对象距离
+     *
      * @param playerX
      * @param playerY
      * @param targetX
      * @param targetY
      * @param distance
-     * @return 
+     * @return
      */
     public static boolean inDistance(int playerX, int playerY, int targetX, int targetY, int distance) {
         int dis = (playerX - targetX) * (playerX - targetX);
@@ -2144,19 +2151,19 @@ public class GameObj {
         }
         return false;
     }
-    
-    public int getPercentageHp(){
+
+    public int getPercentageHp() {
         int r = 0;
-        if(maxHp != 0){
-            r = (int)(((double) curHp / maxHp) * 100);
+        if (maxHp != 0) {
+            r = (int) (((double) curHp / maxHp) * 100);
         }
         return r;
     }
-    
-    public int getPercentageMp(){
+
+    public int getPercentageMp() {
         int r = 0;
-        if(maxMp != 0){
-            r = (int)(((double) curMp / maxMp) * 100);
+        if (maxMp != 0) {
+            r = (int) (((double) curMp / maxMp) * 100);
         }
         return r;
     }

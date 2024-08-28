@@ -623,8 +623,8 @@ class ExtendClass implements CommandListener {
             int hpPer = player.getPercentageHp();
             if (status == 0) {   // 恢复中
                 int mpPer = player.getPercentageMp();
-                // 如果状态满了，或者被攻击
-                if ((hpPer > 70 && mpPer > 70 || player.isBeAttack)) {
+                // 如果状态满了，或者被攻击，这里先强制回原点
+                if (player.isColRow(pCol, pRow) && (hpPer > 70 && mpPer > 70 || player.isBeAttack)) {
                     // 寻找下一个可攻击目标
                     // 选择最近的可攻击对象作为目标
                     target = player.getNearFightObj();
@@ -636,19 +636,20 @@ class ExtendClass implements CommandListener {
                         status = 1;
                     }
                 } else if (setup[0] == 0 && !player.isColRow(pCol, pRow)) {  // 检测是否定点打怪
-                    if(!player.isAimColRow(pCol, pRow)){
+                    // 定点打怪需要检测是否在同一张地图，不在进行地图寻径
+                    if (!player.isAimColRow(pCol, pRow)) {
                         // 设置回原点
                         player.setAimColRow(pCol, pRow);
                     }
-                } else if (hpPer < 100 && player.canCastSkill(2)) {
+                } else if (hpPer < 90 && player.canCastSkill(2)) {
                     manager.setCurrentTarget(player);
                     player.caskSkill(player, 2);
                 }
             } else if (status == 1) {  // 寻径中
                 // 如果是寻径，到目标范围切换战斗状态
-                if (GameObj.inDistance(player.x, player.y, target.x, target.y, 70)) {
-                    player.resetFindPath();
+                if (GameObj.inDistance(player.x, player.y, target.x, target.y, 60)) {
                     // 进入战斗
+                    player.resetFindPath();
                     status = 2;
                 } else {
                     // 这里需要实时更新目标路径
@@ -674,7 +675,7 @@ class ExtendClass implements CommandListener {
                                 }
                             }
                         }
-                    } else {  // 寻径
+                    } else {
                         status = 1;
                     }
                 } else {   // 怪物已死亡

@@ -1761,6 +1761,8 @@ public class Player extends OtherPlayer {
      */
     public void resetFindPath() {
         path = null;
+        aimColumn = -1;
+        aimRow = -1;
         followAimID = -1;
     }
 
@@ -1813,13 +1815,13 @@ public class Player extends OtherPlayer {
     }
     
     /**
-     * 获取当前是否寻径目标
+     * 获取当前是否寻径目标中
      * @param aimCol
      * @param aimRow
      * @return 
      */
     public boolean isAimColRow(int aimCol, int aimRow){
-        return this.aimColumn == aimCol && this.aimRow == aimRow;
+        return this.aimColumn == aimCol && this.aimRow == aimRow && path != null && path.length > 0;
     }
 
     private boolean getDirect() {
